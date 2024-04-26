@@ -31,7 +31,7 @@ compose.desktop {
         mainClass = "MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Deb, TargetFormat.Exe)
             packageName = "org.graphses"
             packageVersion = "1.0.0"
         }
