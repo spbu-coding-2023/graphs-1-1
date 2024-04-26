@@ -5,10 +5,18 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
 
     `java-library`
+
+    // formatter
+    id("com.ncorti.ktfmt.gradle") version "0.18.0"
 }
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+}
+
+ktfmt {
+    // use official kotlin styles
+    kotlinLangStyle()
 }
