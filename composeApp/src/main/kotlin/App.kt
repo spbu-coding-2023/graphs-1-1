@@ -13,6 +13,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun App() {
     MaterialTheme {
         var counter by remember { mutableStateOf(0) }
+        val classDemo = classDemo()
 
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Button(onClick = { counter++ }) {
@@ -20,6 +21,7 @@ fun App() {
             }
 
             Text("counter: $counter")
+            Text(classDemo.show())
         }
     }
 }
