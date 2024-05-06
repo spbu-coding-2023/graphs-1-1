@@ -26,7 +26,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Deb, TargetFormat.Exe)
-            packageName = "org.graphses"
+            packageName = "Graphses"
             packageVersion = "1.0.0"
         }
     }
