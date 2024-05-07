@@ -18,6 +18,9 @@ dependencies {
 
     // desktop
     implementation(compose.desktop.currentOs)
+
+    // resources
+    implementation(compose.components.resources)
 }
 
 compose.desktop {
