@@ -33,11 +33,14 @@ dependencyResolutionManagement {
             val junit5 = version("junit5", "5.7.1")
             val compose = version("compose", "1.6.6")
             val composePlugin = version("compose-plugin", "1.6.2")
+            val detekt = version("detekt", "1.23.6")
 
             // plugins
             plugin("kotlin-jvm", "org.jetbrains.kotlin.jvm").versionRef(kotlin)
 
             plugin("compose", "org.jetbrains.compose").versionRef(composePlugin)
+
+            plugin("detekt", "io.gitlab.arturbosch.detekt").versionRef(detekt)
 
             // libraries
             library("kotlin-test", "org.jetbrains.kotlin", "kotlin-test").versionRef(kotlin)
