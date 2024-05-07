@@ -41,3 +41,21 @@ tasks.withType<Detekt>().configureEach {
         md.required.set(true) // simple Markdown format
     }
 }
+
+tasks.register("gitHooksCopy", Copy::class.java) {
+    description = "Copies git hooks from scripts/git-hooks to .git folder."
+    group = "git hooks"
+    from("$rootDir/scripts/git-hooks/pre-commit")
+    into("$rootDir/.git/hooks/")
+}
+tasks.register("gitHooksInstall", Exec::class.java) {
+    description = "Installs the pre-commit git hook from scripts/git-hooks."
+    group = "git hooks"
+    workingDir = rootDir
+    commandLine = listOf("chmod")
+    args("-R", "+x", ".git/hooks/")
+    dependsOn("gitHooksCopy")
+    doLast {
+        logger.info("Git hook installed successfully.")
+    }
+}
