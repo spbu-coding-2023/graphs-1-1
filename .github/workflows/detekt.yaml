@@ -1,7 +1,7 @@
 name: detekt
 on: [push, pull_request]
 jobs:
-  check-formatted:
+  detekt:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout source
