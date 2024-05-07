@@ -1,12 +1,12 @@
-name: formatter
+name: detekt
 on: [push, pull_request]
 jobs:
   check-formatted:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-      - name: Run detekt
-        uses: natiginfo/action-detekt-all@1.23.6
+    - name: Checkout source
+      uses: actions/checkout@v4
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+    - name: Run detekt
+      uses: ./gradlew detekt
