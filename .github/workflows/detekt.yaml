@@ -9,4 +9,4 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
     - name: Run detekt
-      uses: ./gradlew detekt
+      run: ./gradlew detekt
