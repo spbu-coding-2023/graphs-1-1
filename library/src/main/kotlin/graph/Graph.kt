@@ -1,17 +1,20 @@
 package graph
 
+/**
+ * Common interface for all graphs
+ */
 interface Graph<V, E> {
 
     /**
      * Adds vertex to the graph if not present
      */
-    fun addVertex(v: V)
+    fun addVertex(v: V): Boolean
     // fun addVertex(): V
 
     /**
      * Adds Edge between tail and head to the graph if not present
      */
-    fun addEdge(tail: V, head: V, e: E)
+    fun addEdge(tail: V, head: V, e: E): Boolean
     // fun addEdge(tail: V, head: V): E
 
     /**
@@ -31,6 +34,16 @@ interface Graph<V, E> {
     fun degreeOf(v: V): Int
 
     /**
+     * Returns the in-degree of a vertex
+     */
+    fun inDegreeOf(v: V): Int
+
+    /**
+     * Returns the out-degree of a vertex
+     */
+    fun outDegreeOf(v: V): Int
+
+    /**
      * Returns set of all edges in graph
      */
     fun edgeSet(): Set<E>
@@ -41,9 +54,9 @@ interface Graph<V, E> {
     fun edgesOf(v: V): Set<E>
 
     /**
-     * Returns edge between vertex tail and vertex head
+     * Returns edge between vertex tail and vertex head if exists, otherwise null
      */
-    fun getEdge(tail: V, head: V): E
+    fun getEdge(tail: V, head: V): E?
 
     /**
      * Returns weight of an edge
@@ -63,8 +76,8 @@ interface Graph<V, E> {
     /**
      * Removes edge and returns true if edge was present in the graph
      */
-    fun removeEdge(e: E): Boolean
-    // fun removeEdge(tail: V, head: V): Boolean
+//    fun removeEdge(e: E): Boolean
+    fun removeEdge(tail: V, head: V): Boolean
 
     /**
      * Removes vertex and all its touching edges
