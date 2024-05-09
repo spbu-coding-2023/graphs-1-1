@@ -15,7 +15,7 @@ open class DirectedWeightedGraph<V, E> : Graph<V, E> {
     private val DEFAULT_EDGE_WEIGHT: Double = 1.0
 
     override fun addVertex(v: V): Boolean {
-        if (v !in graph) {
+        if (v !in graph.keys) {
             graph[v] = mutableSetOf()
             return true
         }
@@ -65,6 +65,19 @@ open class DirectedWeightedGraph<V, E> : Graph<V, E> {
         return graph.keys
     }
 
+    override fun getEdgeHead(e: E): V {
+        graph.values.forEach { it.forEach { d -> if (d.second.data == e) return d.first} }
+        throw Error("Can not find edge head: Edge does not exist")
+    }
+
+    override fun getEdgeTail(e: E): V {
+        for (v in graph.keys) {
+            val destination = graph[v] ?: continue
+            if (destination.any { it.second.data == e }) return v
+        }
+        throw Error("Can not find edge tail: Edge does not exist")
+    }
+
     override fun setEdgeWeight(e: E, w: Double) {
         graph.values.forEach {
             it.forEach { d -> if (d.second.data == e) d.second.weight = w }
@@ -72,7 +85,7 @@ open class DirectedWeightedGraph<V, E> : Graph<V, E> {
     }
 
     override fun removeVertex(v: V): Boolean {
-        if (v !in graph) return false
+        if (v !in graph.keys) return false
         //        val destination = graph[v] ?: return false
 
         // clear edges from vertex
@@ -104,7 +117,7 @@ open class DirectedWeightedGraph<V, E> : Graph<V, E> {
     }
 
     override fun incomingEdgesOf(v: V): Set<E> {
-        if (v !in graph) return setOf()
+        if (v !in graph.keys) return setOf()
         val edges = mutableSetOf<E>()
         graph.values.forEach { it.forEach { u -> if (u.first == v) edges.add(u.second.data) } }
         return edges

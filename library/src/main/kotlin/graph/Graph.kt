@@ -94,4 +94,14 @@ interface Graph<V, E> {
      * Returns set of all vertecies in the graph
      */
     fun vertexSet(): Set<V>
+
+    /**
+     * Returns start vertex of an edge
+     */
+    fun getEdgeTail(e: E): V
+
+    /**
+     * Returns end vertex of an edge
+     */
+    fun getEdgeHead(e: E): V
 }
