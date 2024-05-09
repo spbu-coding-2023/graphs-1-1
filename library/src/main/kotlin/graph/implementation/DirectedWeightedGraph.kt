@@ -12,7 +12,7 @@ open class DirectedWeightedGraph<V, E> : Graph<V, E> {
      */
     internal data class Edge<T>(val data: T, var weight: Double)
 
-    private val DEFAULT_EDGE_WEIGHT: Double = 1.0;
+    private val DEFAULT_EDGE_WEIGHT: Double = 1.0
 
     override fun addVertex(v: V): Boolean {
         if (v !in graph) {
