@@ -111,7 +111,7 @@ open class DirectedWeightedGraph<V, E> : Graph<V, E> {
 
     override fun outgoingEdgesOf(v: V): Set<E> {
         val destination = graph[v] ?: return setOf()
-        val edges = mutableSetOf<E>()
+        val edges = mutableSetOf<E>() // TODO: test, Unknown error :/
         destination.forEach { edges.add(it.second.data) }
         return edges
     }

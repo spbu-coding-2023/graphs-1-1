@@ -5,9 +5,9 @@ import graph.Graph
 
 class GraphVertexCycleSearchWithDfs : GraphVertexCycleSearch {
     override fun <V, E> getTrailCycles(graph: Graph<V, E>, startingVertex: V): List<List<V>> {
-        val cycles = listOf<List<V>>()
+        val cycles = mutableListOf<List<V>>()
 
-        fun getTrailCyclesRec(currentVertex: V, currentTrail: List<V>) {
+        fun getTrailCyclesRec(currentVertex: V, currentTrail: MutableList<V>) {
             currentTrail.addLast(currentVertex)
 
             for (edge in graph.outgoingEdgesOf(currentVertex)) {
@@ -19,27 +19,27 @@ class GraphVertexCycleSearchWithDfs : GraphVertexCycleSearch {
                     (currentTrail.size > 2)
                     ) {
                     // fond cycle
-                    val fullCycle = currentTrail.toList()
+                    val fullCycle = currentTrail.toMutableList()
                     fullCycle.addLast(startingVertex)
                     cycles.addLast(fullCycle)
                 }
 
-                getTrailCyclesRec(neighbourVertex, currentTrail.toList())
+                getTrailCyclesRec(neighbourVertex, currentTrail.toMutableList())
 
                 currentTrail.removeLast()
             }
         }
 
-        getTrailCyclesRec(startingVertex, listOf())
+        getTrailCyclesRec(startingVertex, mutableListOf())
         return cycles
     }
 
     override fun <V, E> getPathCycles(graph: Graph<V, E>, startingVertex: V): List<List<V>> {
-        val cycles = listOf<List<V>>()
+        val cycles = mutableListOf<List<V>>()
         val visited = mutableMapOf<V, Boolean>()
         graph.vertexSet().forEach { visited[it] = false }
 
-        fun getPathCyclesRec(currentVertex: V, currentVisited: MutableMap<V, Boolean>, currentPath: List<V>) {
+        fun getPathCyclesRec(currentVertex: V, currentVisited: MutableMap<V, Boolean>, currentPath: MutableList<V>) {
             currentVisited[currentVertex] = true
             currentPath.addLast(currentVertex)
 
@@ -48,7 +48,7 @@ class GraphVertexCycleSearchWithDfs : GraphVertexCycleSearch {
 
                 if ((neighbourVertex == startingVertex) && (currentPath.size > 2)) {
                     // found cycle
-                    val fullCycle = currentPath.toList()
+                    val fullCycle = currentPath.toMutableList()
                     fullCycle.addLast(neighbourVertex)
                     cycles.addLast(fullCycle)
                 } else if (
@@ -63,7 +63,7 @@ class GraphVertexCycleSearchWithDfs : GraphVertexCycleSearch {
             currentVisited[currentVertex] = false
         }
 
-        getPathCyclesRec(startingVertex, visited, listOf())
+        getPathCyclesRec(startingVertex, visited, mutableListOf())
         return cycles
     }
 }

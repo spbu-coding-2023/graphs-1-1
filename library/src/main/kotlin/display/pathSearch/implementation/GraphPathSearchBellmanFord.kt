@@ -2,7 +2,6 @@ package display.pathSearch.implementation
 
 import display.pathSearch.GraphPathSearch
 import graph.Graph
-import kotlin.math.tan
 
 class GraphPathSearchBellmanFord : GraphPathSearch {
     override fun <V, E> searchPath(graph: Graph<V, E>, startingVertex: V, endingVertex: V): List<V> {
@@ -10,7 +9,7 @@ class GraphPathSearchBellmanFord : GraphPathSearch {
         val predecessor = mutableMapOf<V, V?>()
         val vertecies = graph.vertexSet()
         val edges = graph.edgeSet()
-        val path = listOf<V>()
+        val path = mutableListOf<V>()
 
         for (v in vertecies) {
             distance[v] = Double.POSITIVE_INFINITY
