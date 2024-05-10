@@ -13,38 +13,38 @@ import org.openide.util.Lookup
 
 import kotlin.random.Random
 
-class GraphPlacementYifanHu<V, E> : GraphPlacement<V, E> {
+class GraphPlacementYifanHu : GraphPlacement {
     private val _width = 1
     private val _height = 1
-    override fun getPlacement(g: Graph<V, E>): Map<V, Pair<Float, Float>> {
+    override fun <V, E>getPlacement(graph: Graph<V, E>): Map<V, Pair<Float, Float>> {
         val random = Random(1L)
 
         val pc = Lookup.getDefault().lookup(ProjectController::class.java)
         pc.newProject()
 
         val graphModel = Lookup.getDefault().lookup(GraphController::class.java).graphModel
-        val graph = graphModel.undirectedGraph
+        val graphType = graphModel.undirectedGraph
 
         val map = mutableMapOf<V, Node>()
         val placement = mutableMapOf<V, Pair<Float, Float>>()
 
-        for (vert in g.vertexSet()) {
+        for (vert in graph.vertexSet()) {
             val n: Node = graphModel.factory().newNode(vert.toString())
             n.setX(random.nextFloat()*10)
             n.setY(random.nextFloat()*10)
             map[vert] = n
 
-            graph.addNode(n)
+            graphType.addNode(n)
         }
 
-        for (edge in g.edgeSet()) {
+        for (edge in graph.edgeSet()) {
             val e: Edge = graphModel.factory().newEdge(
-                map[g.getEdgeTail(edge)],
-                map[g.getEdgeHead(edge)],
+                map[graph.getEdgeTail(edge)],
+                map[graph.getEdgeHead(edge)],
                 1,
                 false
             )
-            graph.addEdge(e)
+            graphType.addEdge(e)
         }
 
         // Run YifanHuLayout for 100 passes
@@ -65,8 +65,8 @@ class GraphPlacementYifanHu<V, E> : GraphPlacement<V, E> {
         }
         layout.endAlgo()
 
-        for (vertex in g.vertexSet()) {
-            val n: Node = graph.getNode(vertex.toString())
+        for (vertex in graph.vertexSet()) {
+            val n: Node = graphType.getNode(vertex.toString())
             val x = ((_width/2 + n.x()* 3 / 1))
             val y = ((_height/2 + n.y()* 3 / 1))
             placement[vertex] = Pair(x, y)
