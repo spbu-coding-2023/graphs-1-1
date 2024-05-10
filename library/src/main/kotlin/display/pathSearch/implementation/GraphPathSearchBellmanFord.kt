@@ -46,9 +46,9 @@ class GraphPathSearchBellmanFord : GraphPathSearch {
         while (currentVertex != startingVertex) {
             if (predecessor[currentVertex] == null) return listOf() // TODO: think of
             currentVertex = predecessor[currentVertex]!!
-            path.addLast(currentVertex)
+            path.add(currentVertex)
         }
-        path.addFirst(endingVertex)
+        path.add(0, endingVertex)
         return path.reversed()
     }
 }
