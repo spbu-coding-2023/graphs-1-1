@@ -11,7 +11,7 @@ Graphses is a desktop application designed for visualizing and analyzing graphs.
 
 ### Algorithm Implementation
 - [ ] **Implement Main Algorithms**
-    - [ ] Graph layout on the plane
+    - [X] Graph layout on the plane
     - [ ] Key vertex identification
     - [ ] Community search
 - [ ] **Implement Classical Algorithms**
