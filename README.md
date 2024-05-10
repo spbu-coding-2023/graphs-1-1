@@ -17,10 +17,10 @@ Graphses is a desktop application designed for visualizing and analyzing graphs.
 - [ ] **Implement Classical Algorithms**
     - [ ] Strongly connected components extraction (directed graph)
     - [ ] Bridge search (undirected graph)
-    - [ ] Cycle search for a given vertex (directed and/or undirected graph)
+    - [X] Cycle search for a given vertex (directed and/or undirected graph)
     - [ ] Minimum spanning tree construction (undirected graph)
     - [ ] Shortest path between a pair of vertices by Dijkstra's algorithm (directed and/or undirected graph)
-    - [ ] Shortest path between a pair of vertices by the Ford-Bellman algorithm (directed and/or undirected graph)
+    - [X] Shortest path between a pair of vertices by the Ford-Bellman algorithm (directed and/or undirected graph)
 
 ### Graph Saving and Loading
 - [ ] **Implement Graph Saving and Loading**
