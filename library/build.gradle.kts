@@ -10,6 +10,9 @@ dependencies {
 
     // gephi toolkit
     implementation(files("libs/gephi-toolkit-0.10.0-all.jar"))
+
+    // gson
+    implementation(libs.gson)
 }
 
 tasks.named<Test>("test") {
