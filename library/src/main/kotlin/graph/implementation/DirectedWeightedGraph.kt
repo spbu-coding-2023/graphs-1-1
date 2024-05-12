@@ -4,9 +4,61 @@ import graph.Graph
 
 open class DirectedWeightedGraph<V, E> : Graph<V, E> {
     /**
-     * store graph in list
+     * store graph in adjacency matrix
      */
-    private val graph = mutableMapOf<V, MutableSet<Pair<V, Edge<E>>>>()
+    private val graph = AdjacencyMatrix<V, Edge<E>>()
+
+    protected class AdjacencyMatrix<V, E> {
+        val matrix = mutableListOf<MutableList<E?>>()
+        val verteciesMap = HashMap<V, Int>()
+        fun get(tail: V, head: V): E? {
+            val tailIndex = verteciesMap[tail]
+            val headIndex = verteciesMap[head]
+            if (tailIndex == null || headIndex == null) throw IllegalArgumentException("Can not get edge by vertecies: Both vertecies must exist")
+            return matrix[tailIndex][headIndex]
+        }
+
+        fun set(tail: V, head: V, e: E?): Boolean {
+            val tailIndex = verteciesMap[tail]
+            val headIndex = verteciesMap[head]
+            if (tailIndex == null || headIndex == null) throw IllegalArgumentException("Can not set edge by vertecies: Both vertecies must exist")
+            val prev = matrix[tailIndex][headIndex]
+            matrix[tailIndex][headIndex] = e
+            if (prev == null) return true
+            return false
+        }
+
+        fun add(v: V): Boolean {
+            if (v in verteciesMap) return false
+
+            val matrixSize = matrix.size
+            verteciesMap[v] = matrixSize
+
+            matrix.forEach {// adds by one line (could double each time, would be faster ig)
+                it.add(null)
+            }
+            matrix.add(MutableList(matrixSize+1) {null})
+            return true
+        }
+
+        fun delete(v: V) {
+            val vertexIndex = verteciesMap[v] ?: throw IllegalArgumentException("Can not delete vertex: vertex does not exist")
+
+            matrix.forEach {
+                it.removeAt(vertexIndex)
+            }
+
+            matrix.removeAt(vertexIndex)
+
+            verteciesMap.remove(v)
+
+            verteciesMap.forEach {
+                if (it.value > vertexIndex) {
+                    verteciesMap[it.key] = it.value - 1
+                }
+            }
+        }
+    }
     /**
      * Holds data and weight of an edge in the graph
      */
@@ -15,30 +67,19 @@ open class DirectedWeightedGraph<V, E> : Graph<V, E> {
     protected val DEFAULT_EDGE_WEIGHT: Double = 1.0
 
     override fun addVertex(v: V): Boolean {
-        if (v !in graph.keys) {
-            graph[v] = mutableSetOf()
-            return true
-        }
-        return false
+        return graph.add(v)
     }
 
     override fun addEdge(tail: V, head: V, e: E): Boolean {
-        val destination = graph[tail]
-        if (destination == null || graph[head] == null) throw IllegalArgumentException("To create an edge both vertecies must exist")
-        if (destination.any { it.first == head }) return false // edge already exists
-
-        destination.add(Pair(head, Edge(e, DEFAULT_EDGE_WEIGHT)))
-
-        return true
+        return graph.set(tail, head, Edge(e, DEFAULT_EDGE_WEIGHT))
     }
 
     override fun containsVertex(v: V): Boolean {
-        return v in graph
+        return v in graph.verteciesMap
     }
 
     override fun containsEdge(tail: V, head: V): Boolean {
-        val destination = graph[tail] ?: return false
-        return destination.any {it.first == head}
+        return graph.get(tail, head) != null
     }
 
     override fun degreeOf(v: V): Int {
@@ -55,85 +96,81 @@ open class DirectedWeightedGraph<V, E> : Graph<V, E> {
 
     override fun edgeSet(): Set<E> {
         val edges = mutableSetOf<E>()
-        graph.values.forEach {
-            it.forEach { d -> edges.add(d.second.data) }
+        graph.matrix.forEach {row ->
+            row.forEach { edgeItem ->
+                val edge = edgeItem?.data
+                if (edge != null) edges.add(edge)
+            }
         }
         return edges
     }
 
     override fun vertexSet(): Set<V> {
-        return graph.keys
+        return graph.verteciesMap.keys
     }
 
     override fun getEdgeHead(e: E): V {
-        graph.values.forEach { it.forEach { d -> if (d.second.data == e) return d.first} }
+        graph.matrix.forEach { row -> row.forEachIndexed { index, edgeItem ->
+            if (edgeItem?.data == e) {
+                graph.verteciesMap.forEach { if (it.value == index) return it.key }
+            }
+        } }
         throw Error("Can not find edge head: Edge does not exist")
     }
 
     override fun getEdgeTail(e: E): V {
-        for (v in graph.keys) {
-            val destination = graph[v] ?: continue
-            if (destination.any { it.second.data == e }) return v
-        }
+        graph.matrix.forEachIndexed { index, row -> row.forEach { edgeItem ->
+            if (edgeItem?.data == e) {
+                graph.verteciesMap.forEach { if (it.value == index) return it.key }
+            }
+        } }
         throw Error("Can not find edge tail: Edge does not exist")
     }
 
     override fun setEdgeWeight(e: E, w: Double) {
-        graph.values.forEach {
-            it.forEach { d -> if (d.second.data == e) d.second.weight = w }
-        }
+        graph.matrix.forEach { row -> row.forEach { edgeItem ->
+            val edge = edgeItem?.data
+            if (edge == e) edgeItem?.weight = w
+        } }
     }
 
     override fun removeVertex(v: V): Boolean {
-        if (v !in graph.keys) return false
-        //        val destination = graph[v] ?: return false
-
-        // clear edges from vertex
-//        destination.clear()
-
-        // clear edges to vertex
-        for (k in graph.keys) {
-            val u = graph[k] ?: continue
-            graph[k] = u.filter { it.first != v }.toMutableSet()
-        }
-
-        // remove vertex
-        graph.remove(v)
+        if (v !in graph.verteciesMap.keys) return false
+        graph.delete(v)
         return true
     }
 
     override fun removeEdge(tail: V, head: V): Boolean {
-        val destination = graph[tail] ?: return false
-        if (!destination.any { it.first == head }) return false
-        graph[tail] = destination.filter { it.first != head }.toMutableSet()
-        return true
+        return !graph.set(tail, head, null)
     }
 
     override fun outgoingEdgesOf(v: V): Set<E> {
-        val destination = graph[v] ?: return setOf()
-        val edges = mutableSetOf<E>() // TODO: test, Unknown error :/
-        destination.forEach { edges.add(it.second.data) }
+        val edges = mutableSetOf<E>()
+        for (head in graph.verteciesMap.keys) {
+            val edge = graph.get(v, head) ?: continue
+            edges.add(edge.data)
+        }
         return edges
     }
 
     override fun incomingEdgesOf(v: V): Set<E> {
-        if (v !in graph.keys) return setOf()
         val edges = mutableSetOf<E>()
-        graph.values.forEach { it.forEach { u -> if (u.first == v) edges.add(u.second.data) } }
+        for (tail in graph.verteciesMap.keys) {
+            val edge = graph.get(tail, v) ?: continue
+            edges.add(edge.data)
+        }
         return edges
     }
 
     override fun getEdgeWeight(e: E): Double {
-        graph.values.forEach {
-            it.forEach { d -> if (d.second.data == e) return d.second.weight }
-        }
+        graph.matrix.forEach { row -> row.forEach { edgeItem ->
+            if (edgeItem != null && edgeItem.data == e) return edgeItem.weight
+        } }
         throw Error("Can not get edge weight: Edge does not exist")
     }
 
     override fun getEdge(tail: V, head: V): E? {
-        val destination = graph[tail] ?: return null
-        destination.forEach { if (it.first == head) return it.second.data }
-        return null
+        return graph.get(tail, head)?.data
     }
 
     override fun edgesOf(v: V): Set<E> {
