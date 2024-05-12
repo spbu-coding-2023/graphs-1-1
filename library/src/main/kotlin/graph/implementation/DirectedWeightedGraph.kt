@@ -6,7 +6,7 @@ open class DirectedWeightedGraph<V, E> : Graph<V, E> {
     /**
      * store graph in adjacency matrix
      */
-    private val graph = AdjacencyMatrix<V, Edge<E>>()
+    protected val graph = AdjacencyMatrix<V, Edge<E>>()
 
     protected class AdjacencyMatrix<V, E> {
         val matrix = mutableListOf<MutableList<E?>>()
@@ -103,6 +103,17 @@ open class DirectedWeightedGraph<V, E> : Graph<V, E> {
             }
         }
         return edges
+    }
+
+    override fun edgeSetOfVertecies(): Set<Pair<V, V>> {
+        val connections = mutableSetOf<Pair<V, V>>()
+        val vertecies = vertexSet()
+        for (v1 in vertecies) {
+            for (v2 in vertecies) {
+                if (graph.get(v1, v2) != null) connections.add(Pair(v1, v2))
+            }
+        }
+        return connections
     }
 
     override fun vertexSet(): Set<V> {

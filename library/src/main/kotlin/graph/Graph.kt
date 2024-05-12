@@ -49,6 +49,11 @@ interface Graph<V, E> {
     fun edgeSet(): Set<E>
 
     /**
+     * Returns set of all connections of each edge
+     */
+    fun edgeSetOfVertecies(): Set<Pair<V, V>>
+
+    /**
      * Returns set of all edges connected to a vertex in graph (any direction)
      */
     fun edgesOf(v: V): Set<E>
