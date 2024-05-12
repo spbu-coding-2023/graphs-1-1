@@ -24,6 +24,10 @@ open class UndirectedWeightedGraph<V, E> : DirectedWeightedGraph<V, E>() {
         return connections
     }
 
+    override fun getEdge(tail: V, head: V): E? {
+        return graph.get(tail, head)?.data ?: graph.get(head, tail)?.data
+    }
+
     override fun inDegreeOf(v: V): Int = degreeOf(v)
 
     override fun outDegreeOf(v: V): Int = degreeOf(v)

@@ -24,7 +24,7 @@ Graphses is a desktop application designed for visualizing and analyzing graphs.
 
 ### Graph Saving and Loading
 - [ ] **Implement Graph Saving and Loading**
-    - [ ] Read and save graphs from/to files (CSV, JSON, etc.)
+    - [X] Read and save graphs from/to files (CSV, JSON, etc.)
     - [ ] Save and read from SQLite
     - [ ] Save and read from Neo4j
 
