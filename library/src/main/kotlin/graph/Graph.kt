@@ -79,6 +79,16 @@ interface Graph<V, E> {
     fun outgoingEdgesOf(v: V): Set<E>
 
     /**
+     * Returns all incoming vertecies of a vertex
+     */
+    fun incomingVerteciesOf(v: V): Set<V>
+
+    /**
+     * Returns all outgoing vertecies of a vertex
+     */
+    fun outgoingVerteciesOf(v: V): Set<V>
+
+    /**
      * Removes edge and returns true if edge was present in the graph
      */
 //    fun removeEdge(e: E): Boolean

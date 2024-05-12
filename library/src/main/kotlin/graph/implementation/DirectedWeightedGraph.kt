@@ -173,6 +173,24 @@ open class DirectedWeightedGraph<V, E> : Graph<V, E> {
         return edges
     }
 
+    override fun outgoingVerteciesOf(v: V): Set<V> {
+        val vertecies = mutableSetOf<V>()
+        for (head in graph.verteciesMap.keys) {
+            if (graph.get(v, head) == null) continue
+            vertecies.add(head)
+        }
+        return vertecies
+    }
+
+    override fun incomingVerteciesOf(v: V): Set<V> {
+        val vertecies = mutableSetOf<V>()
+        for (tail in graph.verteciesMap.keys) {
+            if (graph.get(tail, v) == null) continue
+            vertecies.add(tail)
+        }
+        return vertecies
+    }
+
     override fun getEdgeWeight(e: E): Double {
         graph.matrix.forEach { row -> row.forEach { edgeItem ->
             if (edgeItem != null && edgeItem.data == e) return edgeItem.weight

@@ -4,66 +4,68 @@ import display.cycleSearch.GraphVertexCycleSearch
 import graph.Graph
 
 class GraphVertexCycleSearchWithDfs : GraphVertexCycleSearch {
-    override fun <V, E> getTrailCycles(graph: Graph<V, E>, startingVertex: V): List<List<V>> {
-        val cycles = mutableListOf<List<V>>()
+    override fun <V, E> getTrailCycle(graph: Graph<V, E>, startingVertex: V): List<V> {
+        val visitedEdges = HashSet<Pair<V, V>>() // TODO: look at the opposite edge direction as well in undirected graph
+        val cameFrom = HashMap<V, V>()
 
-        fun getTrailCyclesRec(currentVertex: V, currentTrail: MutableList<V>) {
-            currentTrail.add(currentVertex)
+        val stack = mutableListOf(startingVertex)
 
-            for (edge in graph.outgoingEdgesOf(currentVertex)) {
-                val neighbourVertex = graph.getEdgeTail(edge)
+        while(stack.isNotEmpty()) {
+            val currentVertex = stack.removeLast()
 
-                if (
-                    (neighbourVertex in currentTrail) &&
-                    (neighbourVertex == startingVertex) &&
-                    (currentTrail.size > 2)
-                    ) {
-                    // fond cycle
-                    val fullCycle = currentTrail.toMutableList()
-                    fullCycle.add(startingVertex)
-                    cycles.add(fullCycle)
+            for (neighbourVertex in graph.outgoingVerteciesOf(currentVertex)) {
+                val currentEdge = Pair(currentVertex, neighbourVertex)
+                cameFrom[neighbourVertex] = currentVertex
+                if (currentEdge !in visitedEdges) {
+                    visitedEdges.add(currentEdge)
+                    if (neighbourVertex == startingVertex && cameFrom[neighbourVertex] != startingVertex) {
+                        val path = mutableListOf(startingVertex)
+                        var cur = cameFrom[neighbourVertex]
+                        while (cur != startingVertex) {
+                            if (cur == null) break
+                            path.add(cur)
+                            cur = cameFrom[cur]
+                        }
+                        path.add(startingVertex)
+                        return path.reversed()
+                    }
+                    stack.add(neighbourVertex)
                 }
-
-                getTrailCyclesRec(neighbourVertex, currentTrail.toMutableList())
-
-                currentTrail.removeLast()
             }
         }
 
-        getTrailCyclesRec(startingVertex, mutableListOf())
-        return cycles
+        return listOf()
     }
 
-    override fun <V, E> getPathCycles(graph: Graph<V, E>, startingVertex: V): List<List<V>> {
-        val cycles = mutableListOf<List<V>>()
-        val visited = mutableMapOf<V, Boolean>()
-        graph.vertexSet().forEach { visited[it] = false }
+    override fun <V, E> getPathCycle(graph: Graph<V, E>, startingVertex: V): List<V> {
+        val visitedVertecies = HashSet<V>() // TODO: look at the opposite edge direction as well in undirected graph
+        val cameFrom = HashMap<V, V>()
 
-        fun getPathCyclesRec(currentVertex: V, currentVisited: MutableMap<V, Boolean>, currentPath: MutableList<V>) {
-            currentVisited[currentVertex] = true
-            currentPath.add(currentVertex)
+        val stack = mutableListOf(startingVertex)
 
-            for (edge in graph.outgoingEdgesOf(currentVertex)) {
-                val neighbourVertex = graph.getEdgeTail(edge)
+        while(stack.isNotEmpty()) {
+            val currentVertex = stack.removeLast()
 
-                if ((neighbourVertex == startingVertex) && (currentPath.size > 2)) {
-                    // found cycle
-                    val fullCycle = currentPath.toMutableList()
-                    fullCycle.add(neighbourVertex)
-                    cycles.add(fullCycle)
-                } else if (
-                    !currentVisited[neighbourVertex]!! && // !!! :)
-                    (neighbourVertex != startingVertex)
-                    ) {
-                    getPathCyclesRec(neighbourVertex, currentVisited, currentPath)
+            for (neighbourVertex in graph.outgoingVerteciesOf(currentVertex)) {
+                cameFrom[neighbourVertex] = currentVertex
+                if (neighbourVertex !in visitedVertecies) {
+                    visitedVertecies.add(neighbourVertex)
+                    if (neighbourVertex == startingVertex && cameFrom[neighbourVertex] != startingVertex) {
+                        val path = mutableListOf(startingVertex)
+                        var cur = cameFrom[neighbourVertex]
+                        while (cur != startingVertex) {
+                            if (cur == null) break
+                            path.add(cur)
+                            cur = cameFrom[cur]
+                        }
+                        path.add(startingVertex)
+                        return path.reversed()
+                    }
+                    stack.add(neighbourVertex)
                 }
             }
-
-            currentPath.removeLast()
-            currentVisited[currentVertex] = false
         }
 
-        getPathCyclesRec(startingVertex, visited, mutableListOf())
-        return cycles
+        return listOf()
     }
 }
