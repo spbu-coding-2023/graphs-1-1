@@ -1,6 +1,5 @@
 package graphs
 
-import graph.configuration.GraphConfiguration
 import graph.implementation.DirectedUnweightedGraph
 import graph.implementation.DirectedWeightedGraph
 import graph.implementation.UndirectedUnweightedGraph
@@ -166,11 +165,11 @@ class AbstractGraphTest {
         DWgraph.addEdge(9, 1, "D")
         DWgraph.addEdge(1, 9, "E")
 
-        assertEquals(DWgraph.inDegreeOf(23), 1)
-        assertEquals(DWgraph.inDegreeOf(52), 1)
-        assertEquals(DWgraph.inDegreeOf(1), 2)
-        assertEquals(DWgraph.inDegreeOf(9), 1)
-        assertEquals(DWgraph.inDegreeOf(0), 0)
+        assertEquals(DWgraph.outDegreeOf(23), 1)
+        assertEquals(DWgraph.outDegreeOf(52), 1)
+        assertEquals(DWgraph.outDegreeOf(1), 2)
+        assertEquals(DWgraph.outDegreeOf(9), 1)
+        assertEquals(DWgraph.outDegreeOf(0), 0)
     }
 
     @Test
