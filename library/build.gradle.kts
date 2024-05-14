@@ -13,6 +13,10 @@ dependencies {
 
     // gson
     implementation(libs.gson)
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 }
 
 tasks.named<Test>("test") {
