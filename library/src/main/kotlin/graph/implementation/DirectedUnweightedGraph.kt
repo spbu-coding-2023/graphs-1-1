@@ -1,11 +1,5 @@
 package graph.implementation
 
-open class DirectedUnweightedGraph<V, E> : DirectedWeightedGraph<V, E>() {
-    override fun getEdgeWeight(e: E): Double {
-        return DEFAULT_EDGE_WEIGHT
-    }
+import graph.abstracts.AbstractGraph
 
-    override fun setEdgeWeight(e: E, w: Double) {
-        return
-    }
-}
+open class DirectedUnweightedGraph<V, E> : AbstractGraph<V, E>(true, false)
