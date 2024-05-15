@@ -201,7 +201,10 @@ class AbstractGraphTest {
         DWgraph.addEdge(9, 1, "D")
         DWgraph.addEdge(1, 9, "E")
 
-        assertEquals(DWgraph.edgeSetOfVertecies(), setOf(Pair(23, 52), Pair(1, 52), Pair(52, 9), Pair(9, 1), Pair(1, 9)))
+        assertEquals(
+            DWgraph.edgeSetOfVertecies(),
+            setOf(Pair(23, 52), Pair(1, 52), Pair(52, 9), Pair(9, 1), Pair(1, 9))
+        )
     }
 
     @Test
@@ -217,7 +220,13 @@ class AbstractGraphTest {
         UDWgraph.addEdge(9, 1, "D")
         UDWgraph.addEdge(1, 9, "E")
 
-        assertEquals(UDWgraph.edgeSetOfVertecies(), setOf(Pair(23, 52), Pair(52, 23), Pair(1, 52), Pair(52, 1), Pair(52, 9), Pair(9, 52), Pair(9, 1), Pair(1, 9)))
+        assertEquals(
+            UDWgraph.edgeSetOfVertecies(),
+            setOf(
+                Pair(23, 52), Pair(52, 23), Pair(1, 52), Pair(52, 1),
+                Pair(52, 9), Pair(9, 52), Pair(9, 1), Pair(1, 9)
+            )
+        )
     }
 
     @Test
