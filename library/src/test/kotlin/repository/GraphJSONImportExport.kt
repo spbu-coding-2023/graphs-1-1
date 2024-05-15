@@ -49,7 +49,7 @@ class GraphJSONImportExport {
         exporter.exportGraph(DWgraph, file)
         importer.importGraph(DWgraphNew, file)
 
-        assertEquals(DWgraphNew.vertexSet(), setOf(23.0))
+        assertEquals(DWgraphNew.vertexSet(), setOf(23))
         assertEquals(DWgraphNew.edgeSet(), setOf<String>())
     }
 
