@@ -11,13 +11,12 @@ interface Graph<V, E> {
      * Adds vertex to the graph if not present
      */
     fun addVertex(v: V): Boolean
-    // fun addVertex(): V
 
     /**
      * Adds Edge between tail and head to the graph if not present
      */
     fun addEdge(tail: V, head: V, e: E): Boolean
-    // fun addEdge(tail: V, head: V): E
+    fun addEdge(tail: V, head: V, e: E, w: Double): Boolean
 
     /**
      * Returns true if vertex is in the graph
@@ -28,7 +27,6 @@ interface Graph<V, E> {
      * Returns true if edge between tail and head is in the graph
      */
     fun containsEdge(tail: V, head: V): Boolean
-    // fun containsEdge(e: E): Boolean
 
     /**
      * Returns the degree of a vertex
@@ -69,6 +67,7 @@ interface Graph<V, E> {
      * Returns weight of an edge
      */
     fun getEdgeWeight(e: E): Double
+    fun getEdgeWeight(tail: V, head: V): Double
 
     /**
      * Returns all incoming edges in vertex
@@ -93,7 +92,6 @@ interface Graph<V, E> {
     /**
      * Removes edge and returns true if edge was present in the graph
      */
-//    fun removeEdge(e: E): Boolean
     fun removeEdge(tail: V, head: V): Boolean
 
     /**
@@ -105,7 +103,7 @@ interface Graph<V, E> {
      * Sets weight to an edge
      */
     fun setEdgeWeight(e: E, w: Double)
-    // fun setEdgeWeight(tail: V, head: V, w: Double)
+    fun setEdgeWeight(tail: V, head: V, w: Double)
 
     /**
      * Returns set of all vertecies in the graph

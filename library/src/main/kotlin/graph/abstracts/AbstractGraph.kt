@@ -30,11 +30,19 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     }
 
     override fun addEdge(tail: V, head: V, e: E): Boolean {
+        return addFullEdge(tail, head, e, DEFAULT_EDGE_WEIGHT)
+    }
+
+    override fun addEdge(tail: V, head: V, e: E, w: Double): Boolean {
+        return addFullEdge(tail, head, e, w)
+    }
+
+    private fun addFullEdge(tail: V, head: V, e: E, w: Double): Boolean {
         var edge = false
         if (configuration.isUndirected()) {
             edge = structure.set(tail, head, null)
         }
-        return structure.set(tail, head, Edge(e, DEFAULT_EDGE_WEIGHT)) || edge
+        return structure.set(tail, head, Edge(e, w)) || edge
     }
 
     override fun containsVertex(v: V): Boolean {
@@ -136,6 +144,12 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
         } }
     }
 
+    override fun setEdgeWeight(tail: V, head: V, w: Double) {
+        if (configuration.isUnweighted()) return
+
+        structure.get(tail, head)?.weight = w
+    }
+
     override fun removeVertex(v: V): Boolean {
         if (v !in structure.verteciesMap.keys) return false
         structure.delete(v)
@@ -224,7 +238,18 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
         structure.matrix.forEach { row -> row.forEach { edgeItem ->
             if (edgeItem != null && edgeItem.data == e) return edgeItem.weight
         } }
-        throw Error("Can not get edge weight: Edge does not exist")
+        throw RuntimeException("Can not get edge weight: Edge does not exist")
+    }
+
+    override fun getEdgeWeight(tail: V, head: V): Double {
+        if (configuration.isUnweighted()) return DEFAULT_EDGE_WEIGHT
+        val isUndirected = configuration.isUndirected()
+
+        var edgeItem = structure.get(tail, head)
+        if (isUndirected && edgeItem == null) edgeItem = structure.get(head, tail)
+        if (edgeItem != null) return edgeItem.weight
+
+        throw RuntimeException("Can not get edge weight: Edge does not exist")
     }
 
     override fun getEdge(tail: V, head: V): E? {
