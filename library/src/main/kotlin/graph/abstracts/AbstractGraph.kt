@@ -29,15 +29,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
         return structure.add(v)
     }
 
-    override fun addEdge(tail: V, head: V, e: E): Boolean {
-        return addFullEdge(tail, head, e, DEFAULT_EDGE_WEIGHT)
-    }
-
     override fun addEdge(tail: V, head: V, e: E, w: Double): Boolean {
-        return addFullEdge(tail, head, e, w)
-    }
-
-    private fun addFullEdge(tail: V, head: V, e: E, w: Double): Boolean {
         var edge = false
         val weight = if (configuration.isUnweighted()) DEFAULT_EDGE_WEIGHT else w
         if (configuration.isUndirected()) {
