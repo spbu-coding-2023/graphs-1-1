@@ -30,8 +30,8 @@ Graphses is a desktop application designed for visualizing and analyzing graphs.
 
 ### Testing
 - [ ] **Write Unit Tests**
-    - [ ] Unit tests for each implemented algorithm
-    - [ ] Unit tests for graph saving and loading functionality
+    - [X] Unit tests for each implemented algorithm !implemented(PathFind, BellmanFord, CycleSearch)
+    - [X] Unit tests for graph saving and loading functionality !implemented(JSON)
 - [ ] **Write Integration Tests**
     - [ ] Integration tests covering main user scenarios
 - [ ] **Test Documentation**

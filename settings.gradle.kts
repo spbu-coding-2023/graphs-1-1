@@ -34,7 +34,6 @@ dependencyResolutionManagement {
             val compose = version("compose", "1.6.6")
             val composePlugin = version("compose-plugin", "1.6.2")
             val detekt = version("detekt", "1.23.6")
-            val gson = version("gson", "2.8.5")
 
             // plugins
             plugin("kotlin-jvm", "org.jetbrains.kotlin.jvm").versionRef(kotlin)
@@ -52,8 +51,6 @@ dependencyResolutionManagement {
 
             library("compose-ui-tooling", "androidx.compose.ui", "ui-tooling").versionRef(compose)
             library("compose-ui-tooling-preview", "androidx.compose.ui", "ui-tooling-preview").versionRef(compose)
-
-            library("gson", "com.google.code.gson", "gson").versionRef(gson)
         }
     }
 

@@ -11,8 +11,14 @@ dependencies {
     // gephi toolkit
     implementation(files("libs/gephi-toolkit-0.10.0-all.jar"))
 
-    // gson
-    implementation(libs.gson)
+    // jackson
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+
+    testImplementation("org.hamcrest:hamcrest:2.2")
 }
 
 tasks.named<Test>("test") {
