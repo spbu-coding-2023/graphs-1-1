@@ -2,8 +2,6 @@ package display.cycleSearch.implementation
 
 import display.cycleSearch.GraphVertexCycleSearch
 import graph.Graph
-import java.util.LinkedList
-import java.util.Queue
 
 class GraphVertexCycleSearchWithDfs : GraphVertexCycleSearch {
     override fun <V, E> getCycle(graph: Graph<V, E>, startingVertex: V): List<V> {
@@ -15,7 +13,7 @@ class GraphVertexCycleSearchWithDfs : GraphVertexCycleSearch {
         while (stack.isNotEmpty()) {
             val currentVertex = stack.removeLast()
             visited.add(currentVertex)
-            for (neighbourVertex in graph.outgoingVerteciesOf(currentVertex)) {
+            for (neighbourVertex in graph.outgoingVerticesOf(currentVertex)) {
 
                 if (neighbourVertex == startingVertex) {
                     cameFrom[neighbourVertex] = currentVertex
