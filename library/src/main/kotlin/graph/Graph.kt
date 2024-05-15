@@ -54,7 +54,7 @@ interface Graph<V, E> {
     fun edgeSetOfVertices(): Set<Pair<V, V>>
 
     /**
-     * Just like edgeSetOfVertecies, but returns exactly edges as they directed
+     * Just like edgeSetOfVertices, but returns exactly edges as they directed
      */
     fun edgeSetOfVerticesDirectional(): Set<Pair<V, V>>
 
