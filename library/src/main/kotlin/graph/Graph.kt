@@ -1,5 +1,7 @@
 package graph
 
+import graph.configuration.GraphConfiguration
+
 /**
  * Common interface for all graphs
  */
@@ -119,4 +121,9 @@ interface Graph<V, E> {
      * Returns end vertex of an edge
      */
     fun getEdgeHead(e: E): V
+
+    /**
+     * type of graph, how it is configured
+     */
+    val configuration: GraphConfiguration
 }

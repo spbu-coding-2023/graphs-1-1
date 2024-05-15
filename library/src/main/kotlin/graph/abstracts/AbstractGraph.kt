@@ -8,7 +8,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     /**
      * type of the graph
      */
-    val configuration = GraphConfiguration(isDirected, isWeighted)
+    override val configuration = GraphConfiguration(isDirected, isWeighted)
 
     /**
      * store graph in adjacency matrix
@@ -182,7 +182,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     }
 
     override fun outgoingVerteciesOf(v: V): Set<V> {
-        if (configuration.isUndirected()) return outgoingVerteciesOfDirected(v) + incomingVerteciesOfDirected(v)
+        if (configuration.isUndirected()) return verteciesOfUndirected(v)
         return outgoingVerteciesOfDirected(v)
     }
 
@@ -195,8 +195,17 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
         return vertecies
     }
 
+    private fun verteciesOfUndirected(v: V): Set<V> {
+        val vertecies = mutableSetOf<V>()
+        for (head in structure.verteciesMap.keys) {
+            if (structure.get(v, head) == null && structure.get(head, v) == null) continue
+            vertecies.add(head)
+        }
+        return vertecies
+    }
+
     override fun incomingVerteciesOf(v: V): Set<V> {
-        if (configuration.isUndirected()) return outgoingVerteciesOfDirected(v) + incomingVerteciesOfDirected(v)
+        if (configuration.isUndirected()) return verteciesOfUndirected(v)
         return incomingVerteciesOfDirected(v)
     }
 
