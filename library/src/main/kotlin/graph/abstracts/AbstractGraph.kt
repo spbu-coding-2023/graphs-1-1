@@ -39,10 +39,11 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
 
     private fun addFullEdge(tail: V, head: V, e: E, w: Double): Boolean {
         var edge = false
+        val weight = if (configuration.isUnweighted()) DEFAULT_EDGE_WEIGHT else w
         if (configuration.isUndirected()) {
             edge = structure.set(tail, head, null)
         }
-        return structure.set(tail, head, Edge(e, w)) || edge
+        return structure.set(tail, head, Edge(e, weight)) || edge
     }
 
     override fun containsVertex(v: V): Boolean {
