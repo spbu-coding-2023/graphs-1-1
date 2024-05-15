@@ -7,18 +7,18 @@ class GraphPathSearchBellmanFord : GraphPathSearch {
     override fun <V, E> searchPath(graph: Graph<V, E>, startingVertex: V, endingVertex: V): List<V> {
         val distance = mutableMapOf<V, Double>()
         val predecessor = mutableMapOf<V, V?>()
-        val vertecies = graph.vertexSet()
+        val vertices = graph.vertexSet()
         val edges = graph.edgeSet()
         val path = mutableListOf<V>()
 
-        for (v in vertecies) {
+        for (v in vertices) {
             distance[v] = Double.POSITIVE_INFINITY
             predecessor[v] = null
         }
 
         distance[startingVertex] = 0.0
 
-        repeat(vertecies.size-1) {
+        repeat(vertices.size-1) {
             for (edge in edges) {
                 val edgeTail = graph.getEdgeTail(edge)
                 val edgeHead = graph.getEdgeHead(edge)
@@ -38,7 +38,7 @@ class GraphPathSearchBellmanFord : GraphPathSearch {
 
             if (distance[edgeTail]!! + weight < distance[edgeHead]!!) {
                 // negative cycle
-                throw Error("Can not find path between vertecies: Negative cycle found") // TODO: bug, input graph must be without negative cycles ig
+                throw Error("Can not find path between vertices: Negative cycle found") // TODO: bug, input graph must be without negative cycles ig
             }
         }
 

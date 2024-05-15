@@ -19,7 +19,7 @@ class GraphJSONExporter : GraphExporter {
             )
         val vertexList = graphRepresentation.vertexList
         val vertexListMap = graphRepresentation.vertexListMap
-        graph.edgeSetOfVertecies().forEach { (v1, v2) ->
+        graph.edgeSetOfVertices().forEach { (v1, v2) ->
             val edge = graph.getEdge(v1, v2)!!
             val edgeWeight = graph.getEdgeWeight(edge)
 

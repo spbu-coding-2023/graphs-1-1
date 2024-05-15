@@ -6,5 +6,5 @@ interface GraphKeyVertex {
     /**
      * Returns map where each vertex mapped to float, which represents how valuable this vertex
      */
-    fun <V, E>getKeyVertecies(graph: Graph<V, E>): Map<V, Float>
+    fun <V, E>getKeyVertices(graph: Graph<V, E>): Map<V, Float>
 }
