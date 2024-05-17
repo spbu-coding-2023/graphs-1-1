@@ -4,7 +4,7 @@ import graph.Graph
 
 interface GraphBridge {
     /**
-     * Returns map where each vertex mapped to float, which represents how valuable this vertex
+     * Returns list of pair, each contains vertexes, between witch bridge is.
      */
     fun <V, E>getBridges(graph: Graph<V, E>): List<Pair<V, V>>
 }
