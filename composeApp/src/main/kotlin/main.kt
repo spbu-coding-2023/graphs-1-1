@@ -1,5 +1,6 @@
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import view.App
 import java.awt.Dimension
 
 fun main() = application {
@@ -7,7 +8,7 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "Graphses",
     ) {
-        window.minimumSize = Dimension(450, 190)
+        window.minimumSize = Dimension(840, 480)
         App()
     }
 }

@@ -41,7 +41,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
         var edge = false
         val weight = if (configuration.isUnweighted()) DEFAULT_EDGE_WEIGHT else w
         if (configuration.isUndirected()) {
-            edge = structure.set(tail, head, null)
+            edge = structure.set(head, tail, null)
         }
         return structure.set(tail, head, Edge(e, weight)) || edge
     }
