@@ -1,35 +1,33 @@
-package view.home
+package view.settings
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import view.settings.SettingsScreen
+import view.home.HomeScreen
 import view.workspace.WorkspaceScreen
 
-class HomeScreen : Screen {
+class SettingsScreen : Screen {
 
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         Column {
-            Text("this is a home screen")
+            Text("Settings are a bit empty")
             Button(
                 onClick = {
-                    navigator.push(WorkspaceScreen())
+                    navigator.pop()
                 },
             ) {
-                Text("Go to graphs!")
-            }
-            Button(
-                onClick = {
-                    navigator.push(SettingsScreen())
-                },
-            ) {
-                Text("Go to settings!")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, "backIcon")
+                Text("Back")
             }
         }
     }
