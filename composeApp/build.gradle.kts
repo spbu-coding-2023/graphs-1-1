@@ -11,6 +11,7 @@ dependencies {
     implementation(compose.runtime)
     implementation(compose.foundation)
     implementation(compose.material3)
+    implementation("androidx.compose.material3:material3-common:1.0.0-alpha01")
     implementation(compose.ui)
     implementation(compose.components.uiToolingPreview)
     // // add library directory
