@@ -32,7 +32,7 @@ fun setupCycle1(graph: Graph<Int, String>) {
     graph.addEdge(0, 23, "E")
     graph.addEdge(0, 9, "F")
 
-    for (i in 100..163) {
+    for (i in 100..1630) {
         graph.addVertex(i)
         val ri = (100..i).random()
         graph.addEdge(i, ri, "$i")

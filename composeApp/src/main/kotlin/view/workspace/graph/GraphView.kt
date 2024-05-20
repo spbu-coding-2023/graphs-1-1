@@ -3,7 +3,6 @@ package view.workspace.graph
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import display.placement.implementation.GraphPlacementYifanHu
 import view.workspace.graph.graphEdges.GraphEdgesView
 import view.workspace.graph.graphVertecies.GraphVerteciesView
 import viewModel.workspace.graph.GraphEdgesViewModel
@@ -12,7 +11,7 @@ import viewModel.workspace.graph.GraphViewModel
 
 @Composable
 fun <V, E>GraphView(modifier: Modifier, graphViewModel: GraphViewModel<V, E>) {
-    val scale = 1f
+    val scale = .1f
     Box(
         modifier = Modifier.then(modifier)
     ) {
@@ -26,7 +25,7 @@ fun <V, E>GraphView(modifier: Modifier, graphViewModel: GraphViewModel<V, E>) {
         GraphVerteciesView(
             GraphVertexViewModel(
                 scale = scale,
-                radiusScale = 10f,
+                radiusScale = 60f,
                 verteciesPlacement = graphViewModel.getVerteciesPlacement()
             )
         )
