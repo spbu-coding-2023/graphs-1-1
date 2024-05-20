@@ -12,6 +12,7 @@ dependencies {
     implementation(compose.foundation)
     implementation(compose.material3)
     implementation("androidx.compose.material3:material3-common:1.0.0-alpha01")
+    implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.0")
     implementation(compose.ui)
     implementation(compose.components.uiToolingPreview)
     // // add library directory
@@ -33,6 +34,11 @@ dependencies {
     implementation("cafe.adriel.voyager:voyager-bottom-sheet-navigator:$voyagerVersion")
     implementation("cafe.adriel.voyager:voyager-tab-navigator:$voyagerVersion")
     implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
+
+    // koin
+    val koin = "3.6.0-alpha3"
+    implementation("io.insert-koin:koin-core:$koin")
+    implementation("io.insert-koin:koin-compose:1.2.0-alpha3")
 }
 
 compose.desktop {

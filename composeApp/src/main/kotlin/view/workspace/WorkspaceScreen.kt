@@ -7,11 +7,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import view.workspace.graphConfiguration.GraphConfiguration
 import view.workspace.graphToolBar.GraphToolBar
-import view.workspace.graphView.GraphView
+import view.workspace.graph.GraphView
 import view.workspace.header.Header
 
 class WorkspaceScreen : Screen {
