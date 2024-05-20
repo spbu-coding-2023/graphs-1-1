@@ -6,15 +6,8 @@ import graph.Graph
 import java.util.*
 
 
-fun successors(v: V): Set<V> {
-    val incoming = incomingVerteciesOf(v)
-    val outgoing = outgoingVerteciesOf(v)
-    return incoming.union(outgoing)
-}
-
-
 class GraphBetweennessCentrality : GraphKeyVertex {
-    override fun <V, E> getKeyVertecies(graph: Graph<V, E>): Map<V, Float> {
+    override fun <V, E> getKeyVertices(graph: Graph<V, E>): Map<V, Float> {
         val betweennessMap = mutableMapOf<V, Float>().withDefault { 0f }
         val vertices = graph.vertexSet()
         for (s in vertices) {
@@ -33,7 +26,9 @@ class GraphBetweennessCentrality : GraphKeyVertex {
             while (queue.isNotEmpty()) {
                 val v = queue.remove()
                 stack.push(v)
-                for (w in graph.successors(v)) {
+                val incoming = graph.incomingVerticesOf(v)
+                val outgoing = graph.outgoingVerticesOf(v)
+                for (w in incoming.union(outgoing)) {
                     if (distance[w] == -1) {
                         queue.add(w)
                         distance[w] = distance[v]!! + 1
