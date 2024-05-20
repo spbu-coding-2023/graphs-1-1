@@ -3,7 +3,7 @@ package display.pathSearchDijkstra.implementation
 import display.pathSearchDijkstra.GraphPathSearchDijkstra
 import graph.Graph
 
-class GraphDijkstraPathFinder<V, E> {
+class GraphDijkstraPathFinder<V, E> : GraphPathSearchDijkstra {
 
     override fun <V, E> searchPathDijkstra(graph: Graph<V, E>, startingVertex: V, endingVertex: V): List<V> {
         val distance = mutableMapOf<V, Double>()
