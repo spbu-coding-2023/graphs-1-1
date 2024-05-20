@@ -2,44 +2,61 @@ package viewModel.workspace.graph
 
 import androidx.lifecycle.ViewModel
 import display.placement.GraphPlacement
+import display.placement.implementation.GraphPlacementYifanHu
 import graph.Graph
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import model.EdgeModel
+import model.VertexModel
 
 class GraphViewModel<V, E>(
-    val graph: Graph<V, E>,
-    val graphPlacement: GraphPlacement
+    initialGraph: Graph<VertexModel<V>, EdgeModel<E>>
 ) : ViewModel() {
-    private var placement = graphPlacement.getPlacement(graph)
+    private val graph = initialGraph
 
-    fun updatePlacement() {
-        placement = graphPlacement.getPlacement(graph)
+    private val _vertices = MutableStateFlow<List<VertexModel<V>>>(listOf())
+    val vertices: StateFlow<List<VertexModel<V>>> = _vertices
+
+    private val _edges = MutableStateFlow<List<EdgeModel<E>>>(listOf())
+    val edges: StateFlow<List<EdgeModel<E>>> = _edges
+
+    private val _scaleFactor = MutableStateFlow(1f)
+    val scaleFactor: StateFlow<Float> = _scaleFactor
+
+    init {
+        runPlacement(GraphPlacementYifanHu())
     }
 
+    private fun updateState() {
+        _vertices.value = graph.vertexSet().toList()
+        _edges.value = graph.edgeSet().toList()
+    }
+
+    fun updateGraph(actionOnGraph: (Graph<VertexModel<V>, EdgeModel<E>>) -> Unit) {
+        actionOnGraph(graph)
+        updateState()
+    }
+
+    fun setScaleFactor(factor: Float) {
+        _scaleFactor.value = factor
+    }
+
+    fun runPlacement(graphPlacement: GraphPlacement) {
+        val placement = graphPlacement.getPlacement(graph)
+        graph.vertexSet().forEach {
+            it.copy(
+                id = it.id,
+                x = placement[it]!!.first,
+                y = placement[it]!!.second,
+                data = it.data
+            )
+        }
+        updateState()
+    }
     /**
      * Returns if edge is directed or not
      */
     fun isEdgesDirected(): Boolean {
         return graph.configuration.isDirected()
-    }
-
-    /**
-     * Returns first point, second point and boolean value is directed (true if so, false otherwise)
-     */
-    fun getEdgesPlacement(): Set<Pair<Pair<Float, Float>, Pair<Float, Float>>> {
-        val edgesPlacement = mutableSetOf<Pair<Pair<Float, Float>, Pair<Float, Float>>>()
-        val isDirected = isEdgesDirected()
-        for ((v, u) in graph.edgeSetOfVertecies()) {
-            val vPos = placement[v] ?: throw IllegalStateException("Should not happen")
-            val uPos = placement[u] ?: throw IllegalStateException("Should not happen")
-
-            if (isDirected || Pair(uPos, vPos) !in edgesPlacement) {
-                edgesPlacement.add(Pair(vPos, uPos))
-            }
-        }
-
-        return edgesPlacement
-    }
-
-    fun getVerteciesPlacement(): Set<Pair<Float, Float>> {
-        return placement.values.toSet()
     }
 }
