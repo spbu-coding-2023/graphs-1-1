@@ -3,7 +3,7 @@ package display.bridgeSearch.implementation
 import display.bridgeSearch.GraphBridgeSearch
 import graph.Graph
 
-class GraphTarjanBridgeFinder<V, E> {
+class GraphTarjanBridgeFinder<V, E> : GraphBridgeSearch {
     private var time = 0
 
     override fun <V, E> getBridges(graph: Graph<V, E>): List<Pair<V, V>> {
@@ -28,7 +28,7 @@ class GraphTarjanBridgeFinder<V, E> {
         return bridges
     }
 
-    private fun dfs(
+    private fun <V, E> dfs(
         graph: Graph<V, E>,
         u: V,
         disc: MutableMap<V, Int>,
