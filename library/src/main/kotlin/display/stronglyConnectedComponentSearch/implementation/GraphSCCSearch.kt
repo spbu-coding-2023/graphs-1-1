@@ -7,14 +7,14 @@ import kotlin.collections.HashMap
 import kotlin.math.min
 
 
-class GraphSCCSearch<V, E> {
+class GraphSCCSearchWithTarjan<V, E> : GraphSCCSearch<V, E> {
     private var index = 0
     private val indexMap = HashMap<V, Int>()
     private val lowLinkMap = HashMap<V, Int>()
     private val stack = Stack<V>()
     private val onStack = HashMap<V, Boolean>()
     private val SCCs = mutableListOf<List<V>>()
-    fun getSCCs(graph: Graph<V, E>) : List<List<V>> {
+    override fun getSCCs(graph: Graph<V, E>) : List<List<V>> {
         for (v : V in graph.vertexSet()) {
             if (indexMap[v] == null) {
                 strongConnect(graph, v)
