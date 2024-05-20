@@ -38,17 +38,17 @@ class AbstractGraphTest {
     fun `add one vertex`() {
         DWgraph.addVertex(23)
 
-        assertEquals(DWgraph.structure.verteciesMap[23], 0)
+        assertEquals(DWgraph.structure.verticesMap[23], 0)
         assertEquals(DWgraph.structure.matrix[0][0], null)
     }
 
     @Test
-    fun `add two vertecies`() {
+    fun `add two vertices`() {
         DWgraph.addVertex(23)
         DWgraph.addVertex(52)
 
-        assertEquals(DWgraph.structure.verteciesMap[23], 0)
-        assertEquals(DWgraph.structure.verteciesMap[52], 1)
+        assertEquals(DWgraph.structure.verticesMap[23], 0)
+        assertEquals(DWgraph.structure.verticesMap[52], 1)
         assertEquals(DWgraph.structure.matrix[0][0], null)
         assertEquals(DWgraph.structure.matrix[0][1], null)
         assertEquals(DWgraph.structure.matrix[1][0], null)
@@ -86,7 +86,7 @@ class AbstractGraphTest {
     fun `contains vertex`() {
         DWgraph.addVertex(23)
 
-        assertNotNull(DWgraph.structure.verteciesMap[23])
+        assertNotNull(DWgraph.structure.verticesMap[23])
         assertTrue(DWgraph.containsVertex(23))
     }
 
@@ -189,7 +189,7 @@ class AbstractGraphTest {
     }
 
     @Test
-    fun `edge set of vertecies directed`() {
+    fun `edge set of vertices directed`() {
         DWgraph.addVertex(23)
         DWgraph.addVertex(52)
         DWgraph.addVertex(1)
@@ -202,13 +202,13 @@ class AbstractGraphTest {
         DWgraph.addEdge(1, 9, "E")
 
         assertEquals(
-            DWgraph.edgeSetOfVertecies(),
+            DWgraph.edgeSetOfVertices(),
             setOf(Pair(23, 52), Pair(1, 52), Pair(52, 9), Pair(9, 1), Pair(1, 9))
         )
     }
 
     @Test
-    fun `edge set of vertecies undirected`() {
+    fun `edge set of vertices undirected`() {
         UDWgraph.addVertex(23)
         UDWgraph.addVertex(52)
         UDWgraph.addVertex(1)
@@ -221,7 +221,7 @@ class AbstractGraphTest {
         UDWgraph.addEdge(1, 9, "E")
 
         assertEquals(
-            UDWgraph.edgeSetOfVertecies(),
+            UDWgraph.edgeSetOfVertices(),
             setOf(
                 Pair(23, 52), Pair(52, 23), Pair(1, 52), Pair(52, 1),
                 Pair(52, 9), Pair(9, 52), Pair(9, 1), Pair(1, 9)
@@ -383,7 +383,7 @@ class AbstractGraphTest {
     }
 
     @Test
-    fun `outgoing vertecies of`() {
+    fun `outgoing vertices of`() {
         DWgraph.addVertex(23)
         DWgraph.addVertex(52)
         DWgraph.addVertex(1)
@@ -395,12 +395,12 @@ class AbstractGraphTest {
         DWgraph.addEdge(9, 1, "D")
         DWgraph.addEdge(1, 9, "E")
 
-        assertEquals(DWgraph.outgoingVerteciesOf(1), setOf(52, 9))
-        assertEquals(DWgraph.outgoingVerteciesOf(0), setOf<Int>())
+        assertEquals(DWgraph.outgoingVerticesOf(1), setOf(52, 9))
+        assertEquals(DWgraph.outgoingVerticesOf(0), setOf<Int>())
     }
 
     @Test
-    fun `incoming vertecies of`() {
+    fun `incoming vertices of`() {
         DWgraph.addVertex(23)
         DWgraph.addVertex(52)
         DWgraph.addVertex(1)
@@ -412,8 +412,8 @@ class AbstractGraphTest {
         DWgraph.addEdge(9, 1, "D")
         DWgraph.addEdge(1, 9, "E")
 
-        assertEquals(DWgraph.incomingVerteciesOf(52), setOf(23, 1))
-        assertEquals(DWgraph.incomingVerteciesOf(0), setOf<Int>())
+        assertEquals(DWgraph.incomingVerticesOf(52), setOf(23, 1))
+        assertEquals(DWgraph.incomingVerticesOf(0), setOf<Int>())
     }
 
     @Test

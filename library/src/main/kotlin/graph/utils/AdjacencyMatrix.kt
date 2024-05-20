@@ -2,20 +2,20 @@ package graph.utils
 
 class AdjacencyMatrix<V, E> {
     val matrix = mutableListOf<MutableList<E?>>()
-    val verteciesMap = HashMap<V, Int>()
+    val verticesMap = HashMap<V, Int>()
     fun get(tail: V, head: V): E? {
-        val tailIndex = verteciesMap[tail]
-        val headIndex = verteciesMap[head]
+        val tailIndex = verticesMap[tail]
+        val headIndex = verticesMap[head]
         if (tailIndex == null || headIndex == null)
-            throw IllegalArgumentException("Can not get edge by vertecies: Both vertecies must exist")
+            throw IllegalArgumentException("Can not get edge by vertices: Both vertices must exist")
         return matrix[tailIndex][headIndex]
     }
 
     fun set(tail: V, head: V, e: E?): Boolean {
-        val tailIndex = verteciesMap[tail]
-        val headIndex = verteciesMap[head]
+        val tailIndex = verticesMap[tail]
+        val headIndex = verticesMap[head]
         if (tailIndex == null || headIndex == null)
-            throw IllegalArgumentException("Can not set edge by vertecies: Both vertecies must exist")
+            throw IllegalArgumentException("Can not set edge by vertices: Both vertices must exist")
         val prev = matrix[tailIndex][headIndex]
         matrix[tailIndex][headIndex] = e
         if (prev == null) return true
@@ -23,10 +23,10 @@ class AdjacencyMatrix<V, E> {
     }
 
     fun add(v: V): Boolean {
-        if (v in verteciesMap) return false
+        if (v in verticesMap) return false
 
         val matrixSize = matrix.size
-        verteciesMap[v] = matrixSize
+        verticesMap[v] = matrixSize
 
         matrix.forEach {// adds by one line (could double each time, would be faster ig)
             it.add(null)
@@ -36,7 +36,7 @@ class AdjacencyMatrix<V, E> {
     }
 
     fun delete(v: V) {
-        val vertexIndex = verteciesMap[v] ?:
+        val vertexIndex = verticesMap[v] ?:
             throw IllegalArgumentException("Can not delete vertex: vertex does not exist")
 
         matrix.forEach {
@@ -45,11 +45,11 @@ class AdjacencyMatrix<V, E> {
 
         matrix.removeAt(vertexIndex)
 
-        verteciesMap.remove(v)
+        verticesMap.remove(v)
 
-        verteciesMap.forEach {
+        verticesMap.forEach {
             if (it.value > vertexIndex) {
-                verteciesMap[it.key] = it.value - 1
+                verticesMap[it.key] = it.value - 1
             }
         }
     }

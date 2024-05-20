@@ -11,7 +11,7 @@ class GraphPathSearchBellmanFord : GraphPathSearch {
         val distance = mutableMapOf<V, Double>()
         val predecessor = mutableMapOf<V, V?>()
         val vertecies = graph.vertexSet()
-        val vertexEdges = graph.edgeSetOfVertecies()
+        val vertexEdges = graph.edgeSetOfVertices()
         val path = mutableListOf<V>()
 
         for (v in vertecies) {

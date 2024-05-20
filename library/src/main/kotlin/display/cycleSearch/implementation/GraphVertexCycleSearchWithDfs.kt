@@ -15,7 +15,7 @@ class GraphVertexCycleSearchWithDfs : GraphVertexCycleSearch {
         while (stack.isNotEmpty()) {
             val currentVertex = stack.removeLast()
             visited.add(currentVertex)
-            for (neighbourVertex in graph.outgoingVerteciesOf(currentVertex)) {
+            for (neighbourVertex in graph.outgoingVerticesOf(currentVertex)) {
 
                 if (neighbourVertex == startingVertex) {
                     cameFrom[neighbourVertex] = currentVertex
