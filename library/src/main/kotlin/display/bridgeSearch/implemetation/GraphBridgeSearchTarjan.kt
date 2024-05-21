@@ -5,7 +5,7 @@ import graph.Graph
 
 class GraphTarjanBridgeFinder<V, E> : GraphBridge {
 
-    override fun getBridges(graph: Graph<V, E>): List<Pair<V, V>> {
+    override fun <V, E> getBridges(graph: Graph<V, E>): List<Pair<V, V>> {
         val vertices = graph.vertexSet()
         val discoveryTimes = mutableMapOf<V, Int>()
         val lowestDiscoveryTimes = mutableMapOf<V, Int>()

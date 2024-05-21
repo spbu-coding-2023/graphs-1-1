@@ -6,11 +6,11 @@ import graph.Graph
 import java.util.*
 
 
-fun <V> successors(v: V): Set<V> {
-    val incoming = graph.incomingVerteciesOf(v)
-    val outgoing = graph.outgoingVerteciesOf(v)
-    return incoming.union(outgoing)
-}
+//fun <V> successors(v: V): Set<V> {
+//    val incoming = graph.incomingVerteciesOf(v)
+//    val outgoing = graph.outgoingVerteciesOf(v)
+//    return incoming.union(outgoing)
+//}
 
 
 class GraphBetweennessCentrality : GraphKeyVertex {
@@ -33,7 +33,7 @@ class GraphBetweennessCentrality : GraphKeyVertex {
             while (queue.isNotEmpty()) {
                 val currentVertex = queue.remove()
                 stack.push(currentVertex)
-                for (successorVertex in successors(currentVertex)) {
+                for (successorVertex in graph.outgoingVerteciesOf(currentVertex)) {
                     if (distance[successorVertex] == -1) {
                         queue.add(successorVertex)
                         distance[successorVertex] = distance[currentVertex]!! + 1
