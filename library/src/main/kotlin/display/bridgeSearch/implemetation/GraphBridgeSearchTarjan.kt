@@ -1,11 +1,11 @@
 package display.bridgeSearch.implementation
 
-import display.bridgeSearch.GraphBridgeSearch
+import display.bridgeSearch.GraphBridge
 import graph.Graph
 
-class GraphTarjanBridgeFinder<V, E> {
+class GraphTarjanBridgeFinder<V, E> : GraphBridge {
 
-    fun getBridges(graph: Graph<V, E>): List<Pair<V, V>> {
+    override fun getBridges(graph: Graph<V, E>): List<Pair<V, V>> {
         val vertices = graph.vertexSet()
         val discoveryTimes = mutableMapOf<V, Int>()
         val lowestDiscoveryTimes = mutableMapOf<V, Int>()
@@ -35,7 +35,7 @@ class GraphTarjanBridgeFinder<V, E> {
         discoveryTimes: MutableMap<V, Int>,
         lowestDiscoveryTimes: MutableMap<V, Int>,
         parents: MutableMap<V, V?>,
-        bridges: MutableList<Pair<V, V>>
+        bridges: MutableList<Pair<V, V>>,
         time: Int
     ) {
         discoveryTimes[currentVertex] = time
@@ -46,7 +46,7 @@ class GraphTarjanBridgeFinder<V, E> {
             val adjacentVertex = graph.getEdgeHead(edge)
             if (discoveryTimes[adjacentVertex] == -1) {
                 parents[adjacentVertex] = currentVertex
-                dfs(graph, adjacentVertex, discoveryTimes, lowestDiscoveryTimes, parents, bridges, time)
+                dfs(graph, adjacentVertex, discoveryTimes, lowestDiscoveryTimes, parents, bridges, localtime)
                 lowestDiscoveryTimes[currentVertex] = minOf(lowestDiscoveryTimes[currentVertex]!!, lowestDiscoveryTimes[adjacentVertex]!!)
 
                 if (lowestDiscoveryTimes[adjacentVertex]!! > discoveryTimes[currentVertex]!!) {
