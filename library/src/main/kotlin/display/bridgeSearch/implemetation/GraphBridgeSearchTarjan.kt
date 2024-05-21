@@ -46,7 +46,7 @@ class GraphTarjanBridgeFinder<V, E> : GraphBridgeSearch {
             val adjacentVertex = graph.getEdgeHead(edge)
             if (discoveryTimes[adjacentVertex] == -1) {
                 parents[adjacentVertex] = currentVertex
-                dfs(graph, adjacentVertex, discoveryTimes, lowestDiscoveryTimes, parents, bridges, localtime)
+                dfs(graph, adjacentVertex, discoveryTimes, lowestDiscoveryTimes, parents, bridges, localTime)
                 lowestDiscoveryTimes[currentVertex] = minOf(lowestDiscoveryTimes[currentVertex]!!, lowestDiscoveryTimes[adjacentVertex]!!)
 
                 if (lowestDiscoveryTimes[adjacentVertex]!! > discoveryTimes[currentVertex]!!) {
