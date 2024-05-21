@@ -14,8 +14,14 @@ import org.openide.util.Lookup
 import kotlin.random.Random
 
 class GraphPlacementYifanHu : GraphPlacement {
-    private val _width = 100
-    private val _height = 100
+    private var _width = 100
+    private var _height = 100
+
+    fun setSize(w: Int, h: Int) {
+        _width = w
+        _height = h
+    }
+
     override fun <V, E>getPlacement(graph: Graph<V, E>): Map<V, Pair<Float, Float>> {
         val random = Random(1L)
 

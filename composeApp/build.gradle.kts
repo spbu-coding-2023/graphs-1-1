@@ -39,6 +39,9 @@ dependencies {
     val koin = "3.6.0-alpha3"
     implementation("io.insert-koin:koin-core:$koin")
     implementation("io.insert-koin:koin-compose:1.2.0-alpha3")
+
+    // extend icons
+    implementation(compose.materialIconsExtended)
 }
 
 compose.desktop {

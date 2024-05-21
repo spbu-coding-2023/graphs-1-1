@@ -17,9 +17,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import viewModel.workspace.graph.GraphViewModel
 
 @Composable
-fun GraphConfiguration(modifier: Modifier) {
+fun <V, E>GraphConfiguration(viewModel: GraphViewModel<V, E>, modifier: Modifier) {
     var isShown by rememberSaveable { mutableStateOf(true) }
     Column(
         modifier = Modifier

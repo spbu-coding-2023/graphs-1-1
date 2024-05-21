@@ -25,6 +25,7 @@ import graphses.composeapp.generated.resources.cat
 import model.VertexModel
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import viewModel.workspace.graph.GraphInteractionMode
 import viewModel.workspace.graph.GraphViewModel
 import kotlin.math.*
 
@@ -42,6 +43,7 @@ val VERTEX_ALPHA = 1f
 fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
     val vertices by viewModel.vertices.collectAsState()
     val edges by viewModel.edges.collectAsState()
+    val interactionMode by viewModel.interactionMode.collectAsState()
     val scaleFactor by viewModel.scaleFactor.collectAsState()
     val offsetFactor by viewModel.offsetFactor.collectAsState()
 
@@ -49,6 +51,8 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
         modifier = Modifier
             .fillMaxSize()
             .onPointerEvent(PointerEventType.Scroll) {
+                if (interactionMode != GraphInteractionMode.Pan) return@onPointerEvent
+
                 val point = it.changes.first()
                 if (point.scrollDelta.y == 0f) return@onPointerEvent
 
@@ -67,6 +71,7 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDrag = { change, dragAmount ->
+                        if (interactionMode != GraphInteractionMode.Pan) return@detectDragGestures
                         viewModel.setOffsetFactor(offsetFactor + dragAmount)
                     }
                 )
@@ -77,11 +82,11 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
         val width = constraints.maxWidth.toFloat()
         val height = constraints.maxHeight.toFloat()
         LaunchedEffect(Unit) {
-            viewModel.setOffsetFactor(Offset(width/3.28f, height/2))
+            viewModel.setOffsetFactor(Offset(width/3, height/2))
         }
 
         // re-renders on keys change
-        key(scaleFactor, offsetFactor, vertices) {
+        key(scaleFactor, offsetFactor, vertices, interactionMode) {
             // Draw edges on a single canvas
             Canvas(
                 modifier = Modifier
@@ -103,7 +108,7 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
             }
             // Overlay vertices on top of the canvas
             vertices.forEach { vertex ->
-                DraggableVertex(vertex, scaleFactor, offsetFactor, viewModel)
+                DraggableVertex(vertex, scaleFactor, offsetFactor, interactionMode, viewModel)
             }
         }
     }
@@ -111,10 +116,11 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFactor: Offset, viewModel: GraphViewModel<V, E>) {
+fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFactor: Offset, interactionMode: GraphInteractionMode, viewModel: GraphViewModel<V, E>) {
     var offsetX by remember { mutableStateOf(vertex.x * scaleFactor + offsetFactor.x) }
     var offsetY by remember { mutableStateOf(vertex.y * scaleFactor + offsetFactor.y) }
     val vertexSize by remember { mutableStateOf(VERTEX_SIZE*scaleFactor) }
+
     Box(
         modifier = Modifier
             .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
@@ -125,6 +131,7 @@ fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFact
             }
             .background(MaterialTheme.colors.primary.copy(alpha = VERTEX_ALPHA), shape = CircleShape)
             .pointerInput(Unit) {
+                if (interactionMode != GraphInteractionMode.Drag) return@pointerInput
                 detectDragGestures { change, dragAmount ->
                     offsetX += dragAmount.x
                     offsetY += dragAmount.y
@@ -139,6 +146,7 @@ fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFact
                 }
             }
             .clickable {
+                if (interactionMode != GraphInteractionMode.Delete) return@clickable
                 viewModel.updateGraph {
                     it.removeVertex(vertex)
                 }

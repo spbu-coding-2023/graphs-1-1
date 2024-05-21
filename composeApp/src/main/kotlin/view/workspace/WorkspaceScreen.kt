@@ -44,6 +44,7 @@ class WorkspaceScreen<V, E>(val viewModel: GraphViewModel<V, E>) : Screen {
                     ) {
                         // the tools to change behavior of the mouse
                         GraphToolBar(
+                            viewModel = viewModel,
                             modifier = Modifier.fillMaxHeight()
                         )
 
@@ -54,6 +55,7 @@ class WorkspaceScreen<V, E>(val viewModel: GraphViewModel<V, E>) : Screen {
 
                         // the sidebar to configure current graph
                         GraphConfiguration(
+                            viewModel = viewModel,
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(340.dp)

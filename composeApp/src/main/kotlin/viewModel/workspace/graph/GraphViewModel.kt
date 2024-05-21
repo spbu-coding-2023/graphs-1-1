@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import model.EdgeModel
 import model.VertexModel
 
+enum class GraphInteractionMode {Pan, Delete, Drag}
+
 class GraphViewModel<V, E>(
     initialGraph: Graph<VertexModel<V>, EdgeModel<E>>
 ) : ViewModel() {
@@ -32,11 +34,18 @@ class GraphViewModel<V, E>(
     private val _rotationFactor = MutableStateFlow(0f)
     val rotationFactor: StateFlow<Float> = _rotationFactor
 
+    private val _interactionMode = MutableStateFlow(GraphInteractionMode.Pan)
+    val interactionMode: StateFlow<GraphInteractionMode> = _interactionMode
+
     init {
-        val graphPlacementRandom = GraphPlacementRandom()
-        graphPlacementRandom.setSize(1000, 1000)
-         runPlacement(graphPlacementRandom)
+        val graphPlacement = GraphPlacementYifanHu()
+        graphPlacement.setSize(4, 4)
+        runPlacement(graphPlacement)
 //        updateState()
+    }
+
+    fun setInteractionMode(mode: GraphInteractionMode) {
+        _interactionMode.value = mode
     }
 
     fun updateState() {
