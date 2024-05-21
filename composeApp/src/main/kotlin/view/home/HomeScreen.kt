@@ -15,16 +15,18 @@ import model.VertexModel
 import view.settings.SettingsScreen
 import view.workspace.WorkspaceScreen
 import viewModel.workspace.graph.GraphViewModel
+import java.lang.Math.pow
+import kotlin.math.exp
 
 fun setupCycle1(graph: Graph<VertexModel<Int>, EdgeModel<String>>) {
     val vv = mutableListOf<VertexModel<Int>>()
-    val r = 100
+    val r = 1000
 
-    for (i in 0..20) {
+    for (i in 0..100) {
         vv.add(VertexModel(i, (0..r).random().toFloat(), (0..r).random().toFloat(), i*2))
         graph.addVertex(vv.last())
         repeat(1) {
-            val ri = (0..i).random()
+            val ri = (pow((0..i).random().toDouble(), 1.952)/pow(i.toDouble(), 1.952)*i).toInt()
             graph.addEdge(vv[i], vv[ri], EdgeModel(i, ri, "$i"))
         }
     }

@@ -32,7 +32,7 @@ class GraphViewModel<V, E>(
     val rotationFactor: StateFlow<Float> = _rotationFactor
 
     init {
-        // runPlacement(GraphPlacementYifanHu())
+//         runPlacement(GraphPlacementYifanHu())
         updateState()
     }
 
