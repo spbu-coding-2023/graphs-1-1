@@ -61,7 +61,6 @@ class GraphViewModel<V, E>(
 
     fun runPlacement(graphPlacement: GraphPlacement) {
         val placement = graphPlacement.getPlacement(graph)
-        println(graph.vertexSet())
         graph.vertexSet().forEach {
             val x = placement[it]!!.first
             val y = placement[it]!!.second

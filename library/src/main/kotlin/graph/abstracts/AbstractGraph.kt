@@ -47,7 +47,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     }
 
     override fun containsVertex(v: V): Boolean {
-        return v in structure.verticesMap
+        return structure.verticesMap.keys.contains(v)
     }
 
     override fun containsEdge(tail: V, head: V): Boolean {
@@ -156,7 +156,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     }
 
     override fun removeVertex(v: V): Boolean {
-        if (v !in structure.verticesMap.keys) return false
+        if (!structure.verticesMap.keys.contains(v)) return false
         structure.delete(v)
         return true
     }

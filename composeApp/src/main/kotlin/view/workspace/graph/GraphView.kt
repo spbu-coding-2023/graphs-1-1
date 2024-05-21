@@ -3,6 +3,7 @@ package view.workspace.graph
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -80,7 +81,7 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
         }
 
         // re-renders on keys change
-        key(scaleFactor, offsetFactor) {
+        key(scaleFactor, offsetFactor, vertices) {
             // Draw edges on a single canvas
             Canvas(
                 modifier = Modifier
@@ -135,6 +136,11 @@ fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFact
                             }
                         }
                     }
+                }
+            }
+            .clickable {
+                viewModel.updateGraph {
+                    it.removeVertex(vertex)
                 }
             }
     )
