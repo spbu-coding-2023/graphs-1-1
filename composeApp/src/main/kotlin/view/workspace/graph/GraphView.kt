@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -20,6 +21,15 @@ import model.VertexModel
 import viewModel.workspace.graph.GraphViewModel
 import kotlin.math.*
 
+val MAX_SCALE_FACTOR = 25f
+val MIN_SCALE_FACTOR = .1f
+
+val EDGE_STROKE_WIDTH = 2f
+val EDGE_ALPHA = 0.5f
+
+val VERTEX_SIZE = 23f
+val VERTEX_ALPHA = 1f
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
@@ -27,85 +37,87 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
     val edges by viewModel.edges.collectAsState()
     val scaleFactor by viewModel.scaleFactor.collectAsState()
     val offsetFactor by viewModel.offsetFactor.collectAsState()
-    val rotationFactor by viewModel.rotationFactor.collectAsState()
-//    viewModel.setScaleFactor(10f)
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .onPointerEvent(PointerEventType.Scroll) {
+                val point = it.changes.first()
+                if (point.scrollDelta.y == 0f) return@onPointerEvent
+
+                val delta = (scaleFactor - MIN_SCALE_FACTOR)/(MAX_SCALE_FACTOR - MIN_SCALE_FACTOR)/10 + 1.05f // max(1f, min(1.08f, exp(scaleFactor/100))) // zoom factor
+
+                val deltaZoom = if (point.scrollDelta.y > 0) delta else 1/delta
+                val scaleChange = scaleFactor * deltaZoom
+
+                if (scaleChange < MIN_SCALE_FACTOR || scaleChange > MAX_SCALE_FACTOR) return@onPointerEvent // zoom range
+
+                val offsetChange = point.position * (1f - deltaZoom) + offsetFactor * deltaZoom
+
+                viewModel.setScaleFactor(scaleChange)
+                viewModel.setOffsetFactor(offsetChange)
+            }
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDrag = { change, dragAmount ->
+                        viewModel.setOffsetFactor(offsetFactor + dragAmount)
+                    }
+                )
+            }
+    ) {
+        val EDGE_COLOR = MaterialTheme.colors.onBackground
+        // runs ones at first render of the component
         val width = constraints.maxWidth.toFloat()
         val height = constraints.maxHeight.toFloat()
+        LaunchedEffect(Unit) {
+            viewModel.setOffsetFactor(Offset(width/3.28f, height/2))
+        }
 
-        val DEFAULT_GRAPH_WIDTH = 1000f
-        val DEFAULT_GRAPH_HEIGHT = 1000f
-        val scale = minOf(width / DEFAULT_GRAPH_WIDTH, height / DEFAULT_GRAPH_HEIGHT)
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .onPointerEvent(PointerEventType.Scroll) {
-                    val point = it.changes.first()
-                    if (point.scrollDelta.y == 0f) return@onPointerEvent
+        // re-renders on keys change
+        key(scaleFactor, offsetFactor) {
+            // Draw edges on a single canvas
+            Canvas(
+                modifier = Modifier
+                    .fillMaxSize()
 
-                    val delta = max(1f, min(1.08f, exp(scaleFactor/100))) // zoom factor
-
-                    val deltaZoom = if (point.scrollDelta.y > 0) delta else 1/delta
-                    val scaleChange = scaleFactor * deltaZoom
-                    if (scaleChange < 1f || scaleChange > 50f) return@onPointerEvent // zoom range
-
-                    viewModel.setScaleFactor(scaleChange)
-                    val offsetChange = point.position - (point.position - offsetFactor) * deltaZoom
-                    viewModel.setOffsetFactor(offsetChange)
-                }
-                .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDrag = { change, dragAmount ->
-                            viewModel.setOffsetFactor(offsetFactor + dragAmount)
-                        }
-                    )
-                }
-        ) {
-            key(scaleFactor, offsetFactor) {
-                // Draw edges on a single canvas
-                Canvas(modifier = Modifier.fillMaxSize().background(Color.Green)) {
-                    edges.forEach { edge ->
-                        val tailVertex = vertices.find { it.id == edge.tailVertexId }
-                        val headVertex = vertices.find { it.id == edge.headVertexId }
-                        if (tailVertex != null && headVertex != null) {
-                            drawLine(
-                                color = Color.Black.copy(alpha = .3f),
-                                start = Offset(tailVertex.x * scaleFactor + offsetFactor.x, tailVertex.y * scaleFactor + offsetFactor.y),
-                                end = Offset(headVertex.x * scaleFactor + offsetFactor.x, headVertex.y * scaleFactor + offsetFactor.y),
-                                strokeWidth = .1f*scaleFactor
-                            )
-                        }
+            ) {
+                edges.forEach { edge ->
+                    val tailVertex = vertices.find { it.id == edge.tailVertexId }
+                    val headVertex = vertices.find { it.id == edge.headVertexId }
+                    if (tailVertex != null && headVertex != null) {
+                        drawLine(
+                            color = EDGE_COLOR.copy(alpha = EDGE_ALPHA),
+                            start = Offset(tailVertex.x * scaleFactor + offsetFactor.x, tailVertex.y * scaleFactor + offsetFactor.y),
+                            end = Offset(headVertex.x * scaleFactor + offsetFactor.x, headVertex.y * scaleFactor + offsetFactor.y),
+                            strokeWidth = EDGE_STROKE_WIDTH*scaleFactor
+                        )
                     }
                 }
-                // Overlay vertices on top of the canvas
-//                vertices.forEach { vertex ->
-//                    DraggableVertex(vertex, viewModel)
-//                }
+            }
+            // Overlay vertices on top of the canvas
+            vertices.forEach { vertex ->
+                DraggableVertex(vertex, scaleFactor, offsetFactor, viewModel)
             }
         }
     }
 }
 
 @Composable
-fun <V, E>DraggableVertex(vertex: VertexModel<V>, viewModel: GraphViewModel<V, E>) {
-    val scaleFactor by viewModel.scaleFactor.collectAsState()
-    val offsetFactor by viewModel.offsetFactor.collectAsState()
+fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFactor: Offset, viewModel: GraphViewModel<V, E>) {
     var offsetX by remember { mutableStateOf(vertex.x * scaleFactor + offsetFactor.x) }
     var offsetY by remember { mutableStateOf(vertex.y * scaleFactor + offsetFactor.y) }
-    val vertexSize by remember { mutableStateOf(.5f*scaleFactor) }
-
+    val vertexSize by remember { mutableStateOf(VERTEX_SIZE*scaleFactor) }
     Box(
         modifier = Modifier
-            .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) } // offsetX.roundToInt(), offsetY.roundToInt()
+            .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
             .size(vertexSize.dp)
             .graphicsLayer {
-                translationX = -vertexSize/2
-                translationY = -vertexSize/2
+                translationX = -vertexSize
+                translationY = -vertexSize
             }
-            .background(Color.Blue.copy(alpha = .4f), shape = CircleShape)
+            .background(MaterialTheme.colors.primary.copy(alpha = VERTEX_ALPHA), shape = CircleShape)
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
-                    change.consume()
                     offsetX += dragAmount.x
                     offsetY += dragAmount.y
                     viewModel.updateGraph {

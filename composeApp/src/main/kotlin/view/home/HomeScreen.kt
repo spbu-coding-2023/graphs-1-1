@@ -25,8 +25,8 @@ fun setupCycle1(graph: Graph<VertexModel<Int>, EdgeModel<String>>) {
     for (i in 0..100) {
         vv.add(VertexModel(i, (0..r).random().toFloat(), (0..r).random().toFloat(), i*2))
         graph.addVertex(vv.last())
-        repeat(1) {
-            val ri = (pow((0..i).random().toDouble(), 1.952)/pow(i.toDouble(), 1.952)*i).toInt()
+        repeat(2) {
+            val ri = (pow((0..i).random().toDouble(), 2.952)/pow(i.toDouble(), 2.952)*i).toInt()
             graph.addEdge(vv[i], vv[ri], EdgeModel(i, ri, "$i"))
         }
     }

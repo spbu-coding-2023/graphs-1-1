@@ -32,11 +32,11 @@ class GraphViewModel<V, E>(
     val rotationFactor: StateFlow<Float> = _rotationFactor
 
     init {
-//         runPlacement(GraphPlacementYifanHu())
-        updateState()
+         runPlacement(GraphPlacementYifanHu())
+//        updateState()
     }
 
-    private fun updateState() {
+    fun updateState() {
         _vertices.value = graph.vertexSet().toList()
         _edges.value = graph.edgeSet().toList()
     }
@@ -58,13 +58,12 @@ class GraphViewModel<V, E>(
 
     fun runPlacement(graphPlacement: GraphPlacement) {
         val placement = graphPlacement.getPlacement(graph)
+        println(graph.vertexSet())
         graph.vertexSet().forEach {
-            it.copy(
-                id = it.id,
-                x = placement[it]!!.first,
-                y = placement[it]!!.second,
-                data = it.data
-            )
+            val x = placement[it]!!.first
+            val y = placement[it]!!.second
+            it.x = x
+            it.y = y
         }
         updateState()
     }
