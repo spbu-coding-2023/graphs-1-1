@@ -6,14 +6,13 @@ import graph.Graph
 import java.util.*
 
 
-fun <V> successors(v: V): Set<V> {
-    val incoming = graph.incomingVerteciesOf(v)
-    val outgoing = graph.outgoingVerteciesOf(v)
-    return incoming.union(outgoing)
-}
-
-
 class GraphBetweennessCentrality : GraphKeyVertex {
+    fun <V, E> successors(graph: Graph<V, E>, v: V): Set<V> {
+        val incoming = graph.incomingVerteciesOf(v)
+        val outgoing = graph.outgoingVerteciesOf(v)
+        return incoming.union(outgoing)
+    }
+
     override fun <V, E> getKeyVertecies(graph: Graph<V, E>): Map<V, Float> {
         val betweennessMap = mutableMapOf<V, Float>().withDefault { 0f }
         val vertices = graph.vertexSet()
@@ -33,7 +32,8 @@ class GraphBetweennessCentrality : GraphKeyVertex {
             while (queue.isNotEmpty()) {
                 val currentVertex = queue.remove()
                 stack.push(currentVertex)
-                for (successorVertex in graph.outgoingVerteciesOf(currentVertex)) {
+
+                for (successorVertex in successors(graph, currentVertex)) {
                     if (distance[successorVertex] == -1) {
                         queue.add(successorVertex)
                         distance[successorVertex] = distance[currentVertex]!! + 1
