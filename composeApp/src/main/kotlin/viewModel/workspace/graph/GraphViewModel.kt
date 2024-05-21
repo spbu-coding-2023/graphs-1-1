@@ -1,5 +1,7 @@
 package viewModel.workspace.graph
 
+import androidx.compose.foundation.gestures.TransformableState
+import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import display.placement.GraphPlacement
 import display.placement.implementation.GraphPlacementYifanHu
@@ -23,8 +25,15 @@ class GraphViewModel<V, E>(
     private val _scaleFactor = MutableStateFlow(1f)
     val scaleFactor: StateFlow<Float> = _scaleFactor
 
+    private val _offsetFactor = MutableStateFlow(Offset.Zero)
+    val offsetFactor: StateFlow<Offset> = _offsetFactor
+
+    private val _rotationFactor = MutableStateFlow(0f)
+    val rotationFactor: StateFlow<Float> = _rotationFactor
+
     init {
-        runPlacement(GraphPlacementYifanHu())
+        // runPlacement(GraphPlacementYifanHu())
+        updateState()
     }
 
     private fun updateState() {
@@ -39,6 +48,12 @@ class GraphViewModel<V, E>(
 
     fun setScaleFactor(factor: Float) {
         _scaleFactor.value = factor
+    }
+    fun setRotationFactor(factor: Float) {
+        _rotationFactor.value = factor
+    }
+    fun setOffsetFactor(factor: Offset) {
+        _offsetFactor.value = factor
     }
 
     fun runPlacement(graphPlacement: GraphPlacement) {
