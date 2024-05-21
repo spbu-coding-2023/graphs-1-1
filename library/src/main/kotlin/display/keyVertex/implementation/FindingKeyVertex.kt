@@ -26,9 +26,7 @@ class GraphBetweennessCentrality : GraphKeyVertex {
             while (queue.isNotEmpty()) {
                 val currentVertex = queue.remove()
                 stack.push(currentVertex)
-                val incoming = graph.incomingVerticesOf(v)
-                val outgoing = graph.outgoingVerticesOf(v)
-                for (successorVertex in incoming.union(outgoing)) {
+                for (successorVertex in graph.outgoingVerticesOf(currentVertex)) {
                     if (distance[successorVertex] == -1) {
                         queue.add(successorVertex)
                         distance[successorVertex] = distance[currentVertex]!! + 1
