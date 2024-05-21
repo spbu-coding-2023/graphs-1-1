@@ -47,7 +47,7 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
 
                 val delta = (scaleFactor - MIN_SCALE_FACTOR)/(MAX_SCALE_FACTOR - MIN_SCALE_FACTOR)/10 + 1.05f // max(1f, min(1.08f, exp(scaleFactor/100))) // zoom factor
 
-                val deltaZoom = if (point.scrollDelta.y > 0) delta else 1/delta
+                val deltaZoom = if (point.scrollDelta.y < 0) delta else 1/delta
                 val scaleChange = scaleFactor * deltaZoom
 
                 if (scaleChange < MIN_SCALE_FACTOR || scaleChange > MAX_SCALE_FACTOR) return@onPointerEvent // zoom range
