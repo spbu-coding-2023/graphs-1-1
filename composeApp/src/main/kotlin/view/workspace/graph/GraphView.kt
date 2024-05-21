@@ -1,6 +1,7 @@
 package view.workspace.graph
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
@@ -9,6 +10,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -17,7 +19,11 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import graphses.composeapp.generated.resources.Res
+import graphses.composeapp.generated.resources.cat
 import model.VertexModel
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import viewModel.workspace.graph.GraphViewModel
 import kotlin.math.*
 
@@ -102,6 +108,7 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFactor: Offset, viewModel: GraphViewModel<V, E>) {
     var offsetX by remember { mutableStateOf(vertex.x * scaleFactor + offsetFactor.x) }

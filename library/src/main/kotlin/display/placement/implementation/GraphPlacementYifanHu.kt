@@ -14,8 +14,8 @@ import org.openide.util.Lookup
 import kotlin.random.Random
 
 class GraphPlacementYifanHu : GraphPlacement {
-    private val _width = 1
-    private val _height = 1
+    private val _width = 100
+    private val _height = 100
     override fun <V, E>getPlacement(graph: Graph<V, E>): Map<V, Pair<Float, Float>> {
         val random = Random(1L)
 
@@ -30,8 +30,8 @@ class GraphPlacementYifanHu : GraphPlacement {
 
         for (vert in graph.vertexSet()) {
             val n: Node = graphModel.factory().newNode(vert.toString())
-            n.setX(random.nextFloat()*10)
-            n.setY(random.nextFloat()*10)
+            n.setX(random.nextFloat()*_width)
+            n.setY(random.nextFloat()*_height)
             map[vert] = n
 
             graphType.addNode(n)
@@ -67,8 +67,8 @@ class GraphPlacementYifanHu : GraphPlacement {
 
         for (vertex in graph.vertexSet()) {
             val n: Node = graphType.getNode(vertex.toString())
-            val x = ((_width/2 + n.x()* 3 / 1))
-            val y = ((_height/2 + n.y()* 3 / 1))
+            val x = _width * n.x()
+            val y = _height * n.y()
             placement[vertex] = Pair(x, y)
         }
 

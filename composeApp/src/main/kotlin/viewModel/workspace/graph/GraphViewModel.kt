@@ -4,6 +4,7 @@ import androidx.compose.foundation.gestures.TransformableState
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import display.placement.GraphPlacement
+import display.placement.implementation.GraphPlacementRandom
 import display.placement.implementation.GraphPlacementYifanHu
 import graph.Graph
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +33,9 @@ class GraphViewModel<V, E>(
     val rotationFactor: StateFlow<Float> = _rotationFactor
 
     init {
-         runPlacement(GraphPlacementYifanHu())
+        val graphPlacementRandom = GraphPlacementRandom()
+        graphPlacementRandom.setSize(1000, 1000)
+         runPlacement(graphPlacementRandom)
 //        updateState()
     }
 
