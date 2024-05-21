@@ -6,11 +6,11 @@ import graph.Graph
 import java.util.*
 
 
-//fun <V> successors(v: V): Set<V> {
-//    val incoming = graph.incomingVerteciesOf(v)
-//    val outgoing = graph.outgoingVerteciesOf(v)
-//    return incoming.union(outgoing)
-//}
+fun <V> successors(v: V): Set<V> {
+    val incoming = graph.incomingVerteciesOf(v)
+    val outgoing = graph.outgoingVerteciesOf(v)
+    return incoming.union(outgoing)
+}
 
 
 class GraphBetweennessCentrality : GraphKeyVertex {
