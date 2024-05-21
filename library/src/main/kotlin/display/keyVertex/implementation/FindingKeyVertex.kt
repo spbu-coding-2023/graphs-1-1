@@ -6,7 +6,7 @@ import graph.Graph
 import java.util.*
 
 
-fun successors(v: V): Set<V> {
+fun <V> successors(v: V): Set<V> {
     val incoming = graph.incomingVerteciesOf(v)
     val outgoing = graph.outgoingVerteciesOf(v)
     return incoming.union(outgoing)
