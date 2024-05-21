@@ -5,7 +5,7 @@ import graph.Graph
 
 class GraphDijkstraPathFinder<V, E> {
 
-    fun <V, E> searchPathDijkstra(graph: Graph<V, E>, startingVertex: V, endingVertex: V): List<V> {
+    override fun <V, E> searchPathDijkstra(graph: Graph<V, E>, startingVertex: V, endingVertex: V): List<V> {
         val distance = mutableMapOf<V, Double>()
         val predecessor = mutableMapOf<V, V?>()
         val unvisitedVertices = mutableSetOf<V>()
