@@ -4,24 +4,25 @@ import display.bridgeSearch.GraphBridgeSearch
 import graph.Graph
 
 class GraphTarjanBridgeFinder<V, E> : GraphBridgeSearch {
-    private var time = 0
 
     override fun <V, E> getBridges(graph: Graph<V, E>): List<Pair<V, V>> {
         val vertices = graph.vertexSet()
-        val disc = mutableMapOf<V, Int>()
-        val low = mutableMapOf<V, Int>()
-        val parent = mutableMapOf<V, V?>()
+        val discoveryTimes = mutableMapOf<V, Int>()
+        val lowestDiscoveryTimes = mutableMapOf<V, Int>()
+        val parents = mutableMapOf<V, V?>()
         val bridges = mutableListOf<Pair<V, V>>()
+        val visited =  mutableSetOf<V>()
+        var time = 0
 
-        for (v in vertices) {
-            disc[v] = -1
-            low[v] = -1
-            parent[v] = null
+        for (vertex in vertices) {
+            discoveryTimes[vertex] = -1
+            lowestDiscoveryTimes[vertex] = -1
+            parents[vertex] = null
         }
 
-        for (v in vertices) {
-            if (disc[v] == -1) {
-                dfs(graph, v, disc, low, parent, bridges)
+        for (vertex in vertices) {
+            if (discoveryTimes[vertex] == -1) {
+                dfs(graph, vertex, discoveryTimes, lowestDiscoveryTimes, parents, bridges, time)
             }
         }
 
@@ -30,28 +31,29 @@ class GraphTarjanBridgeFinder<V, E> : GraphBridgeSearch {
 
     private fun <V, E> dfs(
         graph: Graph<V, E>,
-        u: V,
-        disc: MutableMap<V, Int>,
-        low: MutableMap<V, Int>,
-        parent: MutableMap<V, V?>,
+        currentVertex: V,
+        discoveryTimes: MutableMap<V, Int>,
+        lowestDiscoveryTimes: MutableMap<V, Int>,
+        parents: MutableMap<V, V?>,
         bridges: MutableList<Pair<V, V>>
+        time: Int
     ) {
-        disc[u] = time
-        low[u] = time
-        time++
+        discoveryTimes[currentVertex] = time
+        lowestDiscoveryTimes[currentVertex] = time
+        var localTime = time + 1
 
-        for (e in graph.outgoingEdgesOf(u)) {
-            val v = graph.getEdgeHead(e)
-            if (disc[v] == -1) {
-                parent[v] = u
-                dfs(graph, v, disc, low, parent, bridges)
-                low[u] = minOf(low[u]!!, low[v]!!)
+        for (edge in graph.outgoingEdgesOf(currentVertex)) {
+            val adjacentVertex = graph.getEdgeHead(edge)
+            if (discoveryTimes[adjacentVertex] == -1) {
+                parents[adjacentVertex] = currentVertex
+                dfs(graph, adjacentVertex, discoveryTimes, lowestDiscoveryTimes, parents, bridges, time)
+                lowestDiscoveryTimes[currentVertex] = minOf(lowestDiscoveryTimes[currentVertex]!!, lowestDiscoveryTimes[adjacentVertex]!!)
 
-                if (low[v]!! > disc[u]!!) {
-                    bridges.add(Pair(u, v))
+                if (lowestDiscoveryTimes[adjacentVertex]!! > discoveryTimes[currentVertex]!!) {
+                    bridges.add(Pair(currentVertex, adjacentVertex))
                 }
-            } else if (v != parent[u]) {
-                low[u] = minOf(low[u]!!, disc[v]!!)
+            } else if (adjacentVertex != parents[currentVertex]) {
+                lowestDiscoveryTimes[currentVertex] = minOf(lowestDiscoveryTimes[currentVertex]!!, discoveryTimes[adjacentVertex]!!)
             }
         }
     }
