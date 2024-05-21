@@ -29,7 +29,7 @@ class GraphTarjanBridgeFinder<V, E> : GraphBridge {
         return bridges
     }
 
-    private fun dfs(
+     fun <V, E> dfs(
         graph: Graph<V, E>,
         currentVertex: V,
         discoveryTimes: MutableMap<V, Int>,
