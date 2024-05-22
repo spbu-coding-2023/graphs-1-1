@@ -11,7 +11,7 @@ class GraphTarjanBridgeFinder<V, E> : GraphBridge {
         val lowestDiscoveryTimes = mutableMapOf<V, Int>()
         val parents = mutableMapOf<V, V?>()
         val bridges = mutableListOf<Pair<V, V>>()
-        val visited =  mutableSetOf<V>()
+        //val visited =  mutableSetOf<V>()
         var time = 0
 
         for (vertex in vertices) {
