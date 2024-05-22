@@ -1,4 +1,4 @@
-package repository.implementation
+package repository.implementation.json
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import graph.Graph
