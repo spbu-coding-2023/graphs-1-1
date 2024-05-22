@@ -1,10 +1,11 @@
 package graph
 
+import org.gephi.graph.impl.GraphStoreConfiguration.DEFAULT_EDGE_WEIGHT
+
 /**
  * Common interface for all graphs
  */
 interface Graph<V, E> {
-
     /**
      * Adds vertex to the graph if not present
      */
@@ -14,7 +15,7 @@ interface Graph<V, E> {
     /**
      * Adds Edge between tail and head to the graph if not present
      */
-    fun addEdge(tail: V, head: V, e: E): Boolean
+    fun addEdge(tail: V, head: V, e: E, weight : Double = DEFAULT_EDGE_WEIGHT): Boolean
     // fun addEdge(tail: V, head: V): E
 
     /**
