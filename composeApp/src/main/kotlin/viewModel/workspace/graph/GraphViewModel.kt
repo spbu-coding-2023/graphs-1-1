@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import model.EdgeModel
 import model.VertexModel
 
-enum class GraphInteractionMode {Pan, Delete, Drag}
+enum class GraphInteractionMode {Pan, Delete, Drag, Create, Select}
 
 class GraphViewModel<V, E>(
     initialGraph: Graph<VertexModel<V>, EdgeModel<E>>
@@ -83,5 +83,12 @@ class GraphViewModel<V, E>(
      */
     fun isEdgesDirected(): Boolean {
         return graph.configuration.isDirected()
+    }
+
+    fun getVertexNextId(): Int {
+        var nextId = 0
+        val verticesId = graph.vertexSet().map { it.id }
+        while (verticesId.contains(nextId)) nextId++ // TODO: awfully slow, (keep deleted vertices in a queue, or store them in heap ds)
+        return nextId
     }
 }

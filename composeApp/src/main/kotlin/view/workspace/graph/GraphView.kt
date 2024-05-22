@@ -1,19 +1,22 @@
 package view.workspace.graph
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
@@ -46,6 +49,7 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
     val interactionMode by viewModel.interactionMode.collectAsState()
     val scaleFactor by viewModel.scaleFactor.collectAsState()
     val offsetFactor by viewModel.offsetFactor.collectAsState()
+    var reRender by remember { mutableStateOf(false) }
 
     BoxWithConstraints(
         modifier = Modifier
@@ -76,17 +80,37 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
                     }
                 )
             }
+            .pointerInput(Unit) {
+                detectTapGestures { offset ->
+                    when(interactionMode) {
+                        GraphInteractionMode.Create -> {
+                            viewModel.updateGraph {
+                                it.addVertex(VertexModel(viewModel.getVertexNextId(), (offset.x - offsetFactor.x)/scaleFactor, (offset.y - offsetFactor.y)/scaleFactor, null))
+                            }
+                        }
+                        GraphInteractionMode.Select -> {
+                            viewModel.updateGraph {
+                                it.vertexSet().forEach { v -> v.isSelected = false }
+                                reRender = !reRender
+                            }
+                        }
+                        else -> return@detectTapGestures
+                    }
+                    if (interactionMode != GraphInteractionMode.Create) return@detectTapGestures
+
+                }
+            }
     ) {
-        val EDGE_COLOR = MaterialTheme.colors.onBackground
+        val EDGE_COLOR = MaterialTheme.colorScheme.outline
         // runs ones at first render of the component
         val width = constraints.maxWidth.toFloat()
         val height = constraints.maxHeight.toFloat()
         LaunchedEffect(Unit) {
-            viewModel.setOffsetFactor(Offset(width/3, height/2))
+            viewModel.setOffsetFactor(Offset(width/2, height/2))
         }
 
         // re-renders on keys change
-        key(scaleFactor, offsetFactor, vertices, interactionMode) {
+        key(scaleFactor, offsetFactor, vertices, interactionMode, reRender) {
             // Draw edges on a single canvas
             Canvas(
                 modifier = Modifier
@@ -103,6 +127,13 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
                             end = Offset(headVertex.x * scaleFactor + offsetFactor.x, headVertex.y * scaleFactor + offsetFactor.y),
                             strokeWidth = EDGE_STROKE_WIDTH*scaleFactor
                         )
+//                        if (viewModel.isEdgesDirected()) {
+//                            drawRect(
+//                                color = EDGE_COLOR.copy(alpha = EDGE_ALPHA),
+//                                topLeft = Offset(headVertex.x * scaleFactor + offsetFactor.x, headVertex.y * scaleFactor + offsetFactor.y),
+//                                size = Size(EDGE_STROKE_WIDTH*scaleFactor*14, EDGE_STROKE_WIDTH*scaleFactor*14)
+//                            )
+//                        }
                     }
                 }
             }
@@ -120,36 +151,59 @@ fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFact
     var offsetX by remember { mutableStateOf(vertex.x * scaleFactor + offsetFactor.x) }
     var offsetY by remember { mutableStateOf(vertex.y * scaleFactor + offsetFactor.y) }
     val vertexSize by remember { mutableStateOf(VERTEX_SIZE*scaleFactor) }
+    var reRender by remember { mutableStateOf(false) }
+    val vertexSelectColor by animateColorAsState(
+        if (vertex.isSelected) MaterialTheme.colorScheme.surfaceBright else MaterialTheme.colorScheme.surfaceDim
+    )
 
-    Box(
-        modifier = Modifier
-            .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-            .size(vertexSize.dp)
-            .graphicsLayer {
-                translationX = -vertexSize
-                translationY = -vertexSize
-            }
-            .background(MaterialTheme.colors.primary.copy(alpha = VERTEX_ALPHA), shape = CircleShape)
-            .pointerInput(Unit) {
-                if (interactionMode != GraphInteractionMode.Drag) return@pointerInput
-                detectDragGestures { change, dragAmount ->
-                    offsetX += dragAmount.x
-                    offsetY += dragAmount.y
-                    viewModel.updateGraph {
-                        it.vertexSet().forEach {v ->
-                            if (v.id == vertex.id) {
-                                v.x = (offsetX - offsetFactor.x) / scaleFactor
-                                v.y = (offsetY - offsetFactor.y) / scaleFactor
+    key (reRender) {
+        Box(
+            modifier = Modifier
+                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                .size(vertexSize.dp)
+                .graphicsLayer {
+                    translationX = -vertexSize
+                    translationY = -vertexSize
+                }
+                .background(vertexSelectColor.copy(alpha = VERTEX_ALPHA), shape = CircleShape)
+                .border(
+                    width = (vertexSize/16).dp,
+                    brush = SolidColor(MaterialTheme.colorScheme.outline),
+                    shape = CircleShape
+                )
+                .pointerInput(Unit) {
+                    if (interactionMode != GraphInteractionMode.Drag) return@pointerInput
+                    detectDragGestures { change, dragAmount ->
+                        offsetX += dragAmount.x
+                        offsetY += dragAmount.y
+                        viewModel.updateGraph {
+                            it.vertexSet().forEach { v ->
+                                if (v.id == vertex.id) {
+                                    v.x = (offsetX - offsetFactor.x) / scaleFactor
+                                    v.y = (offsetY - offsetFactor.y) / scaleFactor
+                                }
                             }
                         }
                     }
                 }
-            }
-            .clickable {
-                if (interactionMode != GraphInteractionMode.Delete) return@clickable
-                viewModel.updateGraph {
-                    it.removeVertex(vertex)
+                .pointerInput(Unit) {
+                    detectTapGestures {
+                        when (interactionMode) {
+                            GraphInteractionMode.Delete -> {
+                                viewModel.updateGraph {
+                                    it.removeVertex(vertex)
+                                }
+                            }
+
+                            GraphInteractionMode.Select -> {
+                                vertex.isSelected = !vertex.isSelected
+                                reRender = !reRender
+                            }
+
+                            else -> return@detectTapGestures
+                        }
+                    }
                 }
-            }
-    )
+        )
+    }
 }

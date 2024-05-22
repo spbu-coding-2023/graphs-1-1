@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
@@ -28,7 +29,9 @@ fun <V, E>GraphToolBar(viewModel: GraphViewModel<V, E>, modifier: Modifier) {
     val tools = listOf(
         GraphTool(Icons.Filled.PanTool, "Pan", GraphInteractionMode.Pan),
         GraphTool(Icons.Filled.Delete, "Delete", GraphInteractionMode.Delete),
-        GraphTool(Icons.Filled.OpenWith, "Drag", GraphInteractionMode.Drag)
+        GraphTool(Icons.Filled.OpenWith, "Drag", GraphInteractionMode.Drag),
+        GraphTool(Icons.Filled.AddCircleOutline, "Create", GraphInteractionMode.Create),
+        GraphTool(Icons.Filled.SelectAll, "Select", GraphInteractionMode.Select),
     )
     Column(
         modifier = Modifier
