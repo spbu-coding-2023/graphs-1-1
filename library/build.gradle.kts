@@ -13,6 +13,9 @@ dependencies {
 
     // gson
     implementation(libs.gson)
+
+    // neo4j
+    implementation("org.neo4j.driver:neo4j-java-driver:5.19.0")
 }
 
 tasks.named<Test>("test") {
