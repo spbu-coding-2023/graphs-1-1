@@ -105,8 +105,8 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
         return graph.add(v)
     }
 
-    override fun addEdge(tail: V, head: V, e: E): Boolean {
-        return graph.set(tail, head, Edge(e, DEFAULT_EDGE_WEIGHT))
+    override fun addEdge(tail: V, head: V, e: E, weight : Double): Boolean {
+        return graph.set(tail, head, Edge(e, weight))
     }
 
     override fun containsVertex(v: V): Boolean {
