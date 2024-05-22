@@ -100,6 +100,7 @@ class GraphViewModel<V, E>(
 //        val verticesId = graph.vertexSet().map { it.id }
 //        while (verticesId.contains(nextId)) nextId++ // TODO: awfully slow, (keep deleted vertices in a queue, or store them in heap ds)
 //        return nextId
-        return graph.vertexSet().maxOf { it.id } + 1
+        val vs = graph.vertexSet()
+        return if (vs.size == 0) 0 else vs.maxOf { it.id } + 1
     }
 }
