@@ -11,6 +11,9 @@ dependencies {
     // gephi toolkit
     implementation(files("libs/gephi-toolkit-0.10.0-all.jar"))
 
+    // neo4j
+    implementation("org.neo4j.driver:neo4j-java-driver:5.19.0")
+
     // jackson
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
 
