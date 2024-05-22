@@ -1,4 +1,4 @@
-package repository.implementation
+package repository.implementation.json
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
