@@ -120,4 +120,24 @@ interface Graph<V, E> {
      * Returns end vertex of an edge
      */
     fun getEdgeHead(e: E): V
+
+    /**
+     * Get number of vertices
+     */
+    fun getNOfVertices() : Int
+
+    /**
+     * Get number of edges
+     */
+    fun getNOfEdges() : Int
+
+    /**
+     * Does it have vertices map for easier time in functions
+     */
+    fun hasVerticesMap() : Boolean
+
+    /**
+     * Get a reference to a vertices map (create or pass the existing one)
+     */
+    fun getVerticesMap() : HashMap<V, Int>
 }
