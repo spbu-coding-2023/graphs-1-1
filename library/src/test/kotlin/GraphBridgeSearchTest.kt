@@ -2,8 +2,6 @@ package algorithms
 
 import display.bridgeSearch.implementation.GraphTarjanBridgeFinder
 import graph.Graph
-import graph.implementation.DirectedWeightedGraph
-import graph.implementation.UndirectedUnweightedGraph
 import graph.implementation.UndirectedWeightedGraph
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
