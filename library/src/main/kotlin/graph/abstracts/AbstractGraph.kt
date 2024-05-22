@@ -5,6 +5,11 @@ import graph.configuration.GraphConfiguration
 
 abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : Graph<V, E> {
     /**
+     * number of Edges, Vertices
+     */
+    var numberOfEdges: Int = 0
+    var numberOfVertices: Int = 0
+    /**
      * type of the graph
      */
     val configuration = GraphConfiguration(isDirected, isWeighted)
@@ -17,7 +22,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     /**
      * adjacency matrix
      */
-    protected class AdjacencyMatrix<V, E> {
+    protected inner class AdjacencyMatrix<V, E> {
         val matrix = mutableListOf<MutableList<E?>>()
         val verticesMap = HashMap<V, Int>()
         fun get(tail: V, head: V): E? {
@@ -33,7 +38,15 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
             if (tailIndex == null || headIndex == null) throw IllegalArgumentException("Can not set edge by vertices: Both vertices must exist")
             val prev = matrix[tailIndex][headIndex]
             matrix[tailIndex][headIndex] = e
-            if (prev == null) return true
+            if (prev == null) {
+                if (e != null) {
+                    numberOfEdges++
+                }
+                return true
+            }
+            if (e == null) {
+                numberOfEdges--
+            }
             return false
         }
 
@@ -47,19 +60,28 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
                 it.add(null)
             }
             matrix.add(MutableList(matrixSize+1) {null})
+            numberOfVertices++
             return true
         }
 
         fun delete(v: V) {
             val vertexIndex = verticesMap[v] ?: throw IllegalArgumentException("Can not delete vertex: vertex does not exist")
 
-            matrix.forEach {
-                it.removeAt(vertexIndex)
+            for (i in matrix.indices) {
+                if (matrix[vertexIndex][i] != null) {
+                    numberOfEdges--
+                }
+                if (matrix[i][vertexIndex] != null) {
+                    numberOfEdges--
+                }
+                matrix[i].removeAt(vertexIndex)
             }
 
             matrix.removeAt(vertexIndex)
 
             verticesMap.remove(v)
+
+            numberOfVertices--
 
             verticesMap.forEach {
                 if (it.value > vertexIndex) {
@@ -275,5 +297,29 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
 
     override fun edgesOf(v: V): Set<E> {
         return incomingEdgesOf(v) + outgoingEdgesOf(v)
+    }
+
+    override fun getNOfEdges(): Int {
+        return numberOfEdges
+    }
+
+    override fun getNOfVertices(): Int {
+        return numberOfVertices
+    }
+
+    override fun hasVerticesMap(): Boolean {
+        return true
+    }
+
+    override fun getVerticesMap(): HashMap<V, Int> {
+        if (hasVerticesMap()) {
+            return graph.verticesMap
+        } else {
+            val verticesMap = HashMap<V, Int>()
+            for ((index, vertex) in vertexSet().withIndex()) {
+                verticesMap[vertex] = index
+            }
+            return verticesMap
+        }
     }
 }
