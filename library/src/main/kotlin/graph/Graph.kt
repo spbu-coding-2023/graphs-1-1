@@ -1,5 +1,7 @@
 package graph
 
+import org.gephi.graph.impl.GraphStoreConfiguration.DEFAULT_EDGE_WEIGHT
+
 import graph.configuration.GraphConfiguration
 
 /**
@@ -15,8 +17,7 @@ interface Graph<V, E> {
     /**
      * Adds Edge between tail and head to the graph if not present
      */
-    fun addEdge(tail: V, head: V, e: E): Boolean
-    fun addEdge(tail: V, head: V, e: E, w: Double): Boolean
+    fun addEdge(tail: V, head: V, e: E, weight : Double = DEFAULT_EDGE_WEIGHT): Boolean
 
     /**
      * Returns true if vertex is in the graph
