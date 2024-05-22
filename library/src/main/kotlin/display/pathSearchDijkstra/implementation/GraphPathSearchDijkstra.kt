@@ -22,6 +22,8 @@ class GraphDijkstraPathFinder<V, E> : GraphPathSearchDijkstra {
             val currentVertex = unvisitedVertices.minByOrNull { distance[it]!! } ?: break
             unvisitedVertices.remove(currentVertex)
 
+            if (currentVertex == endingVertex) break
+
             for (edge in graph.outgoingEdgesOf(currentVertex)) {
                 val neighbor = graph.getEdgeHead(edge)
                 val edgeWeight = graph.getEdgeWeight(edge)
@@ -34,11 +36,16 @@ class GraphDijkstraPathFinder<V, E> : GraphPathSearchDijkstra {
             }
         }
 
+        // Проверка на случай, когда путь не найден
+        if (predecessor[endingVertex] == null && startingVertex != endingVertex) {
+            return mutableListOf()
+        }
+
         val path = mutableListOf<V>()
         var currentVertex = endingVertex
         while (currentVertex != startingVertex) {
             path.add(currentVertex)
-            currentVertex = predecessor[currentVertex] ?: break
+            currentVertex = predecessor[currentVertex] ?: return mutableListOf() // Путь не найден
         }
         path.add(startingVertex)
 
