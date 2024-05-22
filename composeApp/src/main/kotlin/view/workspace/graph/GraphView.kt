@@ -191,7 +191,14 @@ fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFact
                         when (interactionMode) {
                             GraphInteractionMode.Delete -> {
                                 viewModel.updateGraph {
-                                    it.removeVertex(vertex)
+                                    if (vertex.isSelected) {
+                                        viewModel.updateGraph { g ->
+                                            val selectedVertices = g.vertexSet().filter { v -> v.isSelected }
+                                            selectedVertices.forEach { v -> g.removeVertex(v) }
+                                        }
+                                    } else {
+                                        it.removeVertex(vertex)
+                                    }
                                 }
                             }
 
