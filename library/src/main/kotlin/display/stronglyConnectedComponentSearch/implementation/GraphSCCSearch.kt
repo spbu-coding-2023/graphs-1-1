@@ -12,7 +12,7 @@ class GraphSCCSearchWithTarjan<V, E> : GraphSCCSearch<V, E> {
     private val indexMap = HashMap<V, Int>()
     private val lowLinkMap = HashMap<V, Int>()
     private val stack = Stack<V>()
-    private val onStack = HashMap<V, Boolean>()
+    private val onStack = HashSet<V>()
     private val SCCs = mutableListOf<List<V>>()
     override fun getSCCs(graph: Graph<V, E>) : List<List<V>> {
         for (v : V in graph.vertexSet()) {
@@ -28,13 +28,13 @@ class GraphSCCSearchWithTarjan<V, E> : GraphSCCSearch<V, E> {
         lowLinkMap[v] = index
         index++
         stack.push(v)
-        onStack[v] = true
+        onStack.add(v)
         for (outgoingNeighbour in graph.outgoingVerticesOf(v)) {
             if (indexMap[outgoingNeighbour] == null) {
                 strongConnect(graph, outgoingNeighbour)
-                lowLinkMap[v] = min(lowLinkMap[v] ?: index, lowLinkMap[outgoingNeighbour] ?: index)
-            } else if (onStack[outgoingNeighbour] == true) {
-                lowLinkMap[v] = min(lowLinkMap[v] ?: index, indexMap[outgoingNeighbour] ?: index)
+                lowLinkMap[v] = min(lowLinkMap[v]!!, lowLinkMap[outgoingNeighbour]!!)
+            } else if (onStack.contains(outgoingNeighbour)) {
+                lowLinkMap[v] = min(lowLinkMap[v]!!, indexMap[outgoingNeighbour]!!)
             }
         }
         if (lowLinkMap[v] == indexMap[v]) {
@@ -42,7 +42,7 @@ class GraphSCCSearchWithTarjan<V, E> : GraphSCCSearch<V, E> {
             var w : V
             do {
                 w = stack.pop()
-                onStack[w] = false
+                onStack.remove(w)
                 component.add(w)
             } while (w != v)
             SCCs.add(component)
