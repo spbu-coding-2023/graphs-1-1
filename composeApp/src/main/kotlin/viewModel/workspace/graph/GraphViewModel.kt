@@ -7,10 +7,15 @@ import display.placement.GraphPlacement
 import display.placement.implementation.GraphPlacementRandom
 import display.placement.implementation.GraphPlacementYifanHu
 import graph.Graph
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import model.EdgeModel
 import model.VertexModel
+import kotlin.concurrent.thread
 
 enum class GraphInteractionMode {Pan, Delete, Drag, Create, Select}
 
@@ -38,10 +43,10 @@ class GraphViewModel<V, E>(
     val interactionMode: StateFlow<GraphInteractionMode> = _interactionMode
 
     init {
-        val graphPlacement = GraphPlacementYifanHu()
-        graphPlacement.setSize(4, 4)
-        runPlacement(graphPlacement)
-//        updateState()
+//        val graphPlacement = GraphPlacementYifanHu()
+//        graphPlacement.setSize(4, 4)
+//        runPlacement(graphPlacement, {})
+        updateState()
     }
 
     fun setInteractionMode(mode: GraphInteractionMode) {
@@ -68,15 +73,20 @@ class GraphViewModel<V, E>(
         _offsetFactor.value = factor
     }
 
-    fun runPlacement(graphPlacement: GraphPlacement) {
-        val placement = graphPlacement.getPlacement(graph)
-        graph.vertexSet().forEach {
-            val x = placement[it]!!.first
-            val y = placement[it]!!.second
-            it.x = x
-            it.y = y
+    fun runPlacement(graphPlacement: GraphPlacement, onFinished: () -> Unit) {
+        CoroutineScope(Dispatchers.Default).launch {
+            val placement = graphPlacement.getPlacement(graph)
+            graph.vertexSet().forEach {
+                val x = placement[it]!!.first
+                val y = placement[it]!!.second
+                it.x = x
+                it.y = y
+            }
+            updateState()
+            withContext(Dispatchers.Main) {
+                onFinished()
+            }
         }
-        updateState()
     }
     /**
      * Returns if edge is directed or not
@@ -86,9 +96,10 @@ class GraphViewModel<V, E>(
     }
 
     fun getVertexNextId(): Int {
-        var nextId = 0
-        val verticesId = graph.vertexSet().map { it.id }
-        while (verticesId.contains(nextId)) nextId++ // TODO: awfully slow, (keep deleted vertices in a queue, or store them in heap ds)
-        return nextId
+//        var nextId = 0
+//        val verticesId = graph.vertexSet().map { it.id }
+//        while (verticesId.contains(nextId)) nextId++ // TODO: awfully slow, (keep deleted vertices in a queue, or store them in heap ds)
+//        return nextId
+        return graph.vertexSet().maxOf { it.id } + 1
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -23,6 +24,7 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.round
 import graphses.composeapp.generated.resources.Res
 import graphses.composeapp.generated.resources.cat
 import model.VertexModel
@@ -51,6 +53,10 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
     val offsetFactor by viewModel.offsetFactor.collectAsState()
     var reRender by remember { mutableStateOf(false) }
 
+    var selectBoxStartOffset by remember { mutableStateOf(Offset.Zero) }
+    var selectBoxSize by remember { mutableStateOf(Offset.Zero) }
+    var selectBoxShow by remember { mutableStateOf(false) }
+
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
@@ -74,10 +80,58 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
             }
             .pointerInput(Unit) {
                 detectDragGestures(
+                    onDragStart = {
+                        when(interactionMode) {
+                            GraphInteractionMode.Select -> {
+                                selectBoxShow = true
+                                selectBoxStartOffset = it
+                            }
+                            else -> return@detectDragGestures
+                        }
+                    },
                     onDrag = { change, dragAmount ->
-                        if (interactionMode != GraphInteractionMode.Pan) return@detectDragGestures
-                        viewModel.setOffsetFactor(offsetFactor + dragAmount)
+                        when(interactionMode) {
+                            GraphInteractionMode.Pan -> {
+                                viewModel.setOffsetFactor(offsetFactor + dragAmount)
+                            }
+                            GraphInteractionMode.Select -> { // select all vertices in box
+                                selectBoxSize += dragAmount
+                            }
+                            else -> return@detectDragGestures
+                        }
+                    },
+                    onDragEnd = {
+                        when(interactionMode) {
+                            GraphInteractionMode.Select -> {
+                                selectBoxShow = false
+
+                                viewModel.updateGraph { g ->
+                                    val selectedVertices = g.vertexSet().filter { v ->
+                                        val vx = v.x*scaleFactor + offsetFactor.x
+                                        val vy = v.y*scaleFactor + offsetFactor.y
+                                        (
+                                        ((vx >= selectBoxStartOffset.x) && (vx <= selectBoxStartOffset.x + selectBoxSize.x)) ||
+                                        ((vx <= selectBoxStartOffset.x) && (vx >= selectBoxStartOffset.x + selectBoxSize.x))
+                                        ) &&
+                                        (
+                                        ((vy >= selectBoxStartOffset.y) && (vy <= selectBoxStartOffset.y + selectBoxSize.y)) ||
+                                        ((vy <= selectBoxStartOffset.y) && (vy >= selectBoxStartOffset.y + selectBoxSize.y))
+                                        )
+                                    }
+
+                                    selectedVertices.forEach { v ->
+                                        v.isSelected = true
+                                    }
+                                }
+
+                                selectBoxSize = Offset.Zero
+                                reRender = !reRender
+                            }
+                            else -> return@detectDragGestures
+                        }
                     }
+
+
                 )
             }
             .pointerInput(Unit) {
@@ -102,15 +156,9 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
             }
     ) {
         val EDGE_COLOR = MaterialTheme.colorScheme.outline
-        // runs ones at first render of the component
-        val width = constraints.maxWidth.toFloat()
-        val height = constraints.maxHeight.toFloat()
-        LaunchedEffect(Unit) {
-            viewModel.setOffsetFactor(Offset(width/2, height/2))
-        }
 
         // re-renders on keys change
-        key(scaleFactor, offsetFactor, vertices, interactionMode, reRender) {
+        key(scaleFactor, offsetFactor, viewModel, interactionMode, reRender) {
             // Draw edges on a single canvas
             Canvas(
                 modifier = Modifier
@@ -139,7 +187,19 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
             }
             // Overlay vertices on top of the canvas
             vertices.forEach { vertex ->
-                DraggableVertex(vertex, scaleFactor, offsetFactor, interactionMode, viewModel)
+                DraggableVertex(vertex, scaleFactor, interactionMode, viewModel)
+            }
+
+            key(selectBoxShow) {
+                val selectBoxColor = MaterialTheme.colorScheme.primary.copy(alpha = .2f)
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    // select rect
+                    drawRect(
+                        color = selectBoxColor,
+                        topLeft = selectBoxStartOffset,
+                        size = Size(selectBoxSize.x, selectBoxSize.y)
+                    )
+                }
             }
         }
     }
@@ -147,7 +207,8 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFactor: Offset, interactionMode: GraphInteractionMode, viewModel: GraphViewModel<V, E>) {
+fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, interactionMode: GraphInteractionMode, viewModel: GraphViewModel<V, E>) {
+    val offsetFactor by viewModel.offsetFactor.collectAsState()
     var offsetX by remember { mutableStateOf(vertex.x * scaleFactor + offsetFactor.x) }
     var offsetY by remember { mutableStateOf(vertex.y * scaleFactor + offsetFactor.y) }
     val vertexSize by remember { mutableStateOf(VERTEX_SIZE*scaleFactor) }
