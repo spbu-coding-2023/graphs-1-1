@@ -1,17 +1,18 @@
 package graphs
 
-import graph.utils.AdjacencyMatrix
+import graph.implementation.UndirectedUnweightedGraph
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 
 class AdjacencyMatrixTest {
-    var structure = AdjacencyMatrix<Int, String>()
+    var graph = UndirectedUnweightedGraph<Int, String>()
+    var structure = graph.AdjacencyMatrix<Int, String>()
 
     @BeforeEach
     fun setup() {
-        structure = AdjacencyMatrix()
+        structure = graph.AdjacencyMatrix()
     }
 
     @Test
@@ -26,7 +27,7 @@ class AdjacencyMatrixTest {
         val res = structure.add(23)
         val hm = HashMap<Int, Int>()
         hm[23] = 0
-        assertEquals(structure.verteciesMap, hm)
+        assertEquals(structure.verticesMap, hm)
         assertTrue(res)
     }
 
@@ -62,7 +63,7 @@ class AdjacencyMatrixTest {
         hm[23] = 0
         hm[52] = 1
         hm[1] = 2
-        assertEquals(structure.verteciesMap, hm)
+        assertEquals(structure.verticesMap, hm)
     }
 
     @Test
@@ -77,6 +78,6 @@ class AdjacencyMatrixTest {
         val hm = HashMap<Int, Int>()
         hm[23] = 0
         hm[1] = 1
-        assertEquals(structure.verteciesMap, hm)
+        assertEquals(structure.verticesMap, hm)
     }
 }

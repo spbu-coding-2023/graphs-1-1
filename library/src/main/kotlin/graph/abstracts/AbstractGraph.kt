@@ -20,7 +20,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
      */
     internal val structure = AdjacencyMatrix<V, Edge<E>>()
 
-    internal inner class AdjacencyMatrix<V, E> {
+    inner class AdjacencyMatrix<V, E> {
         val matrix = mutableListOf<MutableList<E?>>()
         val verticesMap = HashMap<V, Int>()
         fun get(tail: V, head: V): E? {
@@ -69,9 +69,6 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
             throw IllegalArgumentException("Can not delete vertex: vertex does not exist")
 
             for (i in matrix.indices) {
-                if (matrix[vertexIndex][i] != null) {
-                    numberOfEdges--
-                }
                 if (matrix[i][vertexIndex] != null) {
                     numberOfEdges--
                 }
