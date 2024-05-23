@@ -29,13 +29,13 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
         return structure.add(v)
     }
 
-    override fun addEdge(tail: V, head: V, e: E, w: Double): Boolean {
+    override fun addEdge(tail: V, head: V, e: E, weight: Double): Boolean {
         var edge = false
-        val weight = if (configuration.isUnweighted()) DEFAULT_EDGE_WEIGHT else w
+        val newWeight = if (configuration.isUnweighted()) DEFAULT_EDGE_WEIGHT else weight
         if (configuration.isUndirected()) {
             edge = structure.set(head, tail, null)
         }
-        return structure.set(tail, head, Edge(e, weight)) || edge
+        return structure.set(tail, head, Edge(e, newWeight)) || edge
     }
 
     override fun containsVertex(v: V): Boolean {
