@@ -6,5 +6,5 @@ interface GraphMST <V, E> {
     /**
      * Returns a list of edges that form the MST
      */
-    fun getMST(graph: Graph<V, E>) : List<E>
+    fun getMST(graph: Graph<V, E>) : Set<E>
 }
