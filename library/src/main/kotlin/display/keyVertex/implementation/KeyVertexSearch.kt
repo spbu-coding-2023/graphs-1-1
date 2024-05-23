@@ -17,7 +17,6 @@ class GraphBetweennessCentrality : GraphKeyVertex {
         return graph.outgoingVerteciesOf(v)
     }
 
-
     override fun <V, E> getKeyVertecies(graph: Graph<V, E>): Map<V, Float> {
         val betweennessMap = mutableMapOf<V, Float>().withDefault { 0f }
         val vertices = graph.vertexSet()
