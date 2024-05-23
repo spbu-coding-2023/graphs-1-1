@@ -13,8 +13,8 @@ class GraphSCCSearchWithTarjan<V, E> : GraphSCCSearch<V, E> {
     private val lowLinkMap = HashMap<V, Int>()
     private val stack = Stack<V>()
     private val onStack = HashSet<V>()
-    private val SCCs = mutableListOf<List<V>>()
-    override fun getSCCs(graph: Graph<V, E>) : List<List<V>> {
+    private val SCCs = mutableSetOf<Set<V>>()
+    override fun getSCCs(graph: Graph<V, E>) : Set<Set<V>> {
         for (v : V in graph.vertexSet()) {
             if (indexMap[v] == null) {
                 strongConnect(graph, v)
@@ -38,7 +38,7 @@ class GraphSCCSearchWithTarjan<V, E> : GraphSCCSearch<V, E> {
             }
         }
         if (lowLinkMap[v] == indexMap[v]) {
-            val component = mutableListOf<V>()
+            val component = mutableSetOf<V>()
             var w : V
             do {
                 w = stack.pop()
