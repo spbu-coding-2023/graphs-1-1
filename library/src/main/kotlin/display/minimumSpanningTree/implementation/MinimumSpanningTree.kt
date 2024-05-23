@@ -36,7 +36,7 @@ class GraphMSTWithKruskal : GraphMST {
         }
     }
 
-    override fun <V, E>getMST(graph: Graph<V, E>) : List<E> {
+    override fun <V, E>getMST(graph: Graph<V, E>) : Set<E> {
         val disjointSetUnion = DisjointSetUnion(getNOfVertices(graph))
         val mst = mutableListOf<E>()
         val edges = graph.edgeSet().toList().sortedBy { graph.getEdgeWeight(it) }
