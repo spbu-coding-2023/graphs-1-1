@@ -5,65 +5,85 @@ import graph.configuration.GraphConfiguration
 
 abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : Graph<V, E> {
     /**
+     * number of Edges, Vertices
+     */
+    private var numberOfEdges: Int = 0
+    private var numberOfVertices: Int = 0
+
+    /**
      * type of the graph
      */
-    val configuration = GraphConfiguration(isDirected, isWeighted)
+    override val configuration = GraphConfiguration(isDirected, isWeighted)
 
     /**
      * store graph in adjacency matrix
      */
-    protected val graph = AdjacencyMatrix<V, Edge<E>>()
+    internal val structure = AdjacencyMatrix<V, Edge<E>>()
 
-    /**
-     * adjacency matrix
-     */
-    protected class AdjacencyMatrix<V, E> {
+    inner class AdjacencyMatrix<V, E> {
         val matrix = mutableListOf<MutableList<E?>>()
-        val verteciesMap = HashMap<V, Int>()
+        val verticesMap = HashMap<V, Int>()
         fun get(tail: V, head: V): E? {
-            val tailIndex = verteciesMap[tail]
-            val headIndex = verteciesMap[head]
-            if (tailIndex == null || headIndex == null) throw IllegalArgumentException("Can not get edge by vertecies: Both vertecies must exist")
+            val tailIndex = verticesMap[tail]
+            val headIndex = verticesMap[head]
+            if (tailIndex == null || headIndex == null)
+                throw IllegalArgumentException("Can not get edge by vertices: Both vertices must exist")
             return matrix[tailIndex][headIndex]
         }
 
         fun set(tail: V, head: V, e: E?): Boolean {
-            val tailIndex = verteciesMap[tail]
-            val headIndex = verteciesMap[head]
-            if (tailIndex == null || headIndex == null) throw IllegalArgumentException("Can not set edge by vertecies: Both vertecies must exist")
+            val tailIndex = verticesMap[tail]
+            val headIndex = verticesMap[head]
+            if (tailIndex == null || headIndex == null)
+                throw IllegalArgumentException("Can not set edge by vertices: Both vertices must exist")
             val prev = matrix[tailIndex][headIndex]
             matrix[tailIndex][headIndex] = e
-            if (prev == null) return true
+            if (prev == null) {
+                if (e != null) {
+                    numberOfEdges++
+                }
+                return true
+            }
+            if (e == null) {
+                numberOfEdges--
+            }
             return false
         }
 
         fun add(v: V): Boolean {
-            if (v in verteciesMap) return false
+            if (v in verticesMap) return false
 
             val matrixSize = matrix.size
-            verteciesMap[v] = matrixSize
+            verticesMap[v] = matrixSize
 
             matrix.forEach {// adds by one line (could double each time, would be faster ig)
                 it.add(null)
             }
             matrix.add(MutableList(matrixSize+1) {null})
+            numberOfVertices++
             return true
         }
 
         fun delete(v: V) {
-            val vertexIndex = verteciesMap[v] ?: throw IllegalArgumentException("Can not delete vertex: vertex does not exist")
+            val vertexIndex = verticesMap[v] ?:
+            throw IllegalArgumentException("Can not delete vertex: vertex does not exist")
 
-            matrix.forEach {
-                it.removeAt(vertexIndex)
+            for (i in matrix.indices) {
+                if (matrix[i][vertexIndex] != null) {
+                    numberOfEdges--
+                }
+                matrix[i].removeAt(vertexIndex)
             }
 
             matrix.removeAt(vertexIndex)
 
-            verteciesMap.remove(v)
+            verticesMap.remove(v)
 
-            verteciesMap.forEach {
+            numberOfVertices--
+
+            verticesMap.forEach {
                 if (it.value > vertexIndex) {
-                    verteciesMap[it.key] = it.value - 1
+                    verticesMap[it.key] = it.value - 1
                 }
             }
         }
@@ -72,7 +92,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     /**
      * Holds data and weight of an edge in the graph
      */
-    protected data class Edge<T>(val data: T, var weight: Double)
+    internal data class Edge<T>(val data: T, var weight: Double)
 
     /**
      * Initial edges are set to default weight, if not explicitly
@@ -80,15 +100,20 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     protected val DEFAULT_EDGE_WEIGHT: Double = 1.0
 
     override fun addVertex(v: V): Boolean {
-        return graph.add(v)
+        return structure.add(v)
     }
 
-    override fun addEdge(tail: V, head: V, e: E): Boolean {
-        return graph.set(tail, head, Edge(e, DEFAULT_EDGE_WEIGHT))
+    override fun addEdge(tail: V, head: V, e: E, weight: Double): Boolean {
+        var edge = false
+        val newWeight = if (configuration.isUnweighted()) DEFAULT_EDGE_WEIGHT else weight
+        if (configuration.isUndirected()) {
+            edge = structure.set(tail, head, null)
+        }
+        return structure.set(tail, head, Edge(e, newWeight)) || edge
     }
 
     override fun containsVertex(v: V): Boolean {
-        return v in graph.verteciesMap
+        return v in structure.verticesMap
     }
 
     override fun containsEdge(tail: V, head: V): Boolean {
@@ -97,7 +122,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     }
 
     private fun containsEdgeDirected(tail: V, head: V): Boolean {
-        return graph.get(tail, head) != null
+        return structure.get(tail, head) != null
     }
 
     override fun degreeOf(v: V): Int {
@@ -116,7 +141,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
 
     override fun edgeSet(): Set<E> {
         val edges = mutableSetOf<E>()
-        graph.matrix.forEach {row ->
+        structure.matrix.forEach {row ->
             row.forEach { edgeItem ->
                 val edge = edgeItem?.data
                 if (edge != null) edges.add(edge)
@@ -125,28 +150,28 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
         return edges
     }
 
-    override fun edgeSetOfVertecies(): Set<Pair<V, V>> {
-        if (configuration.isDirected()) return edgeSetOfVerteciesDirected()
-        return edgeSetOfVerteciesUndirected()
+    override fun edgeSetOfVertices(): Set<Pair<V, V>> {
+        if (configuration.isDirected()) return edgeSetOfVerticesDirected()
+        return edgeSetOfVerticesUndirected()
     }
 
-    private fun edgeSetOfVerteciesDirected(): Set<Pair<V, V>> {
+    private fun edgeSetOfVerticesDirected(): Set<Pair<V, V>> {
         val connections = mutableSetOf<Pair<V, V>>()
-        val vertecies = vertexSet()
-        for (v1 in vertecies) {
-            for (v2 in vertecies) {
-                if (graph.get(v1, v2) != null) connections.add(Pair(v1, v2))
+        val vertices = vertexSet()
+        for (v1 in vertices) {
+            for (v2 in vertices) {
+                if (structure.get(v1, v2) != null) connections.add(Pair(v1, v2))
             }
         }
         return connections
     }
 
-    private fun edgeSetOfVerteciesUndirected(): Set<Pair<V, V>> {
+    private fun edgeSetOfVerticesUndirected(): Set<Pair<V, V>> {
         val connections = mutableSetOf<Pair<V, V>>()
-        val vertecies = vertexSet()
-        for (v1 in vertecies) {
-            for (v2 in vertecies) {
-                if (graph.get(v1, v2) != null) {
+        val vertices = vertexSet()
+        for (v1 in vertices) {
+            for (v2 in vertices) {
+                if (structure.get(v1, v2) != null) {
                     connections.add(Pair(v1, v2))
                     connections.add(Pair(v2, v1))
                 }
@@ -156,22 +181,22 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     }
 
     override fun vertexSet(): Set<V> {
-        return graph.verteciesMap.keys
+        return structure.verticesMap.keys
     }
 
     override fun getEdgeHead(e: E): V {
-        graph.matrix.forEach { row -> row.forEachIndexed { index, edgeItem ->
+        structure.matrix.forEach { row -> row.forEachIndexed { index, edgeItem ->
             if (edgeItem?.data == e) {
-                graph.verteciesMap.forEach { if (it.value == index) return it.key }
+                structure.verticesMap.forEach { if (it.value == index) return it.key }
             }
         } }
         throw Error("Can not find edge head: Edge does not exist")
     }
 
     override fun getEdgeTail(e: E): V {
-        graph.matrix.forEachIndexed { index, row -> row.forEach { edgeItem ->
+        structure.matrix.forEachIndexed { index, row -> row.forEach { edgeItem ->
             if (edgeItem?.data == e) {
-                graph.verteciesMap.forEach { if (it.value == index) return it.key }
+                structure.verticesMap.forEach { if (it.value == index) return it.key }
             }
         } }
         throw Error("Can not find edge tail: Edge does not exist")
@@ -180,15 +205,21 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     override fun setEdgeWeight(e: E, w: Double) {
         if (configuration.isUnweighted()) return
 
-        graph.matrix.forEach { row -> row.forEach { edgeItem ->
+        structure.matrix.forEach { row -> row.forEach { edgeItem ->
             val edge = edgeItem?.data
             if (edge == e) edgeItem?.weight = w
         } }
     }
 
+    override fun setEdgeWeight(tail: V, head: V, w: Double) {
+        if (configuration.isUnweighted()) return
+
+        structure.get(tail, head)?.weight = w
+    }
+
     override fun removeVertex(v: V): Boolean {
-        if (v !in graph.verteciesMap.keys) return false
-        graph.delete(v)
+        if (v !in structure.verticesMap.keys) return false
+        structure.delete(v)
         return true
     }
 
@@ -200,7 +231,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     }
 
     private fun removeEdgeDirected(tail: V, head: V): Boolean {
-        return !graph.set(tail, head, null)
+        return !structure.set(tail, head, null)
     }
 
     override fun outgoingEdgesOf(v: V): Set<E> {
@@ -210,8 +241,8 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
 
     private fun outgoingEdgesOfDirected(v: V): Set<E> {
         val edges = mutableSetOf<E>()
-        for (head in graph.verteciesMap.keys) {
-            val edge = graph.get(v, head) ?: continue
+        for (head in structure.verticesMap.keys) {
+            val edge = structure.get(v, head) ?: continue
             edges.add(edge.data)
         }
         return edges
@@ -224,56 +255,100 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
 
     private fun incomingEdgesOfDirected(v: V): Set<E> {
         val edges = mutableSetOf<E>()
-        for (tail in graph.verteciesMap.keys) {
-            val edge = graph.get(tail, v) ?: continue
+        for (tail in structure.verticesMap.keys) {
+            val edge = structure.get(tail, v) ?: continue
             edges.add(edge.data)
         }
         return edges
     }
 
-    override fun outgoingVerteciesOf(v: V): Set<V> {
-        if (configuration.isUndirected()) return outgoingVerteciesOfDirected(v) + incomingVerteciesOfDirected(v)
-        return outgoingVerteciesOfDirected(v)
-    }
-
-    private fun outgoingVerteciesOfDirected(v: V): Set<V> {
+    private fun verticesOfUndirected(v: V): Set<V> {
         val vertecies = mutableSetOf<V>()
-        for (head in graph.verteciesMap.keys) {
-            if (graph.get(v, head) == null) continue
+        for (head in structure.verticesMap.keys) {
+            if (structure.get(v, head) == null && structure.get(head, v) == null) continue
             vertecies.add(head)
         }
         return vertecies
     }
 
-    override fun incomingVerteciesOf(v: V): Set<V> {
-        if (configuration.isUndirected()) return outgoingVerteciesOfDirected(v) + incomingVerteciesOfDirected(v)
-        return incomingVerteciesOfDirected(v)
+    override fun outgoingVerticesOf(v: V): Set<V> {
+        if (configuration.isUndirected()) return verticesOfUndirected(v)
+        return outgoingVerticesOfDirected(v)
     }
 
-    private fun incomingVerteciesOfDirected(v: V): Set<V> {
-        val vertecies = mutableSetOf<V>()
-        for (tail in graph.verteciesMap.keys) {
-            if (graph.get(tail, v) == null) continue
-            vertecies.add(tail)
+    private fun outgoingVerticesOfDirected(v: V): Set<V> {
+        val vertices = mutableSetOf<V>()
+        for (head in structure.verticesMap.keys) {
+            if (structure.get(v, head) == null) continue
+            vertices.add(head)
         }
-        return vertecies
+        return vertices
+    }
+
+    override fun incomingVerticesOf(v: V): Set<V> {
+        if (configuration.isUndirected()) return verticesOfUndirected(v)
+        return incomingVerticesOfDirected(v)
+    }
+
+    private fun incomingVerticesOfDirected(v: V): Set<V> {
+        val vertices = mutableSetOf<V>()
+        for (tail in structure.verticesMap.keys) {
+            if (structure.get(tail, v) == null) continue
+            vertices.add(tail)
+        }
+        return vertices
     }
 
     override fun getEdgeWeight(e: E): Double {
         if (configuration.isUnweighted()) return DEFAULT_EDGE_WEIGHT
 
-        graph.matrix.forEach { row -> row.forEach { edgeItem ->
+        structure.matrix.forEach { row -> row.forEach { edgeItem ->
             if (edgeItem != null && edgeItem.data == e) return edgeItem.weight
         } }
         throw Error("Can not get edge weight: Edge does not exist")
     }
 
+    override fun getEdgeWeight(tail: V, head: V): Double {
+        if (configuration.isUnweighted()) return DEFAULT_EDGE_WEIGHT
+        val isUndirected = configuration.isUndirected()
+
+        var edgeItem = structure.get(tail, head)
+        if (isUndirected && edgeItem == null) edgeItem = structure.get(head, tail)
+        if (edgeItem != null) return edgeItem.weight
+
+        throw RuntimeException("Can not get edge weight: Edge does not exist")
+    }
+
     override fun getEdge(tail: V, head: V): E? {
-        if (configuration.isUndirected()) return graph.get(tail, head)?.data ?: graph.get(head, tail)?.data
-        return graph.get(tail, head)?.data
+        if (configuration.isUndirected()) return structure.get(tail, head)?.data ?: structure.get(head, tail)?.data
+        return structure.get(tail, head)?.data
     }
 
     override fun edgesOf(v: V): Set<E> {
         return incomingEdgesOf(v) + outgoingEdgesOf(v)
+    }
+
+    override fun getNOfEdges(): Int {
+        return numberOfEdges
+    }
+
+    override fun getNOfVertices(): Int {
+        return numberOfVertices
+    }
+
+    override fun hasVerticesMap(): Boolean {
+        return true
+    }
+
+    override fun getVerticesMap(): HashMap<V, Int> {
+        if (hasVerticesMap()) {
+            return structure.verticesMap
+        } else {
+            val verticesMap = HashMap<V, Int>()
+            for ((index, vertex) in vertexSet().withIndex()) {
+                verticesMap[vertex] = index
+            }
+            return verticesMap
+        }
     }
 }

@@ -2,7 +2,7 @@ package display.bridgeSearch
 
 import graph.Graph
 
-interface GraphBridge {
+interface GraphBridgeSearch {
     /**
      * Returns list of pair, each contains vertexes, between witch bridge is.
      */

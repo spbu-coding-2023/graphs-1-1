@@ -1,9 +1,9 @@
 package display.bridgeSearch.implementation
 
-import display.bridgeSearch.GraphBridge
+import display.bridgeSearch.GraphBridgeSearch
 import graph.Graph
 
-class GraphTarjanBridgeFinder<V, E> : GraphBridge {
+class GraphTarjanBridgeFinder<V, E> : GraphBridgeSearch {
 
     override fun <V, E> getBridges(graph: Graph<V, E>): List<Pair<V, V>> {
         val vertices = graph.vertexSet()
