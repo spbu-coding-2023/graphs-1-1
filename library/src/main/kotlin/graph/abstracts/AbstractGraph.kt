@@ -249,6 +249,17 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
         throw RuntimeException("Can not get edge weight: Edge does not exist")
     }
 
+    override fun getEdgeWeight(tail: V, head: V): Double {
+        if (configuration.isUnweighted()) return DEFAULT_EDGE_WEIGHT
+        val isUndirected = configuration.isUndirected()
+
+        var edgeItem = structure.get(tail, head)
+        if (isUndirected && edgeItem == null) edgeItem = structure.get(head, tail)
+        if (edgeItem != null) return edgeItem.weight
+
+        throw RuntimeException("Can not get edge weight: Edge does not exist")
+    }
+
     override fun getEdge(tail: V, head: V): E? {
         if (configuration.isUndirected()) return structure.get(tail, head)?.data ?: structure.get(head, tail)?.data
         return structure.get(tail, head)?.data
