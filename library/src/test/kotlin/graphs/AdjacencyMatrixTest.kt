@@ -1,17 +1,18 @@
 package graphs
 
-import graph.utils.AdjacencyMatrix
+import graph.implementation.UndirectedUnweightedGraph
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 
 class AdjacencyMatrixTest {
-    var structure = AdjacencyMatrix<Int, String>()
+    var graph = UndirectedUnweightedGraph<Int, String>()
+    var structure = graph.AdjacencyMatrix<Int, String>()
 
     @BeforeEach
     fun setup() {
-        structure = AdjacencyMatrix()
+        structure = graph.AdjacencyMatrix()
     }
 
     @Test
