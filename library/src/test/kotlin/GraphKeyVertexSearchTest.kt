@@ -51,7 +51,7 @@ class GraphKeyVertexSearchTestTest {
     @Test
     fun testGraph1BetweennessCentrality() {
         setupGraph1(UDWgraph)
-        val keyVertices = KeyVertexFinder.getKeyVertecies(UDWgraph)
+        val keyVertices = KeyVertexFinder.getKeyVertices(UDWgraph)
 
         assertEquals(4, keyVertices.size)
         assertEquals(0.0f, keyVertices[1])
@@ -63,7 +63,7 @@ class GraphKeyVertexSearchTestTest {
     @Test
     fun testGraph2BetweennessCentrality() {
         setupGraph2(UDWgraph)
-        val keyVertices = KeyVertexFinder.getKeyVertecies(UDWgraph)
+        val keyVertices = KeyVertexFinder.getKeyVertices(UDWgraph)
 
         assertEquals(6, keyVertices.size)
         assertEquals(0.0f, keyVertices[1])
