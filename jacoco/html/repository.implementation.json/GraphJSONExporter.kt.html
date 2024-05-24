@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphJSONExporter.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">library</a> &gt; <a href="index.source.html" class="el_package">repository.implementation.json</a> &gt; <span class="el_source">GraphJSONExporter.kt</span></div><h1>GraphJSONExporter.kt</h1><pre class="source lang-java linenums">package repository.implementation.json
+
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import graph.Graph
+import repository.GraphExporter
+import java.io.File
+
+<span class="fc" id="L8">class GraphJSONExporter : GraphExporter {</span>
+<span class="fc" id="L9">    private data class GraphRepresentation&lt;V, E&gt;(</span>
+<span class="fc" id="L10">        val vertexList: MutableList&lt;MutableList&lt;Triple&lt;V, E, Double&gt;&gt;&gt;,</span>
+<span class="fc" id="L11">        val vertexListMap: MutableList&lt;V&gt;,</span>
+<span class="fc" id="L12">        val graphTypeWeighted: Boolean,</span>
+<span class="fc" id="L13">        val graphTypeDirected: Boolean</span>
+    )
+    override fun &lt;V, E&gt; exportGraph(graph: Graph&lt;V, E&gt;, file: File) {
+<span class="fc" id="L16">        val ow = jacksonObjectMapper().writer().withDefaultPrettyPrinter()</span>
+<span class="fc" id="L17">        val graphRepresentation = GraphRepresentation(</span>
+<span class="fc" id="L18">            mutableListOf&lt;MutableList&lt;Triple&lt;V, E, Double&gt;&gt;&gt;(),</span>
+<span class="fc" id="L19">            mutableListOf(),</span>
+<span class="fc" id="L20">            graph.configuration.isWeighted(),</span>
+<span class="fc" id="L21">            graph.configuration.isDirected()</span>
+            )
+
+<span class="fc" id="L24">        val vertexList = graphRepresentation.vertexList</span>
+<span class="fc" id="L25">        val vertexListMap = graphRepresentation.vertexListMap</span>
+
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        for (v in graph.vertexSet()) {</span>
+<span class="fc" id="L28">            vertexListMap.add(v)</span>
+        }
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        repeat(vertexListMap.size) {</span>
+<span class="fc" id="L31">            vertexList.add(mutableListOf())</span>
+<span class="fc" id="L32">        }</span>
+
+<span class="fc" id="L34">        graph.edgeSetOfVertices().forEach { (v1, v2) -&gt;</span>
+<span class="fc" id="L35">            val edge = graph.getEdge(v1, v2)!!</span>
+<span class="fc" id="L36">            val edgeWeight = graph.getEdgeWeight(edge)</span>
+
+<span class="fc" id="L38">            val index = vertexListMap.indexOf(v1)</span>
+<span class="fc" id="L39">            vertexList[index].add(Triple(v2, edge, edgeWeight))</span>
+<span class="fc" id="L40">        }</span>
+
+<span class="fc" id="L42">        val jsonGraph = ow.writeValueAsString(graphRepresentation)</span>
+
+<span class="fc" id="L44">        file.writeText(jsonGraph)</span>
+<span class="fc" id="L45">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
