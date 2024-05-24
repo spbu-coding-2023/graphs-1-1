@@ -9,6 +9,14 @@ import graph.abstracts.AbstractGraph
  * For those that don't, you're going to have to implement your own function :)
  */
 class GraphMSTWithKruskal <V, E> : GraphMST<V, E> {
+    override fun getMST(graph: Graph<V, E>) : Set<E>? {
+        val mst = mutableSetOf<E>()
+        if (graph.configuration.isDirected()) {
+            return null
+        }
+        return if (graph.configuration.isUnweighted()) getMSTUnweighted(graph, mst) else getMSTWeighted(graph, mst)
+    }
+
     private class DisjointSetUnion(numberOfVertices: Int) {
         private val parent = IntArray(numberOfVertices) { it }
         private val rank = IntArray(numberOfVertices) { 1 }
@@ -36,11 +44,14 @@ class GraphMSTWithKruskal <V, E> : GraphMST<V, E> {
             return true
         }
     }
-    override fun getMST(graph: Graph<V, E>) : Set<E> {
+
+    private fun getMSTWeighted(graph: Graph<V, E>, mst: MutableSet<E>) : Set<E> {
         val disjointSetUnion = DisjointSetUnion(graph.getNOfVertices())
-        val mst = mutableSetOf<E>()
         val edges = graph.edgeSet().toList().sortedBy { graph.getEdgeWeight(it) }
+
         val verticesMap = graph.getVerticesMap()
+        if (verticesMap.isEmpty()) return setOf()
+
         edges.forEach { edge ->
             val tail = graph.getEdgeTail(edge)
             val head = graph.getEdgeHead(edge)
@@ -56,4 +67,25 @@ class GraphMSTWithKruskal <V, E> : GraphMST<V, E> {
         }
         return mst
     }
+
+    private fun getMSTUnweighted(graph: Graph<V, E>, mst: MutableSet<E>) : Set<E> {
+        val queue = ArrayDeque<V>()
+        val hashSet = HashSet<V>()
+        queue.addFirst(graph.vertexSet().first())
+        while (queue.isNotEmpty()) {
+            val current = queue.removeFirst()
+            for (edge in graph.outgoingEdgesOf(current)) {
+                val tail = graph.getEdgeTail(edge)
+                val head = graph.getEdgeHead(edge)
+                val neighbour = if (tail != current) tail else if (head != current) head else continue
+                if (neighbour !in hashSet) {
+                    hashSet.add(neighbour)
+                    queue.addFirst(neighbour)
+                    mst.add(edge)
+                }
+            }
+        }
+        return mst
+    }
 }
+
