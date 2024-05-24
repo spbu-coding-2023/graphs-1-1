@@ -11,13 +11,6 @@ jacoco {
     toolVersion = "0.8.11"
 }
 
-jacocoTestReport {
-    reports {
-        csv.required = true
-    }
-}
-
-
 dependencies {
     // use JUnit5
     testImplementation(libs.junit.api)
@@ -60,7 +53,7 @@ tasks.register("downloadGephiToolkit") {
 tasks.named<JacocoReport>("jacocoTestReport") {
     reports {
         xml.required = false
-        csv.required = false
+        csv.required = true
         html.required = true
     }
     dependsOn(tasks.test)
