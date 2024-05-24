@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphSCCSearch.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">library</a> &gt; <a href="index.source.html" class="el_package">display.stronglyConnectedComponentSearch.implementation</a> &gt; <span class="el_source">GraphSCCSearch.kt</span></div><h1>GraphSCCSearch.kt</h1><pre class="source lang-java linenums">package display.stronglyConnectedComponentSearch.implementation
+
+import display.stronglyConnectedComponentSearch.GraphSCCSearch
+import graph.Graph
+import java.util.Stack
+import kotlin.collections.HashMap
+import kotlin.math.min
+
+<span class="fc" id="L9">class GraphSCCSearchWithTarjan&lt;V, E&gt; : GraphSCCSearch&lt;V, E&gt; {</span>
+    override fun getSCCs(graph: Graph&lt;V, E&gt;) : Set&lt;Set&lt;V&gt;&gt;? {
+<span class="fc bfc" id="L11" title="All 2 branches covered.">        if (graph.configuration.isUndirected()) {</span>
+<span class="fc" id="L12">            return null</span>
+        }
+
+<span class="fc" id="L15">        val indexMap = HashMap&lt;V, Int&gt;()</span>
+<span class="fc" id="L16">        val lowLinkMap = HashMap&lt;V, Int&gt;()</span>
+<span class="fc" id="L17">        val stack = Stack&lt;V&gt;()</span>
+<span class="fc" id="L18">        val onStack = HashSet&lt;V&gt;()</span>
+<span class="fc" id="L19">        val SCCs = mutableSetOf&lt;Set&lt;V&gt;&gt;()</span>
+
+<span class="fc" id="L21">        var index = 0</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">        for (v: V in graph.vertexSet()) {</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">            if (indexMap[v] == null) {</span>
+<span class="fc" id="L24">                index = strongConnect(graph, v, index, indexMap, lowLinkMap, stack, onStack, SCCs)</span>
+            }
+        }
+<span class="fc" id="L27">        return SCCs</span>
+    }
+
+    private fun strongConnect(
+        graph: Graph&lt;V, E&gt;, v: V, currentIndex: Int,
+        indexMap: HashMap&lt;V, Int&gt;, lowLinkMap: HashMap&lt;V, Int&gt;,
+        stack: Stack&lt;V&gt;, onStack: HashSet&lt;V&gt;,
+        SCCs: MutableSet&lt;Set&lt;V&gt;&gt;
+    ): Int {
+<span class="fc" id="L36">        var index = currentIndex</span>
+<span class="fc" id="L37">        indexMap[v] = index</span>
+<span class="fc" id="L38">        lowLinkMap[v] = index</span>
+<span class="fc" id="L39">        index++</span>
+<span class="fc" id="L40">        stack.push(v)</span>
+<span class="fc" id="L41">        onStack.add(v)</span>
+
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        for (outgoingNeighbour in graph.outgoingVerticesOf(v)) {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">            if (indexMap[outgoingNeighbour] == null) {</span>
+<span class="fc" id="L45">                index = strongConnect(graph, outgoingNeighbour, index, indexMap, lowLinkMap, stack, onStack, SCCs)</span>
+<span class="fc" id="L46">                lowLinkMap[v] = min(lowLinkMap[v]!!, lowLinkMap[outgoingNeighbour]!!)</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            } else if (onStack.contains(outgoingNeighbour)) {</span>
+<span class="fc" id="L48">                lowLinkMap[v] = min(lowLinkMap[v]!!, indexMap[outgoingNeighbour]!!)</span>
+            }
+        }
+
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (lowLinkMap[v] == indexMap[v]) {</span>
+<span class="fc" id="L53">            val component = mutableSetOf&lt;V&gt;()</span>
+<span class="fc" id="L54">            var w: V</span>
+            do {
+<span class="fc" id="L56">                w = stack.pop()</span>
+<span class="fc" id="L57">                onStack.remove(w)</span>
+<span class="fc" id="L58">                component.add(w)</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">            } while (w != v)</span>
+<span class="fc" id="L60">            SCCs.add(component)</span>
+        }
+
+<span class="fc" id="L63">        return index</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphPlacementYifanHu.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">library</a> &gt; <a href="index.source.html" class="el_package">display.placement.implementation</a> &gt; <span class="el_source">GraphPlacementYifanHu.kt</span></div><h1>GraphPlacementYifanHu.kt</h1><pre class="source lang-java linenums">package display.placement.implementation
+
+import display.placement.GraphPlacement
+import graph.Graph
+
+import org.gephi.graph.api.Edge
+import org.gephi.graph.api.GraphController
+import org.gephi.graph.api.Node
+import org.gephi.layout.plugin.force.StepDisplacement
+import org.gephi.layout.plugin.force.yifanHu.YifanHuLayout
+import org.gephi.project.api.ProjectController
+import org.openide.util.Lookup
+
+import kotlin.random.Random
+
+<span class="nc" id="L16">class GraphPlacementYifanHu : GraphPlacement {</span>
+<span class="nc" id="L17">    private val _width = 1</span>
+<span class="nc" id="L18">    private val _height = 1</span>
+    override fun &lt;V, E&gt;getPlacement(graph: Graph&lt;V, E&gt;): Map&lt;V, Pair&lt;Float, Float&gt;&gt; {
+<span class="nc" id="L20">        val random = Random(1L)</span>
+
+<span class="nc" id="L22">        val pc = Lookup.getDefault().lookup(ProjectController::class.java)</span>
+<span class="nc" id="L23">        pc.newProject()</span>
+
+<span class="nc" id="L25">        val graphModel = Lookup.getDefault().lookup(GraphController::class.java).graphModel</span>
+<span class="nc" id="L26">        val graphType = graphModel.undirectedGraph</span>
+
+<span class="nc" id="L28">        val map = mutableMapOf&lt;V, Node&gt;()</span>
+<span class="nc" id="L29">        val placement = mutableMapOf&lt;V, Pair&lt;Float, Float&gt;&gt;()</span>
+
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        for (vert in graph.vertexSet()) {</span>
+<span class="nc" id="L32">            val n: Node = graphModel.factory().newNode(vert.toString())</span>
+<span class="nc" id="L33">            n.setX(random.nextFloat()*10)</span>
+<span class="nc" id="L34">            n.setY(random.nextFloat()*10)</span>
+<span class="nc" id="L35">            map[vert] = n</span>
+
+<span class="nc" id="L37">            graphType.addNode(n)</span>
+        }
+
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        for (edge in graph.edgeSet()) {</span>
+<span class="nc" id="L41">            val e: Edge = graphModel.factory().newEdge(</span>
+<span class="nc" id="L42">                map[graph.getEdgeTail(edge)],</span>
+<span class="nc" id="L43">                map[graph.getEdgeHead(edge)],</span>
+<span class="nc" id="L44">                1,</span>
+<span class="nc" id="L45">                false</span>
+            )
+<span class="nc" id="L47">            graphType.addEdge(e)</span>
+        }
+
+        // Run YifanHuLayout for 100 passes
+<span class="nc" id="L51">        val layout = YifanHuLayout(null, StepDisplacement(1f))</span>
+<span class="nc" id="L52">        layout.setGraphModel(graphModel)</span>
+<span class="nc" id="L53">        layout.initAlgo()</span>
+<span class="nc" id="L54">        layout.resetPropertiesValues()</span>
+<span class="nc" id="L55">        layout.optimalDistance = 100f</span>
+<span class="nc" id="L56">        layout.relativeStrength = 0.2f</span>
+<span class="nc" id="L57">        layout.initialStep = 20.0f</span>
+<span class="nc" id="L58">        layout.stepRatio = 0.95f</span>
+<span class="nc" id="L59">        layout.isAdaptiveCooling = true</span>
+
+<span class="nc" id="L61">        var i = 0</span>
+<span class="nc bnc" id="L62" title="All 4 branches missed.">        while (i &lt; 1000 &amp;&amp; layout.canAlgo()) {</span>
+<span class="nc" id="L63">            layout.goAlgo()</span>
+<span class="nc" id="L64">            i++</span>
+        }
+<span class="nc" id="L66">        layout.endAlgo()</span>
+
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        for (vertex in graph.vertexSet()) {</span>
+<span class="nc" id="L69">            val n: Node = graphType.getNode(vertex.toString())</span>
+<span class="nc" id="L70">            val x = ((_width/2 + n.x()* 3 / 1))</span>
+<span class="nc" id="L71">            val y = ((_height/2 + n.y()* 3 / 1))</span>
+<span class="nc" id="L72">            placement[vertex] = Pair(x, y)</span>
+        }
+
+<span class="nc" id="L75">        return placement</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
