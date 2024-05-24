@@ -40,6 +40,7 @@ class AbstractGraphTest {
 
         assertEquals(DWgraph.structure.verticesMap[23], 0)
         assertEquals(DWgraph.structure.matrix[0][0], null)
+        assertEquals(DWgraph.getNOfVertices(), 1)
     }
 
     @Test
@@ -53,6 +54,7 @@ class AbstractGraphTest {
         assertEquals(DWgraph.structure.matrix[0][1], null)
         assertEquals(DWgraph.structure.matrix[1][0], null)
         assertEquals(DWgraph.structure.matrix[1][1], null)
+        assertEquals(DWgraph.getNOfVertices(), 2)
     }
 
     @Test
@@ -66,6 +68,8 @@ class AbstractGraphTest {
         assertEquals(DWgraph.structure.matrix[0][0]?.data, null)
         assertEquals(DWgraph.structure.matrix[1][0]?.data, null)
         assertEquals(DWgraph.structure.matrix[1][1]?.data, null)
+        assertEquals(DWgraph.getNOfEdges(), 1)
+        assertEquals(DWgraph.getNOfVertices(), 2)
     }
 
     @Test
@@ -80,6 +84,8 @@ class AbstractGraphTest {
         assertEquals(UDWgraph.structure.matrix[1][0]?.data, null)
         assertEquals(UDWgraph.structure.matrix[0][0]?.data, null)
         assertEquals(UDWgraph.structure.matrix[1][1]?.data, null)
+        assertEquals(UDWgraph.getNOfEdges(), 1)
+        assertEquals(UDWgraph.getNOfVertices(), 2)
     }
 
     @Test
@@ -98,6 +104,8 @@ class AbstractGraphTest {
 
         assertNotNull(DWgraph.structure.matrix[0][1])
         assertTrue(DWgraph.containsEdge(23, 52))
+        assertEquals(DWgraph.getNOfEdges(), 1)
+        assertEquals(DWgraph.getNOfVertices(), 2)
     }
 
     @Test
@@ -110,6 +118,8 @@ class AbstractGraphTest {
         assertNull(UDWgraph.structure.matrix[1][0])
         assertTrue(UDWgraph.containsEdge(23, 52))
         assertTrue(UDWgraph.containsEdge(52, 23))
+        assertEquals(UDWgraph.getNOfEdges(), 1)
+        assertEquals(UDWgraph.getNOfVertices(), 2)
     }
 
     @Test
@@ -130,6 +140,8 @@ class AbstractGraphTest {
         assertEquals(DWgraph.degreeOf(1), 3)
         assertEquals(DWgraph.degreeOf(9), 3)
         assertEquals(DWgraph.degreeOf(0), 0)
+        assertEquals(DWgraph.getNOfEdges(), 5)
+        assertEquals(DWgraph.getNOfVertices(), 5)
     }
 
     @Test
@@ -150,6 +162,8 @@ class AbstractGraphTest {
         assertEquals(DWgraph.inDegreeOf(1), 1)
         assertEquals(DWgraph.inDegreeOf(9), 2)
         assertEquals(DWgraph.inDegreeOf(0), 0)
+        assertEquals(DWgraph.getNOfEdges(), 5)
+        assertEquals(DWgraph.getNOfVertices(), 5)
     }
 
     @Test
@@ -170,6 +184,8 @@ class AbstractGraphTest {
         assertEquals(DWgraph.outDegreeOf(1), 2)
         assertEquals(DWgraph.outDegreeOf(9), 1)
         assertEquals(DWgraph.outDegreeOf(0), 0)
+        assertEquals(DWgraph.getNOfEdges(), 5)
+        assertEquals(DWgraph.getNOfVertices(), 5)
     }
 
     @Test
@@ -319,11 +335,15 @@ class AbstractGraphTest {
         DWgraph.addEdge(52, 9, "C")
         DWgraph.addEdge(9, 1, "D")
         DWgraph.addEdge(1, 9, "E")
+        assertEquals(DWgraph.getNOfEdges(), 5)
+        assertEquals(DWgraph.getNOfVertices(), 5)
 
         val res = DWgraph.removeVertex(52)
 
         assertEquals(DWgraph.edgeSet(), setOf("D", "E"))
         assertEquals(DWgraph.vertexSet(), setOf(23, 9, 1, 0))
+        assertEquals(DWgraph.getNOfEdges(), 2)
+        assertEquals(DWgraph.getNOfVertices(), 4)
         assertTrue(res)
     }
 
@@ -339,10 +359,14 @@ class AbstractGraphTest {
         DWgraph.addEdge(52, 9, "C")
         DWgraph.addEdge(9, 1, "D")
         DWgraph.addEdge(1, 9, "E")
+        assertEquals(DWgraph.getNOfEdges(), 5)
+        assertEquals(DWgraph.getNOfVertices(), 5)
 
         val res = DWgraph.removeEdge(52, 9)
 
         assertEquals(DWgraph.edgeSet(), setOf("A", "B", "D", "E"))
+        assertEquals(DWgraph.getNOfEdges(), 4)
+        assertEquals(DWgraph.getNOfVertices(), 5)
         assertTrue(res)
     }
 
