@@ -9,12 +9,6 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
-      - name: Checkout badges branch to a badges directory nested inside first checkout
-        uses: actions/checkout@v4
-        with:
-          ref: badges
-          path: badges
-
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
@@ -37,7 +31,7 @@ jobs:
           echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
           echo "branches = ${{ steps.jacoco.outputs.branches }}"
 
-      - name: Upload JaCoCo coverage report
+      - name: Upload JaCoCo coverage report to the workflow artifacts
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
