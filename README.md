@@ -1,5 +1,8 @@
 # Graphses - Graph Analysis & Visualization App
 
+[![Coverage](.github/badges/jacoco.svg)](build/reports/jacoco/test/html/index.html)
+[![Branches](.github/badges/branches.svg)](build/reports/jacoco/test/html/index.html)
+
 ## Description 
 
 Graphses is a desktop application designed for visualizing and analyzing graphs. It provides a user-friendly interface for visualizing various types of graphs and analyzing them using different algorithms.

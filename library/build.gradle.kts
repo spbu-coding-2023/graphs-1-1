@@ -1,7 +1,22 @@
+import org.jetbrains.kotlin.codegen.coroutines.reportSuspensionPointInsideMonitor
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     `java-library`
+    jacoco
+
 }
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+jacocoTestReport {
+    reports {
+        csv.required = true
+    }
+}
+
 
 dependencies {
     // use JUnit5
@@ -40,6 +55,25 @@ tasks.register("downloadGephiToolkit") {
 
     if (!jarFile.exists())
         download(sourceUrl, path)
+}
+
+tasks.named<JacocoReport>("jacocoTestReport") {
+    reports {
+        xml.required = false
+        csv.required = false
+        html.required = true
+    }
+    dependsOn(tasks.test)
+}
+
+tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.7".toBigDecimal()
+            }
+        }
+    }
 }
 
 tasks.build {
