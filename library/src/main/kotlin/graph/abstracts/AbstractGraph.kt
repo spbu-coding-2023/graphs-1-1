@@ -72,6 +72,9 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
                 if (matrix[i][vertexIndex] != null) {
                     numberOfEdges--
                 }
+                if (matrix[vertexIndex][if (i > vertexIndex) i-1 else i] != null) {
+                    numberOfEdges--
+                }
                 matrix[i].removeAt(vertexIndex)
             }
 
