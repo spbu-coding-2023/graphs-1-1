@@ -1,13 +1,13 @@
 package algorithms
 
-import display.stronglyConnectedComponentSearch.GraphSCCSearch
 import display.stronglyConnectedComponentSearch.implementation.GraphSCCSearchWithTarjan
 import graph.Graph
 import graph.implementation.DirectedWeightedGraph
 import graph.implementation.DirectedUnweightedGraph
+import graph.implementation.UndirectedWeightedGraph
+import graph.implementation.UndirectedUnweightedGraph
+
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -163,6 +163,9 @@ class GraphStronglyConnectedComponentTest {
         private fun provideGraphsForTesting(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(DirectedWeightedGraph<String, Int>(), setOf<Set<String>>(), "Empty graph"),
+                Arguments.of(UndirectedUnweightedGraph<String, Int>(), null, "Should not work for undirected graphs"),
+                Arguments.of(UndirectedWeightedGraph<String, Int>(), null, "Should not work for undirected graphs"),
+                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph1(UndirectedUnweightedGraph()), null, "Should not work for undirected graphs"),
                 Arguments.of(GraphStronglyConnectedComponentTest().setupGraph1(DirectedWeightedGraph()), setOf(setOf("a", "b", "e"), setOf("c", "d", "h"), setOf("f", "g")), "Initial test graph"),
                 Arguments.of(GraphStronglyConnectedComponentTest().setupGraph2(DirectedWeightedGraph()), setOf(setOf("a", "b", "e"), setOf("c", "d", "h"), setOf("f", "g"), setOf("k")), "Lonely vertex in initial test graph"),
                 Arguments.of(GraphStronglyConnectedComponentTest().setupGraph3(DirectedUnweightedGraph()), setOf(setOf("a", "b", "d"), setOf("c"), setOf("e", "f"), setOf("g"), setOf("h"), setOf("i", "j", "k", "l", "m", "n")), "Complicated graph"),
@@ -179,7 +182,7 @@ class GraphStronglyConnectedComponentTest {
 
     @ParameterizedTest
     @MethodSource("provideGraphsForTesting")
-    fun `test strongly connected components`(graph: Graph<String, Int>, expectedAnswer: Set<Set<String>>, @Suppress("UNUSED_PARAMETER") testName: String) {
+    fun `test strongly connected components`(graph: Graph<String, Int>, expectedAnswer: Set<Set<String>>?, @Suppress("UNUSED_PARAMETER") testName: String) {
         assertEquals(expectedAnswer, SCCsearch.getSCCs(graph))
     }
 }
