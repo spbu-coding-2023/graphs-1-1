@@ -16,10 +16,10 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: coverage-report
-          path: build/reports/jacoco/test/html
+          path: library/build/reports/jacoco/test/html
       - name: Generate JaCoCo Badge
         uses: cicirello/jacoco-badge-generator@v2
         with:
           generate-branches-badge: true
-          jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+          jacoco-csv-file: library/build/reports/jacoco/test/jacocoTestReport.csv
 
