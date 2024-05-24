@@ -49,7 +49,7 @@ jobs:
             git push
           fi
           cd ..
-          mv /library/build/reports/jacoco/test/html /jacoco
+          mv library/build/reports/jacoco/test/html jacoco/
           cd jacoco
           if [[ `git status --porcelain html ]]; then
             git add html
