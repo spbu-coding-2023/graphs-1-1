@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractGraph.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">library</a> &gt; <a href="index.source.html" class="el_package">graph.abstracts</a> &gt; <span class="el_source">AbstractGraph.kt</span></div><h1>AbstractGraph.kt</h1><pre class="source lang-java linenums">package graph.abstracts
+
+import graph.Graph
+import graph.configuration.GraphConfiguration
+
+<span class="fc" id="L6">abstract class AbstractGraph&lt;V, E&gt;(isDirected: Boolean, isWeighted: Boolean) : Graph&lt;V, E&gt; {</span>
+    /**
+     * number of Edges, Vertices
+     */
+    private var numberOfEdges: Int = 0
+    private var numberOfVertices: Int = 0
+
+    /**
+     * type of the graph
+     */
+<span class="fc" id="L16">    override val configuration = GraphConfiguration(isDirected, isWeighted)</span>
+
+    /**
+     * store graph in adjacency matrix
+     */
+<span class="fc" id="L21">    internal val structure = AdjacencyMatrix&lt;V, Edge&lt;E&gt;&gt;()</span>
+
+<span class="fc" id="L23">    inner class AdjacencyMatrix&lt;V, E&gt; {</span>
+<span class="fc" id="L24">        val matrix = mutableListOf&lt;MutableList&lt;E?&gt;&gt;()</span>
+<span class="fc" id="L25">        val verticesMap = HashMap&lt;V, Int&gt;()</span>
+        fun get(tail: V, head: V): E? {
+<span class="fc" id="L27">            val tailIndex = verticesMap[tail]</span>
+<span class="fc" id="L28">            val headIndex = verticesMap[head]</span>
+<span class="pc bpc" id="L29" title="2 of 4 branches missed.">            if (tailIndex == null || headIndex == null)</span>
+<span class="nc" id="L30">                throw IllegalArgumentException(&quot;Can not get edge by vertices: Both vertices must exist&quot;)</span>
+<span class="fc" id="L31">            return matrix[tailIndex][headIndex]</span>
+        }
+
+        fun set(tail: V, head: V, e: E?): Boolean {
+<span class="fc" id="L35">            val tailIndex = verticesMap[tail]</span>
+<span class="fc" id="L36">            val headIndex = verticesMap[head]</span>
+<span class="pc bpc" id="L37" title="2 of 4 branches missed.">            if (tailIndex == null || headIndex == null)</span>
+<span class="nc" id="L38">                throw IllegalArgumentException(&quot;Can not set edge by vertices: Both vertices must exist&quot;)</span>
+<span class="fc" id="L39">            val prev = matrix[tailIndex][headIndex]</span>
+<span class="fc" id="L40">            matrix[tailIndex][headIndex] = e</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">            if (prev == null) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">                if (e != null) {</span>
+<span class="fc" id="L43">                    numberOfEdges++</span>
+                }
+<span class="fc" id="L45">                return true</span>
+            }
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">            if (e == null) {</span>
+<span class="fc" id="L48">                numberOfEdges--</span>
+            }
+<span class="fc" id="L50">            return false</span>
+        }
+
+        fun add(v: V): Boolean {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">            if (v in verticesMap) return false</span>
+
+<span class="fc" id="L56">            val matrixSize = matrix.size</span>
+<span class="fc" id="L57">            verticesMap[v] = matrixSize</span>
+
+<span class="fc" id="L59">            matrix.forEach {// adds by one line (could double each time, would be faster ig)</span>
+<span class="fc" id="L60">                it.add(null)</span>
+<span class="fc" id="L61">            }</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            matrix.add(MutableList(matrixSize+1) {null})</span>
+<span class="fc" id="L63">            numberOfVertices++</span>
+<span class="fc" id="L64">            return true</span>
+        }
+
+        fun delete(v: V) {
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">            val vertexIndex = verticesMap[v] ?:</span>
+<span class="nc" id="L69">            throw IllegalArgumentException(&quot;Can not delete vertex: vertex does not exist&quot;)</span>
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">            for (i in matrix.indices) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">                if (matrix[i][vertexIndex] != null) {</span>
+<span class="fc" id="L73">                    numberOfEdges--</span>
+                }
+<span class="fc bfc" id="L75" title="All 4 branches covered.">                if (matrix[vertexIndex][if (i &gt; vertexIndex) i-1 else i] != null) {</span>
+<span class="fc" id="L76">                    numberOfEdges--</span>
+                }
+<span class="fc" id="L78">                matrix[i].removeAt(vertexIndex)</span>
+            }
+
+<span class="fc" id="L81">            matrix.removeAt(vertexIndex)</span>
+
+<span class="fc" id="L83">            verticesMap.remove(v)</span>
+
+<span class="fc" id="L85">            numberOfVertices--</span>
+
+<span class="fc" id="L87">            verticesMap.forEach {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">                if (it.value &gt; vertexIndex) {</span>
+<span class="fc" id="L89">                    verticesMap[it.key] = it.value - 1</span>
+                }
+<span class="fc" id="L91">            }</span>
+<span class="fc" id="L92">        }</span>
+    }
+
+    /**
+     * Holds data and weight of an edge in the graph
+     */
+<span class="fc" id="L98">    internal data class Edge&lt;T&gt;(val data: T, var weight: Double)</span>
+
+    /**
+     * Initial edges are set to default weight, if not explicitly
+     */
+<span class="pc" id="L103">    protected val DEFAULT_EDGE_WEIGHT: Double = 1.0</span>
+
+    override fun addVertex(v: V): Boolean {
+<span class="fc" id="L106">        return structure.add(v)</span>
+    }
+
+    override fun addEdge(tail: V, head: V, e: E, weight: Double): Boolean {
+<span class="fc" id="L110">        var edge = false</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        val newWeight = if (configuration.isUnweighted()) DEFAULT_EDGE_WEIGHT else weight</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (configuration.isUndirected()) {</span>
+<span class="fc" id="L113">            edge = structure.set(tail, head, null)</span>
+        }
+<span class="pc bpc" id="L115" title="3 of 4 branches missed.">        return structure.set(tail, head, Edge(e, newWeight)) || edge</span>
+    }
+
+    override fun containsVertex(v: V): Boolean {
+<span class="fc" id="L119">        return v in structure.verticesMap</span>
+    }
+
+    override fun containsEdge(tail: V, head: V): Boolean {
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        if (configuration.isDirected()) return containsEdgeDirected(tail, head)</span>
+<span class="pc bpc" id="L124" title="1 of 4 branches missed.">        return containsEdgeDirected(tail, head) || containsEdgeDirected(head, tail)</span>
+    }
+
+    private fun containsEdgeDirected(tail: V, head: V): Boolean {
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        return structure.get(tail, head) != null</span>
+    }
+
+    override fun degreeOf(v: V): Int {
+<span class="fc" id="L132">        return (incomingEdgesOf(v) + outgoingEdgesOf(v)).size</span>
+    }
+
+    override fun inDegreeOf(v: V): Int {
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">        if (configuration.isUndirected()) return degreeOf(v)</span>
+<span class="fc" id="L137">        return incomingEdgesOf(v).size</span>
+    }
+
+    override fun outDegreeOf(v: V): Int {
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">        if (configuration.isUndirected()) return degreeOf(v)</span>
+<span class="fc" id="L142">        return outgoingEdgesOf(v).size</span>
+    }
+
+    override fun edgeSet(): Set&lt;E&gt; {
+<span class="fc" id="L146">        val edges = mutableSetOf&lt;E&gt;()</span>
+<span class="fc" id="L147">        structure.matrix.forEach {row -&gt;</span>
+<span class="fc" id="L148">            row.forEach { edgeItem -&gt;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">                val edge = edgeItem?.data</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">                if (edge != null) edges.add(edge)</span>
+<span class="fc" id="L151">            }</span>
+<span class="fc" id="L152">        }</span>
+<span class="fc" id="L153">        return edges</span>
+    }
+
+    override fun edgeSetOfVertices(): Set&lt;Pair&lt;V, V&gt;&gt; {
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        if (configuration.isDirected()) return edgeSetOfVerticesDirected()</span>
+<span class="fc" id="L158">        return edgeSetOfVerticesUndirected()</span>
+    }
+
+    private fun edgeSetOfVerticesDirected(): Set&lt;Pair&lt;V, V&gt;&gt; {
+<span class="fc" id="L162">        val connections = mutableSetOf&lt;Pair&lt;V, V&gt;&gt;()</span>
+<span class="fc" id="L163">        val vertices = vertexSet()</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        for (v1 in vertices) {</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            for (v2 in vertices) {</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">                if (structure.get(v1, v2) != null) connections.add(Pair(v1, v2))</span>
+            }
+        }
+<span class="fc" id="L169">        return connections</span>
+    }
+
+    private fun edgeSetOfVerticesUndirected(): Set&lt;Pair&lt;V, V&gt;&gt; {
+<span class="fc" id="L173">        val connections = mutableSetOf&lt;Pair&lt;V, V&gt;&gt;()</span>
+<span class="fc" id="L174">        val vertices = vertexSet()</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        for (v1 in vertices) {</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">            for (v2 in vertices) {</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">                if (structure.get(v1, v2) != null) {</span>
+<span class="fc" id="L178">                    connections.add(Pair(v1, v2))</span>
+<span class="fc" id="L179">                    connections.add(Pair(v2, v1))</span>
+                }
+            }
+        }
+<span class="fc" id="L183">        return connections</span>
+    }
+
+    override fun vertexSet(): Set&lt;V&gt; {
+<span class="fc" id="L187">        return structure.verticesMap.keys</span>
+    }
+
+    override fun getEdgeHead(e: E): V {
+<span class="fc" id="L191">        structure.matrix.forEach { row -&gt; row.forEachIndexed { index, edgeItem -&gt;</span>
+<span class="fc bfc" id="L192" title="All 4 branches covered.">            if (edgeItem?.data == e) {</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">                structure.verticesMap.forEach { if (it.value == index) return it.key }</span>
+            }
+<span class="fc" id="L195">        } }</span>
+<span class="nc" id="L196">        throw Error(&quot;Can not find edge head: Edge does not exist&quot;)</span>
+    }
+
+    override fun getEdgeTail(e: E): V {
+<span class="fc" id="L200">        structure.matrix.forEachIndexed { index, row -&gt; row.forEach { edgeItem -&gt;</span>
+<span class="fc bfc" id="L201" title="All 4 branches covered.">            if (edgeItem?.data == e) {</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">                structure.verticesMap.forEach { if (it.value == index) return it.key }</span>
+            }
+<span class="fc" id="L204">        } }</span>
+<span class="nc" id="L205">        throw Error(&quot;Can not find edge tail: Edge does not exist&quot;)</span>
+    }
+
+    override fun setEdgeWeight(e: E, w: Double) {
+<span class="fc bfc" id="L209" title="All 2 branches covered.">        if (configuration.isUnweighted()) return</span>
+
+<span class="fc" id="L211">        structure.matrix.forEach { row -&gt; row.forEach { edgeItem -&gt;</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">            val edge = edgeItem?.data</span>
+<span class="pc bpc" id="L213" title="1 of 4 branches missed.">            if (edge == e) edgeItem?.weight = w</span>
+<span class="fc" id="L214">        } }</span>
+<span class="fc" id="L215">    }</span>
+
+    override fun setEdgeWeight(tail: V, head: V, w: Double) {
+<span class="nc bnc" id="L218" title="All 2 branches missed.">        if (configuration.isUnweighted()) return</span>
+
+<span class="nc bnc" id="L220" title="All 2 branches missed.">        structure.get(tail, head)?.weight = w</span>
+<span class="nc" id="L221">    }</span>
+
+    override fun removeVertex(v: V): Boolean {
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">        if (v !in structure.verticesMap.keys) return false</span>
+<span class="fc" id="L225">        structure.delete(v)</span>
+<span class="fc" id="L226">        return true</span>
+    }
+
+    override fun removeEdge(tail: V, head: V): Boolean {
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">        if (configuration.isDirected()) return removeEdgeDirected(tail, head)</span>
+<span class="nc" id="L231">        val e1 = removeEdgeDirected(tail, head)</span>
+<span class="nc" id="L232">        val e2 = removeEdgeDirected(head, tail)</span>
+<span class="nc bnc" id="L233" title="All 4 branches missed.">        return e1 || e2</span>
+    }
+
+    private fun removeEdgeDirected(tail: V, head: V): Boolean {
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">        return !structure.set(tail, head, null)</span>
+    }
+
+    override fun outgoingEdgesOf(v: V): Set&lt;E&gt; {
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        if (configuration.isUndirected()) return outgoingEdgesOfDirected(v) + incomingEdgesOfDirected(v)</span>
+<span class="fc" id="L242">        return outgoingEdgesOfDirected(v)</span>
+    }
+
+    private fun outgoingEdgesOfDirected(v: V): Set&lt;E&gt; {
+<span class="fc" id="L246">        val edges = mutableSetOf&lt;E&gt;()</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        for (head in structure.verticesMap.keys) {</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">            val edge = structure.get(v, head) ?: continue</span>
+<span class="fc" id="L249">            edges.add(edge.data)</span>
+        }
+<span class="fc" id="L251">        return edges</span>
+    }
+
+    override fun incomingEdgesOf(v: V): Set&lt;E&gt; {
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">        if (configuration.isUndirected()) return outgoingEdgesOfDirected(v) + incomingEdgesOfDirected(v)</span>
+<span class="fc" id="L256">        return incomingEdgesOfDirected(v)</span>
+    }
+
+    private fun incomingEdgesOfDirected(v: V): Set&lt;E&gt; {
+<span class="fc" id="L260">        val edges = mutableSetOf&lt;E&gt;()</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">        for (tail in structure.verticesMap.keys) {</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">            val edge = structure.get(tail, v) ?: continue</span>
+<span class="fc" id="L263">            edges.add(edge.data)</span>
+        }
+<span class="fc" id="L265">        return edges</span>
+    }
+
+    private fun verticesOfUndirected(v: V): Set&lt;V&gt; {
+<span class="fc" id="L269">        val vertecies = mutableSetOf&lt;V&gt;()</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">        for (head in structure.verticesMap.keys) {</span>
+<span class="fc bfc" id="L271" title="All 4 branches covered.">            if (structure.get(v, head) == null &amp;&amp; structure.get(head, v) == null) continue</span>
+<span class="fc" id="L272">            vertecies.add(head)</span>
+        }
+<span class="fc" id="L274">        return vertecies</span>
+    }
+
+    override fun outgoingVerticesOf(v: V): Set&lt;V&gt; {
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        if (configuration.isUndirected()) return verticesOfUndirected(v)</span>
+<span class="fc" id="L279">        return outgoingVerticesOfDirected(v)</span>
+    }
+
+    private fun outgoingVerticesOfDirected(v: V): Set&lt;V&gt; {
+<span class="fc" id="L283">        val vertices = mutableSetOf&lt;V&gt;()</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        for (head in structure.verticesMap.keys) {</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">            if (structure.get(v, head) == null) continue</span>
+<span class="fc" id="L286">            vertices.add(head)</span>
+        }
+<span class="fc" id="L288">        return vertices</span>
+    }
+
+    override fun incomingVerticesOf(v: V): Set&lt;V&gt; {
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">        if (configuration.isUndirected()) return verticesOfUndirected(v)</span>
+<span class="fc" id="L293">        return incomingVerticesOfDirected(v)</span>
+    }
+
+    private fun incomingVerticesOfDirected(v: V): Set&lt;V&gt; {
+<span class="fc" id="L297">        val vertices = mutableSetOf&lt;V&gt;()</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">        for (tail in structure.verticesMap.keys) {</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">            if (structure.get(tail, v) == null) continue</span>
+<span class="fc" id="L300">            vertices.add(tail)</span>
+        }
+<span class="fc" id="L302">        return vertices</span>
+    }
+
+    override fun getEdgeWeight(e: E): Double {
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">        if (configuration.isUnweighted()) return DEFAULT_EDGE_WEIGHT</span>
+
+<span class="fc" id="L308">        structure.matrix.forEach { row -&gt; row.forEach { edgeItem -&gt;</span>
+<span class="fc bfc" id="L309" title="All 4 branches covered.">            if (edgeItem != null &amp;&amp; edgeItem.data == e) return edgeItem.weight</span>
+<span class="fc" id="L310">        } }</span>
+<span class="nc" id="L311">        throw Error(&quot;Can not get edge weight: Edge does not exist&quot;)</span>
+    }
+
+    override fun getEdgeWeight(tail: V, head: V): Double {
+<span class="pc bpc" id="L315" title="1 of 2 branches missed.">        if (configuration.isUnweighted()) return DEFAULT_EDGE_WEIGHT</span>
+<span class="fc" id="L316">        val isUndirected = configuration.isUndirected()</span>
+
+<span class="fc" id="L318">        var edgeItem = structure.get(tail, head)</span>
+<span class="fc bfc" id="L319" title="All 4 branches covered.">        if (isUndirected &amp;&amp; edgeItem == null) edgeItem = structure.get(head, tail)</span>
+<span class="pc bpc" id="L320" title="1 of 2 branches missed.">        if (edgeItem != null) return edgeItem.weight</span>
+
+<span class="nc" id="L322">        throw RuntimeException(&quot;Can not get edge weight: Edge does not exist&quot;)</span>
+    }
+
+    override fun getEdge(tail: V, head: V): E? {
+<span class="pc bpc" id="L326" title="2 of 8 branches missed.">        if (configuration.isUndirected()) return structure.get(tail, head)?.data ?: structure.get(head, tail)?.data</span>
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">        return structure.get(tail, head)?.data</span>
+    }
+
+    override fun edgesOf(v: V): Set&lt;E&gt; {
+<span class="fc" id="L331">        return incomingEdgesOf(v) + outgoingEdgesOf(v)</span>
+    }
+
+    override fun getNOfEdges(): Int {
+<span class="fc" id="L335">        return numberOfEdges</span>
+    }
+
+    override fun getNOfVertices(): Int {
+<span class="fc" id="L339">        return numberOfVertices</span>
+    }
+
+    override fun hasVerticesMap(): Boolean {
+<span class="fc" id="L343">        return true</span>
+    }
+
+    override fun getVerticesMap(): HashMap&lt;V, Int&gt; {
+<span class="pc bpc" id="L347" title="1 of 2 branches missed.">        if (hasVerticesMap()) {</span>
+<span class="fc" id="L348">            return structure.verticesMap</span>
+        } else {
+<span class="nc" id="L350">            val verticesMap = HashMap&lt;V, Int&gt;()</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">            for ((index, vertex) in vertexSet().withIndex()) {</span>
+<span class="nc" id="L352">                verticesMap[vertex] = index</span>
+            }
+<span class="nc" id="L354">            return verticesMap</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
