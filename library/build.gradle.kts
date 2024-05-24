@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.codegen.coroutines.reportSuspensionPointInsideMonitor
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     `java-library`
