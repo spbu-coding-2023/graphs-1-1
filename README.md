@@ -1,7 +1,7 @@
 # Graphses - Graph Analysis & Visualization App
 
 ![Coverage](badges/jacoco.svg)
-![Branches](badges/branches.svg)library/build/reports/jacoco/test/html/index.html
+![Branches](badges/branches.svg)
 
 ## Description 
 
