@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphPathSearchBellmanFord.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">library</a> &gt; <a href="index.source.html" class="el_package">display.pathSearch.implementation</a> &gt; <span class="el_source">GraphPathSearchBellmanFord.kt</span></div><h1>GraphPathSearchBellmanFord.kt</h1><pre class="source lang-java linenums">package display.pathSearch.implementation
+
+import display.pathSearch.GraphPathSearch
+import graph.Graph
+
+/**
+ * Returns empty list if negative cycle found, otherwise a vertex path containing starting and ending points
+ */
+<span class="fc" id="L9">class GraphPathSearchBellmanFord : GraphPathSearch {</span>
+    override fun &lt;V, E&gt; searchPath(graph: Graph&lt;V, E&gt;, startingVertex: V, endingVertex: V): List&lt;V&gt; {
+<span class="fc" id="L11">        val distance = mutableMapOf&lt;V, Double&gt;()</span>
+<span class="fc" id="L12">        val predecessor = mutableMapOf&lt;V, V?&gt;()</span>
+<span class="fc" id="L13">        val vertices = graph.vertexSet()</span>
+<span class="fc" id="L14">        val vertexEdges = graph.edgeSetOfVertices()</span>
+<span class="fc" id="L15">        val path = mutableListOf&lt;V&gt;()</span>
+
+<span class="fc bfc" id="L17" title="All 2 branches covered.">        for (v in vertices) {</span>
+<span class="fc" id="L18">            distance[v] = Double.POSITIVE_INFINITY</span>
+<span class="fc" id="L19">            predecessor[v] = null</span>
+        }
+
+<span class="fc" id="L22">        distance[startingVertex] = 0.0</span>
+
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        repeat(vertices.size-1) {</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">            for ((edgeTail, edgeHead) in vertexEdges) {</span>
+<span class="fc" id="L26">                val weight = graph.getEdgeWeight(edgeTail, edgeHead)</span>
+
+<span class="fc bfc" id="L28" title="All 2 branches covered.">                if (distance[edgeTail]!! + weight &lt; distance[edgeHead]!!) {</span>
+<span class="fc" id="L29">                    distance[edgeHead] = distance[edgeTail]!! + weight</span>
+<span class="fc" id="L30">                    predecessor[edgeHead] = edgeTail</span>
+                }
+            }
+<span class="fc" id="L33">        }</span>
+
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        for ((edgeTail, edgeHead) in vertexEdges) {</span>
+<span class="fc" id="L36">            val weight = graph.getEdgeWeight(edgeTail, edgeHead)</span>
+
+<span class="fc bfc" id="L38" title="All 2 branches covered.">            if (distance[edgeTail]!! + weight &lt; distance[edgeHead]!!) {</span>
+                // negative cycle
+<span class="fc" id="L40">                return listOf()</span>
+            }
+        }
+
+<span class="fc" id="L44">        var currentVertex = endingVertex</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        while (currentVertex != startingVertex) {</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">            if (predecessor[currentVertex] == null) return listOf() // TODO: think of</span>
+<span class="fc" id="L47">            currentVertex = predecessor[currentVertex]!!</span>
+<span class="fc" id="L48">            path.add(currentVertex)</span>
+        }
+<span class="fc" id="L50">        path.add(0, endingVertex)</span>
+<span class="fc" id="L51">        return path.reversed()</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
