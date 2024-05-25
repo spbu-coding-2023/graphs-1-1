@@ -14,7 +14,9 @@ import model.EdgeModel
 import model.VertexModel
 import view.settings.SettingsScreen
 import view.workspace.WorkspaceScreen
+import viewModel.workspace.graph.EdgeViewModel
 import viewModel.workspace.graph.GraphViewModel
+import viewModel.workspace.graph.VertexViewModel
 import java.lang.Math.pow
 import kotlin.math.exp
 
