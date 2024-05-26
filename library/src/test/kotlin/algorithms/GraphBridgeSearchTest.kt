@@ -1,3 +1,5 @@
+package algorithms
+
 import display.bridgeSearch.implementation.GraphTarjanBridgeFinder
 import graph.Graph
 import graph.implementation.UndirectedWeightedGraph

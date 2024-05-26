@@ -1,3 +1,5 @@
+package algorithms
+
 import display.keyVertex.implementation.GraphBetweennessCentrality
 import graph.Graph
 import graph.implementation.UndirectedWeightedGraph
