@@ -17,13 +17,16 @@ import model.EdgeModel
 import model.VertexModel
 import view.workspace.graph.MAX_SCALE_FACTOR
 import view.workspace.graph.MIN_SCALE_FACTOR
+import viewModel.workspace.graph.utils.LocalDatabase
 
 enum class GraphInteractionMode {Pan, Delete, Drag, Create, Select}
 
 class GraphViewModel<V, E>(
-    initialGraph: Graph<VertexModel<V>, EdgeModel<E>>
+    initialGraph: Graph<VertexModel<V>, EdgeModel<E>>,
+    val graphName: String
 ) : ViewModel() {
     private val graph = initialGraph
+    val storage = LocalDatabase(graph, graphName)
 
     private val _vertices = MutableStateFlow<List<VertexModel<V>>>(listOf())
     val vertices: StateFlow<List<VertexModel<V>>> = _vertices
@@ -47,6 +50,7 @@ class GraphViewModel<V, E>(
     val updated: StateFlow<Boolean> = _updated
 
     init {
+        storage.importGraph()
         updateState()
     }
 

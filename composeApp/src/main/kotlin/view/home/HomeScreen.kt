@@ -42,7 +42,7 @@ class HomeScreen : Screen {
             Text("this is a home screen")
             Button(
                 onClick = {
-                    navigator.push(WorkspaceScreen(GraphViewModel(myGraph)))
+                    navigator.push(WorkspaceScreen(GraphViewModel(myGraph, "freshGraph")))
                 },
             ) {
                 Text("Go to graphs!")
