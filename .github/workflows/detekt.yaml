@@ -1,5 +1,5 @@
 name: detekt
-on: [push, pull_request]
+on: [push]
 jobs:
   detekt:
     runs-on: ubuntu-latest

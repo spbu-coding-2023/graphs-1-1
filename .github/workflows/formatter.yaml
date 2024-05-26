@@ -1,5 +1,5 @@
 name: formatter
-on: [push, pull_request]
+on: [push]
 jobs:
   check-formatted:
     runs-on: ubuntu-latest
