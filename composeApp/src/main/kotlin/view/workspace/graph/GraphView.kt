@@ -2,6 +2,7 @@ package view.workspace.graph
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -21,11 +22,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.input.pointer.PointerIcon.Companion.Text
-import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.onPointerEvent
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
@@ -145,31 +143,8 @@ fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
                     v,
                     scaleFactor,
                     offsetFactor,
-                    onDrag = { change, dragAmount ->
-                        when (interactionMode) {
-                            GraphInteractionMode.Pan -> {
-                                viewModel.handlePan(dragAmount)
-                            }
-                            GraphInteractionMode.Drag -> {
-                                println("raggin $dragAmount")
-                                viewModel.vertexDrag(v, dragAmount / scaleFactor)
-                            }
-                            else -> return@DraggableVertex
-                        }
-                    },
-                    onClick = { offset ->
-                        when (interactionMode) {
-                            GraphInteractionMode.Select -> {
-                                viewModel.switchSelectionVertex(v)
-                            }
-                            GraphInteractionMode.Delete -> {
-                                viewModel.removeAndAllIfSelected(v)
-                            }
-                            else -> return@DraggableVertex
-                        }
-                    }
+                    viewModel
                 )
-
             }
         }
 
@@ -195,16 +170,19 @@ fun DrawSelectArea(area: Rect) {
 }
 
 @Composable
-fun <V>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFactor: Offset, onDrag: (PointerInputChange, Offset) -> Unit, onClick: (Offset) -> Unit) {
-    val offsetX by rememberUpdatedState(vertex.x * scaleFactor + offsetFactor.x)
-    val offsetY by rememberUpdatedState(vertex.y * scaleFactor + offsetFactor.y)
+fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFactor: Offset, graphViewModel: GraphViewModel<V, E>) {
+    val scaleFactor by rememberUpdatedState(scaleFactor)
+    val offsetFactor by rememberUpdatedState(offsetFactor)
+    var offsetX by remember { mutableStateOf(vertex.x) }
+    var offsetY by remember { mutableStateOf(vertex.y) }
     val vertexSize by rememberUpdatedState(VERTEX_SIZE*scaleFactor)
+    val interactionMode by graphViewModel.interactionMode.collectAsState()
     var reRender by remember { mutableStateOf(false) }
 
     key (reRender) {
         Box(
             modifier = Modifier
-                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                .offset { IntOffset((offsetX * scaleFactor + offsetFactor.x).roundToInt(), (offsetY * scaleFactor + offsetFactor.y).roundToInt()) }
                 .size(vertexSize.dp)
                 .graphicsLayer {
                     translationX = -vertexSize
@@ -222,19 +200,38 @@ fun <V>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFactor:
                 .pointerInput(Unit) {
                     detectDragGestures(
                         onDrag = { change, dragAmount ->
-                            onDrag(change, dragAmount)
+                            when (interactionMode) {
+                                GraphInteractionMode.Pan -> {
+                                    graphViewModel.handlePan(dragAmount)
+                                }
+                                GraphInteractionMode.Drag -> {
+                                    offsetX += dragAmount.x / scaleFactor
+                                    offsetY += dragAmount.y / scaleFactor
+                                    vertex.x = offsetX
+                                    vertex.y = offsetY
+//                                    graphViewModel.updateState()
+                                }
+                                else -> return@detectDragGestures
+                            }
                         }
                     )
                 }
                 .pointerInput(Unit) {
                     detectTapGestures { offset ->
-                        onClick(offset)
-                        reRender = !reRender
+                        when (interactionMode) {
+                            GraphInteractionMode.Select -> {
+                                graphViewModel.switchSelectionVertex(vertex)
+                                reRender = !reRender
+                            }
+                            GraphInteractionMode.Delete -> {
+                                graphViewModel.removeAndAllIfSelected(vertex)
+                                reRender = !reRender
+                            }
+                            else -> return@detectTapGestures
+                        }
                     }
                 }
-        ) {
-            Text("${vertex.id}")
-        }
+        )
     }
 
 }

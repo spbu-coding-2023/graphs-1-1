@@ -67,6 +67,7 @@ class GraphViewModel<V, E>(
         _vertices.value = graph.vertexSet().toList()
         _edges.value = graph.edgeSet().toList()
         _updated.value = !_updated.value
+        println("updated")
     }
 
     fun updateGraph(actionOnGraph: (Graph<VertexModel<V>, EdgeModel<E>>) -> Unit) {
@@ -199,6 +200,7 @@ class GraphViewModel<V, E>(
             vertex.x += dragAmount.x
             vertex.y += dragAmount.y
         }
+        _updated.value = !_updated.value
     }
 
     fun removeAndAllIfSelected(vertex: VertexModel<V>) {
