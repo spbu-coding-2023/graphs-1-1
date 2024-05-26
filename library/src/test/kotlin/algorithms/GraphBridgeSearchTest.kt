@@ -1,21 +1,20 @@
-import display.keyVertex.implementation.GraphBetweennessCentrality
+package algorithms
+
+import display.bridgeSearch.implementation.GraphTarjanBridgeFinder
 import graph.Graph
 import graph.implementation.UndirectedWeightedGraph
-import graph.implementation.DirectedWeightedGraph
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 
 
-class GraphKeyVertexSearchTestTest {
+class GraphTarjanBridgeFinderTest {
     var UDWgraph = UndirectedWeightedGraph<Int, String>()
-    var DWgraph = DirectedWeightedGraph<Int, String>()
-    val KeyVertexFinder = GraphBetweennessCentrality()
+    val bridgeFinder = GraphTarjanBridgeFinder()
 
     @BeforeEach
     fun setup() {
         UDWgraph = UndirectedWeightedGraph()
-        DWgraph = DirectedWeightedGraph()
     }
 
     fun setupGraph1(graph: Graph<Int, String>) {
@@ -48,29 +47,40 @@ class GraphKeyVertexSearchTestTest {
         graph.addEdge(5, 6, "G")
     }
 
-    @Test
-    fun testGraph1BetweennessCentrality() {
-        setupGraph1(UDWgraph)
-        val keyVertices = KeyVertexFinder.getKeyVertices(UDWgraph)
+    fun setupGraph3(graph: Graph<Int, String>) {
+        graph.addVertex(1)
+        graph.addVertex(2)
+        graph.addVertex(3)
+        graph.addVertex(4)
+        graph.addVertex(5)
+        graph.addVertex(6)
 
-        assertEquals(4, keyVertices.size)
-        assertEquals(0.0f, keyVertices[1])
-        assertEquals(4.0f, keyVertices[2])
-        assertEquals(0.0f, keyVertices[3])
-        assertEquals(0.0f, keyVertices[4])
+        graph.addEdge(1, 2, "A")
+        graph.addEdge(2, 4, "B")
+        graph.addEdge(2, 3, "C")
+        graph.addEdge(4, 5, "D")
+        graph.addEdge(2, 5, "E")
+    }
+
+
+    @Test
+    fun `all edges are bridges in undirected graph`() {
+        setupGraph1(UDWgraph)
+        val bridges = bridgeFinder.getBridges(UDWgraph)
+        assertEquals(bridges.sortedBy { it.first }, listOf(Pair(2, 4)))
     }
 
     @Test
-    fun testGraph2BetweennessCentrality() {
-        setupGraph2(UDWgraph)
-        val keyVertices = KeyVertexFinder.getKeyVertices(UDWgraph)
+    fun `find bridges in undirected graph 1`() {
+        setupGraph3(UDWgraph)
+        val bridges = bridgeFinder.getBridges(UDWgraph)
+        assertEquals(bridges.sortedBy { it.first }, listOf(Pair(1, 2), Pair(2, 3)))
+    }
 
-        assertEquals(6, keyVertices.size)
-        assertEquals(0.0f, keyVertices[1])
-        assertEquals(0.0f, keyVertices[2])
-        assertEquals(13.0f, keyVertices[3])
-        assertEquals(3.0f, keyVertices[4])
-        assertEquals(3.0f, keyVertices[5])
-        assertEquals(1.0f, keyVertices[6])
+    @Test
+    fun `find bridges in undirected graph 2`() {
+        setupGraph2(UDWgraph)
+        val bridges = bridgeFinder.getBridges(UDWgraph)
+        assertEquals(bridges.sortedBy { it.first }, listOf<Pair<Int, Int>>())
     }
 }
