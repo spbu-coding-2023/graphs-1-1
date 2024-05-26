@@ -1,5 +1,6 @@
-package display.community
+package display.community.implementation
 
+import display.community.GraphCommunity
 import graph.Graph
 import org.gephi.graph.api.Edge
 import org.gephi.graph.api.GraphController

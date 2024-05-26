@@ -1,11 +1,11 @@
-package display.pathSearchDijkstra.implementation
+package display.pathSearch.implementation
 
-import display.pathSearchDijkstra.GraphPathSearchDijkstra
+import display.pathSearch.GraphPathSearch
 import graph.Graph
 
-class GraphDijkstraPathFinder<V, E> : GraphPathSearchDijkstra {
+class GraphDijkstraPathFinder : GraphPathSearch {
 
-    override fun <V, E> searchPathDijkstra(graph: Graph<V, E>, startingVertex: V, endingVertex: V): List<V> {
+    override fun <V, E> searchPath(graph: Graph<V, E>, startingVertex: V, endingVertex: V): List<V> {
         val distance = mutableMapOf<V, Double>()
         val predecessor = mutableMapOf<V, V?>()
         val unvisitedVertices = mutableSetOf<V>()

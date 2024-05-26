@@ -3,7 +3,7 @@ package display.bridgeSearch.implementation
 import display.bridgeSearch.GraphBridgeSearch
 import graph.Graph
 
-class GraphTarjanBridgeFinder<V, E> : GraphBridgeSearch {
+class GraphTarjanBridgeFinder : GraphBridgeSearch {
 
     override fun <V, E> getBridges(graph: Graph<V, E>): List<Pair<V, V>> {
         val vertices = graph.vertexSet()

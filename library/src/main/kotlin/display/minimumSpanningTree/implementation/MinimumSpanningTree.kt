@@ -8,7 +8,7 @@ import graph.abstracts.AbstractGraph
  * Works efficiently for graphs that already have a vertex map.
  * For those that don't, you're going to have to implement your own function :)
  */
-class GraphMSTWithKruskal <V, E> : GraphMST<V, E> {
+class GraphMSTWithKruskal : GraphMST {
     private class DisjointSetUnion(numberOfVertices: Int) {
         private val parent = IntArray(numberOfVertices) { it }
         private val rank = IntArray(numberOfVertices) { 1 }
@@ -36,7 +36,7 @@ class GraphMSTWithKruskal <V, E> : GraphMST<V, E> {
             return true
         }
     }
-    override fun getMST(graph: Graph<V, E>) : List<E> {
+    override fun <V, E>getMST(graph: Graph<V, E>) : List<E> {
         val disjointSetUnion = DisjointSetUnion(graph.getNOfVertices())
         val mst = mutableListOf<E>()
         val edges = graph.edgeSet().toList().sortedBy { graph.getEdgeWeight(it) }

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach
 
 class GraphTarjanBridgeFinderTest {
     var UDWgraph = UndirectedWeightedGraph<Int, String>()
-    val bridgeFinder = GraphTarjanBridgeFinder<Int, String>()
+    val bridgeFinder = GraphTarjanBridgeFinder()
 
     @BeforeEach
     fun setup() {

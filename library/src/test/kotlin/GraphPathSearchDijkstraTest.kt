@@ -1,6 +1,6 @@
 package algorithms
 
-import display.pathSearchDijkstra.implementation.GraphDijkstraPathFinder
+import display.pathSearch.implementation.GraphDijkstraPathFinder
 import graph.Graph
 import graph.implementation.DirectedWeightedGraph
 import graph.implementation.UndirectedWeightedGraph
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 class GraphPathSearchDijkstraTest {
     var DWgraph = DirectedWeightedGraph<Int, String>()
     var UDWgraph = UndirectedWeightedGraph<Int, String>()
-    val Dijkstra = GraphDijkstraPathFinder<Int, String>()
+    val Dijkstra = GraphDijkstraPathFinder()
 
     @BeforeEach
     fun setup() {
@@ -50,36 +50,36 @@ class GraphPathSearchDijkstraTest {
     @Test
     fun `search path from to self directed`() {
         setupGraph1(DWgraph)
-        assertEquals(Dijkstra.searchPathDijkstra(DWgraph, 5, 5), mutableListOf(5))
+        assertEquals(Dijkstra.searchPath(DWgraph, 5, 5), mutableListOf(5))
     }
 
     @Test
     fun `search path from to self undirected`() {
         setupGraph1(UDWgraph)
-        assertEquals(Dijkstra.searchPathDijkstra(UDWgraph, 5, 5), mutableListOf(5))
+        assertEquals(Dijkstra.searchPath(UDWgraph, 5, 5), mutableListOf(5))
     }
 
     @Test
     fun `search path exists directed`() {
         setupGraph1(DWgraph)
-        assertEquals(Dijkstra.searchPathDijkstra(DWgraph, 1, 7), mutableListOf(1, 2, 3, 7))
+        assertEquals(Dijkstra.searchPath(DWgraph, 1, 7), mutableListOf(1, 2, 3, 7))
     }
 
     @Test
     fun `search path exists undirected`() {
         setupGraph1(UDWgraph)
-        assertEquals(Dijkstra.searchPathDijkstra(UDWgraph, 1, 6), mutableListOf(1, 2, 3, 6))
+        assertEquals(Dijkstra.searchPath(UDWgraph, 1, 6), mutableListOf(1, 2, 3, 6))
     }
 
     @Test
     fun `search path not exists directed`() {
         setupGraph1(DWgraph)
-        assertEquals(Dijkstra.searchPathDijkstra(DWgraph, 5, 1), mutableListOf<Int>())
+        assertEquals(Dijkstra.searchPath(DWgraph, 5, 1), mutableListOf<Int>())
     }
 
     @Test
     fun `search path not exists undirected`() {
         setupGraph1(UDWgraph)
-        assertEquals(Dijkstra.searchPathDijkstra(UDWgraph, 1, 4), mutableListOf<Int>())
+        assertEquals(Dijkstra.searchPath(UDWgraph, 1, 4), mutableListOf<Int>())
     }
 }
