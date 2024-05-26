@@ -20,7 +20,7 @@ fun setupCycle1(graph: Graph<VertexModel<Int>, EdgeModel<String>>) {
     val vv = mutableListOf<VertexModel<Int>>()
     val r = 1000
 
-    for (i in 0..1000) {
+    for (i in 0..100) {
         vv.add(VertexModel(i, (0..r).random().toFloat(), (0..r).random().toFloat(), i*2))
         graph.addVertex(vv.last())
         repeat(2) {
