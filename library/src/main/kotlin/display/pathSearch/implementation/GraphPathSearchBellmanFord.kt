@@ -10,18 +10,18 @@ class GraphPathSearchBellmanFord : GraphPathSearch {
     override fun <V, E> searchPath(graph: Graph<V, E>, startingVertex: V, endingVertex: V): List<V> {
         val distance = mutableMapOf<V, Double>()
         val predecessor = mutableMapOf<V, V?>()
-        val vertecies = graph.vertexSet()
+        val vertices = graph.vertexSet()
         val vertexEdges = graph.edgeSetOfVertices()
         val path = mutableListOf<V>()
 
-        for (v in vertecies) {
+        for (v in vertices) {
             distance[v] = Double.POSITIVE_INFINITY
             predecessor[v] = null
         }
 
         distance[startingVertex] = 0.0
 
-        repeat(vertecies.size-1) {
+        repeat(vertices.size-1) {
             for ((edgeTail, edgeHead) in vertexEdges) {
                 val weight = graph.getEdgeWeight(edgeTail, edgeHead)
 
