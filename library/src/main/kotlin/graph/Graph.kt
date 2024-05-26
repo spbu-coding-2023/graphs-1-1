@@ -51,12 +51,22 @@ interface Graph<V, E> {
     /**
      * Returns set of all connections of each edge
      */
-    fun edgeSetOfVertecies(): Set<Pair<V, V>>
+    fun edgeSetOfVertices(): Set<Pair<V, V>>
+
+    /**
+     * Just like edgeSetOfVertecies, but returns exactly edges as they directed
+     */
+    fun edgeSetOfVerticesDirectional(): Set<Pair<V, V>>
 
     /**
      * Returns set of all edges connected to a vertex in graph (any direction)
      */
     fun edgesOf(v: V): Set<E>
+
+    /**
+     * Returns set of all vertices which are neighbours to that vertex
+     */
+    fun verticesOf(v: V): Set<V>
 
     /**
      * Returns edge between vertex tail and vertex head if exists, otherwise null
@@ -80,14 +90,14 @@ interface Graph<V, E> {
     fun outgoingEdgesOf(v: V): Set<E>
 
     /**
-     * Returns all incoming vertecies of a vertex
+     * Returns all incoming vertices of a vertex
      */
-    fun incomingVerteciesOf(v: V): Set<V>
+    fun incomingVerticesOf(v: V): Set<V>
 
     /**
-     * Returns all outgoing vertecies of a vertex
+     * Returns all outgoing vertices of a vertex
      */
-    fun outgoingVerteciesOf(v: V): Set<V>
+    fun outgoingVerticesOf(v: V): Set<V>
 
     /**
      * Removes edge and returns true if edge was present in the graph
@@ -106,7 +116,7 @@ interface Graph<V, E> {
     fun setEdgeWeight(tail: V, head: V, w: Double)
 
     /**
-     * Returns set of all vertecies in the graph
+     * Returns set of all vertices in the graph
      */
     fun vertexSet(): Set<V>
 

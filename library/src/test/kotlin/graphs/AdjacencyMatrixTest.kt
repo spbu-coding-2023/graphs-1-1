@@ -22,11 +22,11 @@ class AdjacencyMatrixTest {
     }
 
     @Test
-    fun `get vertecies map`() {
+    fun `get vertices map`() {
         val res = structure.add(23)
         val hm = HashMap<Int, Int>()
         hm[23] = 0
-        assertEquals(structure.verteciesMap, hm)
+        assertEquals(structure.verticesMap, hm)
         assertTrue(res)
     }
 
@@ -62,7 +62,7 @@ class AdjacencyMatrixTest {
         hm[23] = 0
         hm[52] = 1
         hm[1] = 2
-        assertEquals(structure.verteciesMap, hm)
+        assertEquals(structure.verticesMap, hm)
     }
 
     @Test
@@ -77,6 +77,6 @@ class AdjacencyMatrixTest {
         val hm = HashMap<Int, Int>()
         hm[23] = 0
         hm[1] = 1
-        assertEquals(structure.verteciesMap, hm)
+        assertEquals(structure.verticesMap, hm)
     }
 }
