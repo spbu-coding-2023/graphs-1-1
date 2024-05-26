@@ -8,7 +8,6 @@ import graph.abstracts.AbstractGraph
  * Works efficiently for graphs that already have a vertex map.
  * For those that don't, you're going to have to implement your own function :)
  */
-class GraphMSTWithKruskal : GraphMST {
 class GraphMSTWithKruskal: GraphMST {
     override fun <V, E> getMST(graph: Graph<V, E>) : Set<E>? {
         val mst = mutableSetOf<E>()
