@@ -1,15 +1,11 @@
 package viewModel.workspace.graph
 
-import androidx.compose.foundation.gestures.TransformableState
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerEvent
-import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.lifecycle.ViewModel
 import display.placement.GraphPlacement
-import display.placement.implementation.GraphPlacementRandom
-import display.placement.implementation.GraphPlacementYifanHu
 import graph.Graph
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,8 +17,6 @@ import model.EdgeModel
 import model.VertexModel
 import view.workspace.graph.MAX_SCALE_FACTOR
 import view.workspace.graph.MIN_SCALE_FACTOR
-import viewModel.workspace.SelectAreaViewModel
-import kotlin.concurrent.thread
 
 enum class GraphInteractionMode {Pan, Delete, Drag, Create, Select}
 
@@ -42,9 +36,6 @@ class GraphViewModel<V, E>(
 
     private val _offsetFactor = MutableStateFlow(Offset.Zero)
     val offsetFactor: StateFlow<Offset> = _offsetFactor
-
-    private val _rotationFactor = MutableStateFlow(0f)
-    val rotationFactor: StateFlow<Float> = _rotationFactor
 
     private val _interactionMode = MutableStateFlow(GraphInteractionMode.Pan)
     val interactionMode: StateFlow<GraphInteractionMode> = _interactionMode
@@ -67,7 +58,6 @@ class GraphViewModel<V, E>(
         _vertices.value = graph.vertexSet().toList()
         _edges.value = graph.edgeSet().toList()
         _updated.value = !_updated.value
-        println("updated")
     }
 
     fun updateGraph(actionOnGraph: (Graph<VertexModel<V>, EdgeModel<E>>) -> Unit) {
@@ -78,9 +68,7 @@ class GraphViewModel<V, E>(
     fun setScaleFactor(factor: Float) {
         _scaleFactor.value = factor
     }
-    fun setRotationFactor(factor: Float) {
-        _rotationFactor.value = factor
-    }
+
     fun setOffsetFactor(factor: Offset) {
         _offsetFactor.value = factor
     }
@@ -161,25 +149,6 @@ class GraphViewModel<V, E>(
         }
     }
 
-    fun handleVertexOnDrag(change: PointerInputChange, dragAmount: Offset, vertex: VertexViewModel<V>) {
-        when (interactionMode.value) {
-            GraphInteractionMode.Drag -> {
-                updateGraph {
-                    println("updating vertex position from ${Offset(vertex.vertexState.value.x, vertex.vertexState.value.y)}")
-                    val newOffset = Offset(vertex.vertexState.value.x, vertex.vertexState.value.y) + dragAmount / scaleFactor.value
-                    vertex.setVertexOffset(newOffset)
-                    println("to ${newOffset}")
-//                    it.vertexSet().forEach { v ->
-//                        if (v.vertexState.value.id == vertex.vertexState.value.id) {
-//                            v.setVertexOffset(Offset(v.vertexState.value.x, v.vertexState.value.y) + dragAmount / scaleFactor.value)
-//                        }
-//                    }
-                }
-            }
-            else -> return
-        }
-    }
-
     fun handleDragVertex(vertexId: Int, dragAmount: Offset) {
         updateGraph { g ->
             g.vertexSet().first { v -> v.id == vertexId }.let {
@@ -195,14 +164,6 @@ class GraphViewModel<V, E>(
         }
     }
 
-    fun vertexDrag(vertex: VertexModel<V>, dragAmount: Offset) {
-        updateGraph { g ->
-            vertex.x += dragAmount.x
-            vertex.y += dragAmount.y
-        }
-        _updated.value = !_updated.value
-    }
-
     fun removeAndAllIfSelected(vertex: VertexModel<V>) {
         updateGraph { g ->
             if (vertex.isSelected) {
@@ -213,88 +174,9 @@ class GraphViewModel<V, E>(
         }
     }
 
-//    fun deleteVertex(vertexId: Int) {
-//        updateGraph { g ->
-//            g.vertexSet().first { v -> v.vertexState.value.id == vertexId }.let { v ->
-//                println("removed ${v.vertexState.value}")
-//                g.removeVertex(v)
-//
-//            }
-//        }
-//    }
-
-//    fun handleVertexOnClick(offset: Offset, vertex: VertexViewModel<V>) {
-//        when (interactionMode.value) {
-//            GraphInteractionMode.Delete -> {
-//                updateGraph {
-//                    if (vertex.vertexState.value.isSelected) {
-//                        updateGraph { g ->
-//                            val selectedVertices = g.vertexSet().filter { v -> v.vertexState.value.isSelected }
-//                            selectedVertices.forEach { v -> g.removeVertex(v) }
-//                        }
-//                    } else {
-//                        it.removeVertex(vertex)
-//                    }
-//                }
-//            }
-//            GraphInteractionMode.Select -> {
-//                vertex.setVertexSelect(!vertex.vertexState.value.isSelected)
-//            }
-//            else -> return
-//        }
-//    }
-
-    fun handleGraphOnDrag(change: PointerInputChange, dragAmount: Offset, selectAreaViewModel: SelectAreaViewModel) {
-        when(interactionMode.value) {
-            GraphInteractionMode.Pan -> {
-                setOffsetFactor(offsetFactor.value + dragAmount)
-            }
-            GraphInteractionMode.Select -> { // select all vertices in box
-                selectAreaViewModel.incAreaSize(dragAmount)
-            }
-            else -> return
-        }
-    }
-
     fun handlePan(dragAmount: Offset) {
         setOffsetFactor(offsetFactor.value + dragAmount)
     }
-
-    fun handleGraphOnDragStart(offset: Offset, selectAreaViewModel: SelectAreaViewModel) {
-        when(interactionMode.value) {
-            GraphInteractionMode.Select -> {
-                selectAreaViewModel.setStartOffset(offset)
-            }
-            else -> return
-        }
-    }
-
-//    fun handleGraphOnDragEnd(selectAreaViewModel: SelectAreaViewModel) {
-//        selectAreaViewModel.selectAreaState.value.startOffset
-//        when(interactionMode.value) {
-//            GraphInteractionMode.Select -> {
-//                updateGraph { g ->
-//                    val selectedVertices = g.vertexSet().filter { v ->
-//                        val vx = v.vertexState.value.x*scaleFactor.value + offsetFactor.value.x
-//                        val vy = v.vertexState.value.y*scaleFactor.value + offsetFactor.value.y
-//                        val ax = selectAreaViewModel.selectAreaState.value.startOffset.x
-//                        val ay = selectAreaViewModel.selectAreaState.value.startOffset.y
-//                        val sx = selectAreaViewModel.selectAreaState.value.areaSize.x
-//                        val sy = selectAreaViewModel.selectAreaState.value.areaSize.y
-//                        (((vx >= ax) && (vx <= ax + sx)) || ((vx <= ax) && (vx >= ax + sx))) &&
-//                        (((vy >= ay) && (vy <= ay + sy)) || ((vy <= ay) && (vy >= ay + sy)))
-//                    }
-//
-//                    selectedVertices.forEach { v ->
-//                        v.setVertexSelect(true)
-//                    }
-//                }
-//
-//                selectAreaViewModel.setAreaSize(Offset.Zero)
-//            }
-//            else -> return
-//        }
-//    }
 
     fun handleGraphScroll(pointerEvent: PointerEvent) {
         val point = pointerEvent.changes.first()
@@ -312,26 +194,4 @@ class GraphViewModel<V, E>(
         setScaleFactor(scaleChange)
         setOffsetFactor(offsetChange)
     }
-
-//    fun handleGraphOnClick(offset: Offset) {
-//        when(interactionMode.value) {
-//            GraphInteractionMode.Create -> {
-//                updateGraph {
-//                    it.addVertex(VertexViewModel(
-//                        VertexModel(
-//                            getVertexNextId(),
-//                            (offset.x - offsetFactor.value.x)/scaleFactor.value,
-//                            (offset.y - offsetFactor.value.y)/scaleFactor.value,
-//                            null
-//                    )))
-//                }
-//            }
-//            GraphInteractionMode.Select -> {
-//                updateGraph {
-//                    it.vertexSet().forEach { v -> v.setVertexSelect(false) }
-//                }
-//            }
-//            else -> return
-//        }
-//    }
 }

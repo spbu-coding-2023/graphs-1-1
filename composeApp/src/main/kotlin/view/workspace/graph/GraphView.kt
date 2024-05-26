@@ -1,44 +1,26 @@
 package view.workspace.graph
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.*
-import androidx.compose.ui.input.pointer.PointerIcon.Companion.Text
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.round
-import androidx.lifecycle.viewModelScope
-import graphses.composeapp.generated.resources.Res
-import graphses.composeapp.generated.resources.cat
 import model.EdgeModel
 import model.VertexModel
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
-import viewModel.workspace.SelectAreaViewModel
-import viewModel.workspace.graph.EdgeViewModel
 import viewModel.workspace.graph.GraphInteractionMode
 import viewModel.workspace.graph.GraphViewModel
-import viewModel.workspace.graph.VertexViewModel
 import kotlin.math.*
 
 val MAX_SCALE_FACTOR = 25f

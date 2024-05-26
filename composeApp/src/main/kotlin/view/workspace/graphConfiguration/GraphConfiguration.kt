@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import display.placement.implementation.GraphPlacementRandom
 import display.placement.implementation.GraphPlacementYifanHu
 import viewModel.workspace.graph.GraphViewModel
-import java.awt.Color
 
 @Composable
 fun <V, E>GraphConfiguration(viewModel: GraphViewModel<V, E>, modifier: Modifier) {

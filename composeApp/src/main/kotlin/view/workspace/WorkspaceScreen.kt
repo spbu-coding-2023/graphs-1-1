@@ -5,14 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import display.placement.implementation.GraphPlacementYifanHu
-import graph.Graph
-import graph.implementation.DirectedWeightedGraph
 import view.workspace.graphConfiguration.GraphConfiguration
 import view.workspace.graphToolBar.GraphToolBar
 import view.workspace.graph.GraphView

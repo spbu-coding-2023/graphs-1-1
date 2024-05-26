@@ -1,7 +1,6 @@
 package view.home
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,11 +13,8 @@ import model.EdgeModel
 import model.VertexModel
 import view.settings.SettingsScreen
 import view.workspace.WorkspaceScreen
-import viewModel.workspace.graph.EdgeViewModel
 import viewModel.workspace.graph.GraphViewModel
-import viewModel.workspace.graph.VertexViewModel
 import java.lang.Math.pow
-import kotlin.math.exp
 
 fun setupCycle1(graph: Graph<VertexModel<Int>, EdgeModel<String>>) {
     val vv = mutableListOf<VertexModel<Int>>()
