@@ -2,7 +2,6 @@ package display.minimumSpanningTree.implementation
 
 import display.minimumSpanningTree.GraphMST
 import graph.Graph
-import graph.abstracts.AbstractGraph
 
 /**
  * Works efficiently for graphs that already have a vertex map.
@@ -36,11 +35,12 @@ class GraphMSTWithKruskal : GraphMST {
             return true
         }
     }
+
     override fun <V, E>getMST(graph: Graph<V, E>) : List<E> {
-        val disjointSetUnion = DisjointSetUnion(graph.getNOfVertices())
+        val disjointSetUnion = DisjointSetUnion(getNOfVertices(graph))
         val mst = mutableListOf<E>()
         val edges = graph.edgeSet().toList().sortedBy { graph.getEdgeWeight(it) }
-        val verticesMap = graph.getVerticesMap()
+        val verticesMap = getVerticesMap(graph)
         edges.forEach { edge ->
             val tail = graph.getEdgeTail(edge)
             val head = graph.getEdgeHead(edge)
@@ -56,4 +56,17 @@ class GraphMSTWithKruskal : GraphMST {
         }
         return mst
     }
+}
+
+private fun <V, E>getVerticesMap(graph: Graph<V, E>): HashMap<V, Int> {
+    val vertices = graph.vertexSet()
+    val hm = HashMap<V, Int>()
+    vertices.forEachIndexed { index, element ->
+        hm[element] = index
+    }
+    return hm
+}
+
+private fun <V, E>getNOfVertices(graph: Graph<V, E>): Int {
+    return graph.vertexSet().size
 }

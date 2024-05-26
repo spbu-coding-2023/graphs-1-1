@@ -19,7 +19,7 @@ class GraphJSONExporter : GraphExporter {
             mutableListOf(),
             graph.configuration.isWeighted(),
             graph.configuration.isDirected()
-            )
+        )
 
         val vertexList = graphRepresentation.vertexList
         val vertexListMap = graphRepresentation.vertexListMap
@@ -31,7 +31,7 @@ class GraphJSONExporter : GraphExporter {
             vertexList.add(mutableListOf())
         }
 
-        graph.edgeSetOfVertices().forEach { (v1, v2) ->
+        graph.edgeSetOfVerticesDirectional().forEach { (v1, v2) ->
             val edge = graph.getEdge(v1, v2)!!
             val edgeWeight = graph.getEdgeWeight(edge)
 

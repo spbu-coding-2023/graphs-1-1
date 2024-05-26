@@ -1,7 +1,5 @@
 package graph
 
-import org.gephi.graph.impl.GraphStoreConfiguration.DEFAULT_EDGE_WEIGHT
-
 import graph.configuration.GraphConfiguration
 
 /**
@@ -17,7 +15,8 @@ interface Graph<V, E> {
     /**
      * Adds Edge between tail and head to the graph if not present
      */
-    fun addEdge(tail: V, head: V, e: E, weight : Double = DEFAULT_EDGE_WEIGHT): Boolean
+    fun addEdge(tail: V, head: V, e: E): Boolean
+    fun addEdge(tail: V, head: V, e: E, w: Double): Boolean
 
     /**
      * Returns true if vertex is in the graph
@@ -55,9 +54,19 @@ interface Graph<V, E> {
     fun edgeSetOfVertices(): Set<Pair<V, V>>
 
     /**
+     * Just like edgeSetOfVertecies, but returns exactly edges as they directed
+     */
+    fun edgeSetOfVerticesDirectional(): Set<Pair<V, V>>
+
+    /**
      * Returns set of all edges connected to a vertex in graph (any direction)
      */
     fun edgesOf(v: V): Set<E>
+
+    /**
+     * Returns set of all vertices which are neighbours to that vertex
+     */
+    fun verticesOf(v: V): Set<V>
 
     /**
      * Returns edge between vertex tail and vertex head if exists, otherwise null
@@ -125,24 +134,4 @@ interface Graph<V, E> {
      * type of graph, how it is configured
      */
     val configuration: GraphConfiguration
-
-    /**
-     * Get number of vertices
-     */
-    fun getNOfVertices() : Int
-
-    /**
-     * Get number of edges
-     */
-    fun getNOfEdges() : Int
-
-    /**
-     * Does it have vertices map for easier time in functions
-     */
-    fun hasVerticesMap() : Boolean
-
-    /**
-     * Get a reference to a vertices map (create or pass the existing one)
-     */
-    fun getVerticesMap() : HashMap<V, Int>
 }
