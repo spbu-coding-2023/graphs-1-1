@@ -137,24 +137,4 @@ interface Graph<V, E> {
      * type of graph, how it is configured
      */
     val configuration: GraphConfiguration
-
-    /**
-     * Get number of vertices
-     */
-    fun getNOfVertices() : Int
-
-    /**
-     * Get number of edges
-     */
-    fun getNOfEdges() : Int
-
-    /**
-     * Does it have vertices map for easier time in functions
-     */
-    fun hasVerticesMap() : Boolean
-
-    /**
-     * Get a reference to a vertices map (create or pass the existing one)
-     */
-    fun getVerticesMap() : HashMap<V, Int>
 }
