@@ -6,8 +6,8 @@ import java.util.Stack
 import kotlin.collections.HashMap
 import kotlin.math.min
 
-class GraphSCCSearchWithTarjan<V, E> : GraphSCCSearch<V, E> {
-    override fun getSCCs(graph: Graph<V, E>) : Set<Set<V>>? {
+class GraphSCCSearchWithTarjan: GraphSCCSearch {
+    override fun <V, E> getSCCs(graph: Graph<V, E>) : Set<Set<V>>? {
         if (graph.configuration.isUndirected()) {
             return null
         }
@@ -27,7 +27,7 @@ class GraphSCCSearchWithTarjan<V, E> : GraphSCCSearch<V, E> {
         return SCCs
     }
 
-    private fun strongConnect(
+    private fun <V, E> strongConnect(
         graph: Graph<V, E>, v: V, currentIndex: Int,
         indexMap: HashMap<V, Int>, lowLinkMap: HashMap<V, Int>,
         stack: Stack<V>, onStack: HashSet<V>,
