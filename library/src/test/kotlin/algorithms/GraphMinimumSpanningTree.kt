@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 class GraphMinimumSpanningTreeTest {
-    val MSTsearch = GraphMSTWithKruskal<String, String>()
+    val MSTsearch = GraphMSTWithKruskal()
     private fun setupGraph1(graph: Graph<String, String>): Graph<String, String> {
         graph.addVertex("a")
         graph.addVertex("b")
