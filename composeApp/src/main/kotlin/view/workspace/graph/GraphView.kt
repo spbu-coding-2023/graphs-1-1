@@ -12,7 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.unit.IntOffset
@@ -230,13 +234,141 @@ fun <V, E>EdgesView(vertices: List<VertexModel<V>>, edges: List<EdgeModel<E>>, s
             val tailVertex = vertices.find { it.id == edge.tailVertexId }
             val headVertex = vertices.find { it.id == edge.headVertexId }
             if (tailVertex != null && headVertex != null) {
-                drawLine(
-                    color = EDGE_COLOR.copy(alpha = EDGE_ALPHA),
-                    start = Offset(tailVertex.x * scaleFactor + offsetFactor.x, tailVertex.y * scaleFactor + offsetFactor.y),
-                    end = Offset(headVertex.x * scaleFactor + offsetFactor.x, headVertex.y * scaleFactor + offsetFactor.y),
-                    strokeWidth = EDGE_STROKE_WIDTH*scaleFactor
-                )
+                val startX = tailVertex.x * scaleFactor + offsetFactor.x
+                val startY = tailVertex.y * scaleFactor + offsetFactor.y
+                val endX = headVertex.x * scaleFactor + offsetFactor.x
+                val endY  = headVertex.y * scaleFactor + offsetFactor.y
+
+                if (startX == endX && startY == endY) {
+                    drawSelfLoop(
+                        centerX = startX,
+                        centerY = startY,
+                        vertexRadius = VERTEX_SIZE*scaleFactor,
+                        arrowHeadLength = 20f*scaleFactor,
+                        arrowHeadAngle = 30f,
+                        lineColor = EDGE_COLOR.copy(alpha = EDGE_ALPHA),
+                        lineWidth = EDGE_STROKE_WIDTH*scaleFactor
+                    )
+                } else if (edge.isDirected) {
+                    drawArrow(
+                        startX = startX,
+                        startY = startY,
+                        endX = endX,
+                        endY = endY,
+                        vertexRadius = VERTEX_SIZE*scaleFactor,
+                        arrowHeadLength = 20f*scaleFactor,
+                        arrowHeadAngle = 30f,
+                        lineColor = EDGE_COLOR.copy(alpha = EDGE_ALPHA),
+                        lineWidth = EDGE_STROKE_WIDTH*scaleFactor
+                    )
+                } else {
+                    drawLine(
+                        color = EDGE_COLOR.copy(alpha = EDGE_ALPHA),
+                        start = Offset(startX, startY),
+                        end = Offset(endX, endY),
+                        strokeWidth = EDGE_STROKE_WIDTH*scaleFactor
+                    )
+                }
+
+
             }
         }
     }
+}
+
+fun DrawScope.drawArrow(
+    startX: Float,
+    startY: Float,
+    endX: Float,
+    endY: Float,
+    vertexRadius: Float,
+    arrowHeadLength: Float,
+    arrowHeadAngle: Float,
+    lineColor: Color,
+    lineWidth: Float
+) {
+    val angle = atan2(endY - startY, endX - startX)
+
+    val startAdjustedX = startX + vertexRadius * cos(angle)
+    val startAdjustedY = startY + vertexRadius * sin(angle)
+    val endAdjustedX = endX - vertexRadius * cos(angle)
+    val endAdjustedY = endY - vertexRadius * sin(angle)
+
+    val arrowX1 = endAdjustedX - arrowHeadLength * cos(angle - Math.toRadians(arrowHeadAngle.toDouble())).toFloat()
+    val arrowY1 = endAdjustedY - arrowHeadLength * sin(angle - Math.toRadians(arrowHeadAngle.toDouble())).toFloat()
+    val arrowX2 = endAdjustedX - arrowHeadLength * cos(angle + Math.toRadians(arrowHeadAngle.toDouble())).toFloat()
+    val arrowY2 = endAdjustedY - arrowHeadLength * sin(angle + Math.toRadians(arrowHeadAngle.toDouble())).toFloat()
+
+    // Draw the main line
+    drawLine(
+        color = lineColor,
+        start = Offset(startAdjustedX, startAdjustedY),
+        end = Offset(endAdjustedX, endAdjustedY),
+        strokeWidth = lineWidth
+    )
+
+    // Draw the arrowhead
+    val arrowPath = Path().apply {
+        moveTo(endAdjustedX, endAdjustedY)
+        lineTo(arrowX1, arrowY1)
+        lineTo(arrowX2, arrowY2)
+        close()
+    }
+    drawPath(
+        path = arrowPath,
+        color = lineColor
+    )
+}
+
+
+fun DrawScope.drawSelfLoop(
+    centerX: Float,
+    centerY: Float,
+    vertexRadius: Float,
+    arrowHeadLength: Float,
+    arrowHeadAngle: Float,
+    lineColor: Color,
+    lineWidth: Float
+) {
+    val loopRadius = vertexRadius * 3.5f
+    val controlOffset = loopRadius
+    val controlX1 = centerX
+    val controlY1 = centerY - controlOffset
+    val controlX2 = centerX - controlOffset
+    val controlY2 = centerY
+
+    // Start from top center and end at the left center
+    val startX = centerX
+    val startY = centerY - vertexRadius
+    val endX = centerX - vertexRadius
+    val endY = centerY
+
+    // Draw the loop using a cubic Bezier curve
+    val loopPath = Path().apply {
+        moveTo(startX, startY)
+        cubicTo(controlX1, controlY1, controlX2, controlY2, endX, endY)
+    }
+    drawPath(loopPath, color = lineColor, style = Stroke(width = lineWidth))
+
+    // Draw the arrowhead at the end of the loop
+    val angle = atan2(controlY2 - endY, controlX2 - endX)
+    val arrowX1 = endX - arrowHeadLength * cos(angle - Math.toRadians(arrowHeadAngle.toDouble())).toFloat()
+    val arrowY1 = endY - arrowHeadLength * sin(angle - Math.toRadians(arrowHeadAngle.toDouble())).toFloat()
+    val arrowX2 = endX - arrowHeadLength * cos(angle + Math.toRadians(arrowHeadAngle.toDouble())).toFloat()
+    val arrowY2 = endY - arrowHeadLength * sin(angle + Math.toRadians(arrowHeadAngle.toDouble())).toFloat()
+
+    // Mirror the arrowhead along the y-axis
+    val mirroredArrowX1 = endX - (arrowX1 - endX)
+    val mirroredArrowX2 = endX - (arrowX2 - endX)
+
+    val arrowPath = Path().apply {
+        moveTo(endX, endY)
+        lineTo(mirroredArrowX1, arrowY1)
+        lineTo(mirroredArrowX2, arrowY2)
+        close()
+    }
+    drawPath(
+        path = arrowPath,
+        color = lineColor
+    )
 }
