@@ -1,27 +1,29 @@
 package repository.implementation.neo4j
 
-import graph.Graph
 import org.neo4j.driver.AuthTokens
 import org.neo4j.driver.Driver
 import org.neo4j.driver.GraphDatabase
 import org.neo4j.driver.Session
-import repository.GraphImporter
-import java.io.File
+import graph.Graph
+import repository.DatabaseGraphImporter
+import graph.implementation.UndirectedUnweightedGraph
 
-class GraphNeo4jImporter : GraphImporter {
-    private val uri = "bolt://localhost:7687"
-    private val user = "neo4j"
-    private val password = "12345678"
-
-    override fun <V, E> importGraph(graph: Graph<V, E>, file: File) {
-        val driver: Driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password))
-        return driver.use {
+class GraphNeo4jImporter: DatabaseGraphImporter {
+    /* Example of credentials
+    uri = credentials[0] = "bolt://localhost:7687"
+    user = credentials[1] = "neo4j"
+    password = credentials[2] = "12345678"
+    */
+    override fun <V, E> importGraph(graphId: String, credentials: List<String>): Graph<V, E> {
+        val driver: Driver = GraphDatabase.driver(credentials[0], AuthTokens.basic(credentials[1], credentials[2]))
+        val graph = UndirectedUnweightedGraph<V, E>()
+        driver.use {
             val session: Session = it.session()
 
             // Retrieve the graph metadata
-            val graphMetadataResult = session.run("MATCH (g:Graph) RETURN g LIMIT 1") // TODO: have the user choose what graph to import, perhaps by changing that wretched file argument
+            val graphMetadataResult = session.run("MATCH (g:Graph {id: \$graphId}) RETURN g LIMIT 1")
             if (!graphMetadataResult.hasNext()) {
-                throw IllegalStateException("No graph found in the database.")
+                throw IllegalStateException("No graph found with id $graphId")
             }
             val graphMetadata = graphMetadataResult.single()["g"].asNode()
             val isDirected = graphMetadata["directed"].asBoolean()
@@ -40,7 +42,7 @@ class GraphNeo4jImporter : GraphImporter {
             }
 
             // Retrieve all nodes and add them to the graph
-            val nodesResult = session.run("MATCH (g:Graph)-[:CONTAINS]->(n:Node) RETURN n.value AS value")
+            val nodesResult = session.run("MATCH (g:Graph {id: \$graphId})-[:CONTAINS]->(n:Node) RETURN n.value AS value")
             nodesResult.forEach { record ->
                 val vertex = record["value"].asObject() as V
                 graph.addVertex(vertex)
@@ -48,7 +50,7 @@ class GraphNeo4jImporter : GraphImporter {
 
             // Retrieve all edges and add them to the graph
             val edgesResult = session.run("""
-                MATCH (g:Graph)-[:CONTAINS]->(r:EDGE)
+                MATCH (g:Graph {id: \$graphId)-[:CONTAINS]->(r:EDGE)
                 MATCH (a:Node)-[r]->(b:Node)
                 RETURN id(r) AS id, a.value AS tail, b.value AS head, r.value AS value, r.weight AS weight
             """.trimIndent())
@@ -67,6 +69,7 @@ class GraphNeo4jImporter : GraphImporter {
 
             session.close()
         }
+        return graph
     }
 }
 
