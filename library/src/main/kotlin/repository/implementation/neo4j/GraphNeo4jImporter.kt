@@ -15,37 +15,58 @@ class GraphNeo4jImporter : GraphImporter {
 
     override fun <V, E> importGraph(graph: Graph<V, E>, file: File) {
         val driver: Driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password))
-        driver.use {
+        return driver.use {
             val session: Session = it.session()
 
-            // Retrieve all nodes
-            val nodesResult = session.run("MATCH (n) RETURN n")
-            val nodes = mutableMapOf<String, V>()
-            while (nodesResult.hasNext()) {
-                val record = nodesResult.next()
-                val node = record["n"].asNode()
-                val id = node.elementId().toString()
-                val value = node["value"].asObject() as V
-                nodes[id] = value
-                graph.addVertex(value)
+            // Retrieve the graph metadata
+            val graphMetadataResult = session.run("MATCH (g:Graph) RETURN g LIMIT 1") // TODO: have the user choose what graph to import, perhaps by changing that wretched file argument
+            if (!graphMetadataResult.hasNext()) {
+                throw IllegalStateException("No graph found in the database.")
+            }
+            val graphMetadata = graphMetadataResult.single()["g"].asNode()
+            val isDirected = graphMetadata["directed"].asBoolean()
+            val isWeighted = graphMetadata["weighted"].asBoolean()
+
+            // Change metadata of the graph
+            if (isWeighted) {
+                graph.configuration.asWeighted()
+            } else {
+                graph.configuration.asUnweighted()
+            }
+            if (isDirected) {
+                graph.configuration.isDirected()
+            } else {
+                graph.configuration.asUndirected()
             }
 
-            // Retrieve all relationships
-            val edgesResult = session.run("MATCH (a)-[r:EDGE]->(b) RETURN a, b, r")
-            while (edgesResult.hasNext()) {
-                val record = edgesResult.next()
-                val nodeA = record["a"].asNode()
-                val nodeB = record["b"].asNode()
-                val relationship = record["r"].asRelationship()
-
-                val valueA = nodes[nodeA.elementId().toString()]!!
-                val valueB = nodes[nodeB.elementId().toString()]!!
-                val edge = relationship["value"].asObject() as E
-                val weight = relationship["weight"].asDouble()
-
-                graph.addEdge(valueA, valueB, edge, weight)
+            // Retrieve all nodes and add them to the graph
+            val nodesResult = session.run("MATCH (g:Graph)-[:CONTAINS]->(n:Node) RETURN n.value AS value")
+            nodesResult.forEach { record ->
+                val vertex = record["value"].asObject() as V
+                graph.addVertex(vertex)
             }
+
+            // Retrieve all edges and add them to the graph
+            val edgesResult = session.run("""
+                MATCH (g:Graph)-[:CONTAINS]->(r:EDGE)
+                MATCH (a:Node)-[r]->(b:Node)
+                RETURN id(r) AS id, a.value AS tail, b.value AS head, r.value AS value, r.weight AS weight
+            """.trimIndent())
+            edgesResult.forEach { record ->
+                val tail = record["tail"].asObject() as V
+                val head = record["head"].asObject() as V
+                val edge = record["value"].asObject() as E
+
+                if (isWeighted) {
+                    val weight = record["weight"].asDouble()
+                    graph.addEdge(tail, head, edge, weight)
+                } else {
+                    graph.addEdge(tail, head, edge)
+                }
+            }
+
             session.close()
         }
     }
 }
+
