@@ -1,4 +1,4 @@
-package algorithms
+package algorithms.algorithms
 
 import display.pathSearch.implementation.GraphDijkstraPathFinder
 import graph.Graph
