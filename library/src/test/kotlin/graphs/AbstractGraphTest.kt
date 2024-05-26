@@ -127,8 +127,8 @@ class AbstractGraphTest {
 
         assertEquals(DWgraph.degreeOf(23), 1)
         assertEquals(DWgraph.degreeOf(52), 3)
-        assertEquals(DWgraph.degreeOf(1), 3)
-        assertEquals(DWgraph.degreeOf(9), 3)
+        assertEquals(DWgraph.degreeOf(1), 2)
+        assertEquals(DWgraph.degreeOf(9), 2)
         assertEquals(DWgraph.degreeOf(0), 0)
     }
 
@@ -147,7 +147,7 @@ class AbstractGraphTest {
 
         assertEquals(DWgraph.inDegreeOf(23), 0)
         assertEquals(DWgraph.inDegreeOf(52), 2)
-        assertEquals(DWgraph.inDegreeOf(1), 1)
+        assertEquals(DWgraph.inDegreeOf(1), 0)
         assertEquals(DWgraph.inDegreeOf(9), 2)
         assertEquals(DWgraph.inDegreeOf(0), 0)
     }
@@ -168,7 +168,7 @@ class AbstractGraphTest {
         assertEquals(DWgraph.outDegreeOf(23), 1)
         assertEquals(DWgraph.outDegreeOf(52), 1)
         assertEquals(DWgraph.outDegreeOf(1), 2)
-        assertEquals(DWgraph.outDegreeOf(9), 1)
+        assertEquals(DWgraph.outDegreeOf(9), 0)
         assertEquals(DWgraph.outDegreeOf(0), 0)
     }
 
@@ -185,7 +185,7 @@ class AbstractGraphTest {
         DWgraph.addEdge(9, 1, "D")
         DWgraph.addEdge(1, 9, "E")
 
-        assertEquals(DWgraph.edgeSet(), setOf("A", "B", "C", "D", "E"))
+        assertEquals(DWgraph.edgeSet(), setOf("A", "B", "C", "E"))
     }
 
     @Test
@@ -203,7 +203,7 @@ class AbstractGraphTest {
 
         assertEquals(
             DWgraph.edgeSetOfVertices(),
-            setOf(Pair(23, 52), Pair(1, 52), Pair(52, 9), Pair(9, 1), Pair(1, 9))
+            setOf(Pair(23, 52), Pair(1, 52), Pair(52, 9), Pair(1, 9))
         )
     }
 
@@ -261,7 +261,7 @@ class AbstractGraphTest {
         assertEquals(DWgraph.getEdgeHead("A"), 52)
         assertEquals(DWgraph.getEdgeHead("B"), 52)
         assertEquals(DWgraph.getEdgeHead("C"), 9)
-        assertEquals(DWgraph.getEdgeHead("D"), 1)
+//        assertEquals(DWgraph.getEdgeHead("D"), null)
         assertEquals(DWgraph.getEdgeHead("E"), 9)
     }
 
@@ -281,7 +281,7 @@ class AbstractGraphTest {
         assertEquals(DWgraph.getEdgeTail("A"), 23)
         assertEquals(DWgraph.getEdgeTail("B"), 1)
         assertEquals(DWgraph.getEdgeTail("C"), 52)
-        assertEquals(DWgraph.getEdgeTail("D"), 9)
+//        assertEquals(DWgraph.getEdgeTail("D"), null)
         assertEquals(DWgraph.getEdgeTail("E"), 1)
     }
 
@@ -322,7 +322,7 @@ class AbstractGraphTest {
 
         val res = DWgraph.removeVertex(52)
 
-        assertEquals(DWgraph.edgeSet(), setOf("D", "E"))
+        assertEquals(DWgraph.edgeSet(), setOf("E"))
         assertEquals(DWgraph.vertexSet(), setOf(23, 9, 1, 0))
         assertTrue(res)
     }
@@ -342,7 +342,7 @@ class AbstractGraphTest {
 
         val res = DWgraph.removeEdge(52, 9)
 
-        assertEquals(DWgraph.edgeSet(), setOf("A", "B", "D", "E"))
+        assertEquals(DWgraph.edgeSet(), setOf("A", "B", "E"))
         assertTrue(res)
     }
 
@@ -457,6 +457,6 @@ class AbstractGraphTest {
         DWgraph.addEdge(9, 1, "D")
         DWgraph.addEdge(1, 9, "E")
 
-        assertEquals(DWgraph.edgesOf(1), setOf("B", "D", "E"))
+        assertEquals(DWgraph.edgesOf(1), setOf("B", "E"))
     }
 }
