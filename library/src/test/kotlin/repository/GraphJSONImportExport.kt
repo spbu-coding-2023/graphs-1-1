@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
-import repository.implementation.GraphJSONExporter
-import repository.implementation.GraphJSONImporter
+import repository.implementation.json.GraphJSONExporter
+import repository.implementation.json.GraphJSONImporter
 import java.io.File
 
 class GraphJSONImportExport {

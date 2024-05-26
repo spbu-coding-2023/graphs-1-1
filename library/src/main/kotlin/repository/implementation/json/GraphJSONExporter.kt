@@ -1,4 +1,4 @@
-package repository.implementation
+package repository.implementation.json
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import graph.Graph
@@ -19,7 +19,7 @@ class GraphJSONExporter : GraphExporter {
             mutableListOf(),
             graph.configuration.isWeighted(),
             graph.configuration.isDirected()
-            )
+        )
 
         val vertexList = graphRepresentation.vertexList
         val vertexListMap = graphRepresentation.vertexListMap
