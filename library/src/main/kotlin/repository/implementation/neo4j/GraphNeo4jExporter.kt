@@ -5,29 +5,29 @@ import org.neo4j.driver.AuthTokens
 import org.neo4j.driver.Driver
 import org.neo4j.driver.GraphDatabase
 import org.neo4j.driver.Session
-import repository.GraphExporter
-import java.io.File
+import repository.DatabaseGraphExporter
+import java.util.UUID
 
-class GraphNeo4jExporter : GraphExporter {
-    private val uri = "bolt://localhost:7687"
-    private val user = "neo4j"
-    private val password = "12345678"
-
+class GraphNeo4jExporter: DatabaseGraphExporter {
+    /* Example of credentials
+    uri = credentials[0] = "bolt://localhost:7687"
+    user = credentials[1] = "neo4j"
+    password = credentials[2] = "12345678"
+    */
     override fun <V, E> exportGraph(
         graph: Graph<V, E>,
-        file: File,
-    ) {
-        val driver: Driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password))
+        credentials: List<String>
+    ): String {
+        val driver: Driver = GraphDatabase.driver(credentials[0], AuthTokens.basic(credentials[1], credentials[2]))
+        val graphId = UUID.randomUUID().toString()
         driver.use {
             val session: Session = it.session()
             session.executeWrite { tx ->
                 // Create a graph node to hold references to all nodes and edges
-                val graphResult = tx.run(
-                    "CREATE (g:Graph {directed: \$directed, weighted: \$weighted}) RETURN g",
-                    mapOf("directed" to graph.configuration.isDirected(), "weighted" to graph.configuration.isWeighted())
+                tx.run(
+                    "CREATE (g:Graph {id: \$graphId, directed: \$directed, weighted: \$weighted}) RETURN g",
+                    mapOf("graphId" to graphId, "directed" to graph.configuration.isDirected(), "weighted" to graph.configuration.isWeighted())
                 )
-                val graphNodeId = graphResult.single()["g"].asNode().elementId()
-
                 // Export nodes and create relationships to the graph node
                 graph.vertexSet().forEach { vertex ->
                     val nodeResult = tx.run(
@@ -36,8 +36,8 @@ class GraphNeo4jExporter : GraphExporter {
                     )
                     val nodeId = nodeResult.single()["n"].asNode().elementId()
                     tx.run(
-                        "MATCH (g:Graph), (n:Node) WHERE id(g) = \$graphId AND id(n) = \$nodeId CREATE (g)-[:CONTAINS]->(n)",
-                        mapOf("graphId" to graphNodeId, "nodeId" to nodeId)
+                        "MATCH (g:Graph), (n:Node) WHERE g.id = \$graphId AND id(n) = \$nodeId CREATE (g)-[:CONTAINS]->(n)",
+                        mapOf("graphId" to graphId, "nodeId" to nodeId)
                     )
                 }
 
@@ -70,8 +70,8 @@ class GraphNeo4jExporter : GraphExporter {
                     val edgeResult = tx.run(cypher, params)
                     val edgeId = edgeResult.single()["r"].asRelationship().elementId()
                     tx.run(
-                        "MATCH (g:Graph), ()-[r:EDGE]->() WHERE id(g) = \$graphId AND id(r) = \$edgeId CREATE (g)-[:CONTAINS]->(r)",
-                        mapOf("graphId" to graphNodeId, "edgeId" to edgeId)
+                        "MATCH (g:Graph), ()-[r:EDGE]->() WHERE g.id = \$graphId AND id(r) = \$edgeId CREATE (g)-[:CONTAINS]->(r)",
+                        mapOf("graphId" to graphId, "edgeId" to edgeId)
                     )
 
                     // If the graph is undirected, create the reverse edge
@@ -79,13 +79,15 @@ class GraphNeo4jExporter : GraphExporter {
                         val reverseEdgeResult = tx.run(cypher, params.apply { put("tail", head); put("head", tail) })
                         val reverseEdgeId = reverseEdgeResult.single()["r"].asRelationship().elementId()
                         tx.run(
-                            "MATCH (g:Graph), ()-[r:EDGE]->() WHERE id(g) = \$graphId AND id(r) = \$reverseEdgeId CREATE (g)-[:CONTAINS]->(r)",
-                            mapOf("graphId" to graphNodeId, "reverseEdgeId" to reverseEdgeId)
+                            "MATCH (g:Graph), ()-[r:EDGE]->() WHERE g.id = \$graphId AND id(r) = \$reverseEdgeId CREATE (g)-[:CONTAINS]->(r)",
+                            mapOf("graphId" to graphId, "reverseEdgeId" to reverseEdgeId)
                         )
                     }
                 }
             }
             session.close()
         }
+        return graphId
     }
 }
+
