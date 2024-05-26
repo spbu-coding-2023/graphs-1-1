@@ -37,7 +37,7 @@ class AdjacencyMatrix<V, E> {
 
     fun delete(v: V) {
         val vertexIndex = verticesMap[v] ?:
-        throw IllegalArgumentException("Can not delete vertex: vertex does not exist")
+            throw IllegalArgumentException("Can not delete vertex: vertex does not exist")
 
         matrix.forEach {
             it.removeAt(vertexIndex)
