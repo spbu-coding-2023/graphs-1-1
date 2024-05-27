@@ -23,7 +23,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     /**
      * Initial edges are set to default weight, if not explicitly
      */
-    protected val DEFAULT_EDGE_WEIGHT: Double = 1.0
+    override val DEFAULT_EDGE_WEIGHT: Double = 1.0
 
     override fun addVertex(v: V): Boolean {
         return structure.add(v)
