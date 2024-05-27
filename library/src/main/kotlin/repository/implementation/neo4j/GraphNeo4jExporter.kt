@@ -16,28 +16,26 @@ class GraphNeo4jExporter: DatabaseGraphExporter {
     */
     override fun <V, E> exportGraph(
         graph: Graph<V, E>,
-        credentials: List<String>
+        credentials: List<String?>
     ): String {
+        if (credentials[0] == null) {
+            throw IllegalStateException("bolt link needed (credentials[0])")
+        }
         val driver: Driver = GraphDatabase.driver(credentials[0], AuthTokens.basic(credentials[1], credentials[2]))
         val graphId = UUID.randomUUID().toString()
         driver.use {
             val session: Session = it.session()
             session.executeWrite { tx ->
-                // Create a graph node to hold references to all nodes and edges
+                // Create a graph node containing metadata
                 tx.run(
                     "CREATE (g:Graph {id: \$graphId, directed: \$directed, weighted: \$weighted}) RETURN g",
                     mapOf("graphId" to graphId, "directed" to graph.configuration.isDirected(), "weighted" to graph.configuration.isWeighted())
                 )
-                // Export nodes and create relationships to the graph node
+                // Export nodes with graphId
                 graph.vertexSet().forEach { vertex ->
-                    val nodeResult = tx.run(
-                        "CREATE (n:Node {value: \$value}) RETURN n",
-                        mapOf("value" to vertex)
-                    )
-                    val nodeId = nodeResult.single()["n"].asNode().elementId()
                     tx.run(
-                        "MATCH (g:Graph), (n:Node) WHERE g.id = \$graphId AND id(n) = \$nodeId CREATE (g)-[:CONTAINS]->(n)",
-                        mapOf("graphId" to graphId, "nodeId" to nodeId)
+                        "CREATE (n:Node {graphId: \$graphId, value: \$value}) RETURN n",
+                        mapOf("graphId" to graphId, "value" to vertex)
                     )
                 }
 
@@ -46,42 +44,32 @@ class GraphNeo4jExporter: DatabaseGraphExporter {
                     val tail = graph.getEdgeTail(edge)
                     val head = graph.getEdgeHead(edge)
                     val weight = graph.getEdgeWeight(edge)
-                    val params = mutableMapOf("tail" to tail, "head" to head, "edge" to edge)
 
-                    // Include weight if the graph is weighted
                     if (graph.configuration.isWeighted()) {
-                        params["weight"] = weight
-                    }
-
-                    val cypher = if (graph.configuration.isWeighted()) {
-                        """
-                        MATCH (a:Node {value: \$tail}), (b:Node {value: \$head})
-                        CREATE (a)-[r:EDGE {value: \$edge, weight: \$weight}]->(b)
-                        RETURN r
-                        """
+                        tx.run(
+                                "MATCH (a:Node {graphId: \$graphId, value: \$tail}), (b:Node {graphId: \$graphId, value: \$head}) " +
+                                "CREATE (a)-[r:EDGE {graphId: \$graphId, value: \$edge, weight: \$weight}]->(b) " +
+                                "RETURN r", mapOf("graphId" to graphId, "tail" to tail, "head" to head, "edge" to edge, "weight" to weight))
                     } else {
-                        """
-                        MATCH (a:Node {value: \$tail}), (b:Node {value: \$head})
-                        CREATE (a)-[r:EDGE {value: \$edge}]->(b)
-                        RETURN r
-                        """
-                    }.trimIndent()
-
-                    val edgeResult = tx.run(cypher, params)
-                    val edgeId = edgeResult.single()["r"].asRelationship().elementId()
-                    tx.run(
-                        "MATCH (g:Graph), ()-[r:EDGE]->() WHERE g.id = \$graphId AND id(r) = \$edgeId CREATE (g)-[:CONTAINS]->(r)",
-                        mapOf("graphId" to graphId, "edgeId" to edgeId)
-                    )
+                        tx.run(
+                                "MATCH (a:Node {graphId: \$graphId, value: \$tail}), (b:Node {graphId: \$graphId, value: \$head}) " +
+                                "CREATE (a)-[r:EDGE {graphId: \$graphId, value: \$edge}]->(b) " +
+                                "RETURN r", mapOf("graphId" to graphId, "tail" to tail, "head" to head, "edge" to edge))
+                        }
 
                     // If the graph is undirected, create the reverse edge
                     if (graph.configuration.isUndirected()) {
-                        val reverseEdgeResult = tx.run(cypher, params.apply { put("tail", head); put("head", tail) })
-                        val reverseEdgeId = reverseEdgeResult.single()["r"].asRelationship().elementId()
-                        tx.run(
-                            "MATCH (g:Graph), ()-[r:EDGE]->() WHERE g.id = \$graphId AND id(r) = \$reverseEdgeId CREATE (g)-[:CONTAINS]->(r)",
-                            mapOf("graphId" to graphId, "reverseEdgeId" to reverseEdgeId)
-                        )
+                        if (graph.configuration.isWeighted()) {
+                            tx.run(
+                                    "MATCH (a:Node {graphId: \$graphId, value: \$head}), (b:Node {graphId: \$graphId, value: \$tail}) " +
+                                    "CREATE (a)-[r:EDGE {graphId: \$graphId, value: \$edge, weight: \$weight}]->(b) " +
+                                    "RETURN r", mapOf("graphId" to graphId, "tail" to tail, "head" to head, "edge" to edge, "weight" to weight))
+                        } else {
+                            tx.run(
+                                    "MATCH (a:Node {graphId: \$graphId, value: \$head}), (b:Node {graphId: \$graphId, value: \$tail}) " +
+                                    "CREATE (a)-[r:EDGE {graphId: \$graphId, value: \$edge}]->(b) " +
+                                    "RETURN r", mapOf("graphId" to graphId, "tail" to tail, "head" to head, "edge" to edge))
+                        }
                     }
                 }
             }
