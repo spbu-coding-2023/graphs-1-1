@@ -38,16 +38,12 @@ class GraphStorage(
             file = createFile(graphName)
         }
         val graph = getGraph()
-        println(appDir)
-        println(file.readText())
         jsonImporter.importGraph(graph, file, VertexModel::class.java, EdgeModel::class.java)
     }
 
     fun exportGraph() {
         val graph = getGraph()
         val file = File(appDir, graphName)
-        println(graph.vertexSet())
-        println("export to ${file.name} with ${file.readText()}")
         jsonExporter.exportGraph(graph, file)
     }
 

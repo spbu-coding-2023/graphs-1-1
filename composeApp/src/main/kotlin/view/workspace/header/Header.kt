@@ -26,7 +26,6 @@ fun Header(viewModel: GraphViewModel) {
             // Home button
             IconButton(
                 onClick = {
-                    println("from header")
                     viewModel.storage.exportGraph()
                     navigator.push(HomeScreen())
                 }

@@ -17,11 +17,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,7 +43,7 @@ fun HeaderLogo() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(1-1/1.618f)
+            .fillMaxHeight(1-.618f)
             .background(MaterialTheme.colorScheme.primary)
     ) {
         Image(
@@ -69,13 +72,15 @@ fun HeaderLogo() {
                     color = Color.Cyan,
                     fontWeight = FontWeight.ExtraBold,
                     fontStyle = FontStyle.Italic,
-                    letterSpacing = 2.sp,
+                    letterSpacing = 8.sp,
                     shadow = Shadow(
-                        color = Color.Gray,
-                        offset = Offset(2f, 2f),
-                        blurRadius = 4f
+                        color = Color.Green,
+                        offset = Offset(8f, 8f),
+                        blurRadius = 32f
+
                     ),
                     textDecoration = TextDecoration.Underline,
+
                 ),
 
             )

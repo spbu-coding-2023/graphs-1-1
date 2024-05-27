@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -12,6 +15,8 @@ import graph.implementation.DirectedWeightedGraph
 import graph.implementation.UndirectedWeightedGraph
 import model.EdgeModel
 import model.VertexModel
+import view.home.columns.ColumnGraphsList
+import view.home.columns.ColumnMenuList
 import view.home.header.HeaderLogo
 import view.settings.SettingsScreen
 import view.workspace.WorkspaceScreen
@@ -40,14 +45,26 @@ class HomeScreen : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val graphsContainer by rememberUpdatedState(GraphsContainerViewModel())
+        val graphsContainerViewModel by rememberUpdatedState(GraphsContainerViewModel())
         LocalDatabase.getAllGraphs().forEach { g ->
-            println("getting all graphs")
-            graphsContainer.addGraph(g)
+            // TODO: loads each time going to home screen, shouldn't
+            graphsContainerViewModel.addGraph(g)
         }
+        val graphs by graphsContainerViewModel.graphsContainer.collectAsState()
 
         Column {
             HeaderLogo()
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                ColumnMenuList(modifier = Modifier.fillMaxWidth(1-.618f), graphsContainerViewModel)
+                ColumnGraphsList(modifier = Modifier.weight(1f), graphsContainerViewModel)
+            }
+
 
 
 
@@ -55,10 +72,10 @@ class HomeScreen : Screen {
                 onClick = {
                     val gg = UndirectedWeightedGraph<VertexModel, EdgeModel>()
                     setupCycle1(gg, 10)
-                    graphsContainer.addGraph(GraphViewModel(gg, "namelesss thing"))
+                    graphsContainerViewModel.addGraph(GraphViewModel(gg, "namelesss thing"))
                 }
             ) { Text("add") }
-            graphsContainer.getGraphs().forEach { g ->
+            graphs.forEach { g ->
                 Button(
                     onClick = {
                         navigator.push(WorkspaceScreen(g))
