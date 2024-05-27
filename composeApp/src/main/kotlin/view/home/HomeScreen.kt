@@ -40,10 +40,9 @@ class HomeScreen : Screen {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val graphsContainer by rememberUpdatedState(GraphsContainerViewModel())
-        var totalGraphs by remember { mutableStateOf(0) }
         LocalDatabase.getAllGraphs().forEach { g ->
+            println("getting all graphs")
             graphsContainer.addGraph(g)
-            totalGraphs++
         }
 
         Column {
@@ -51,9 +50,8 @@ class HomeScreen : Screen {
             Button(
                 onClick = {
                     val gg = UndirectedWeightedGraph<VertexModel, EdgeModel>()
-                    setupCycle1(gg, 3)
-                    graphsContainer.addGraph(GraphViewModel(gg, "namelesss thing $totalGraphs"))
-                    totalGraphs++
+                    setupCycle1(gg, 0)
+                    graphsContainer.addGraph(GraphViewModel(gg, "namelesss thing"))
                 }
             ) { Text("add") }
             graphsContainer.getGraphs().forEach { g ->
