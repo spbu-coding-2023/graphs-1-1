@@ -11,20 +11,24 @@ import model.VertexModel
  * the graphs are locally stored
  */
 class GraphsContainerViewModel : ViewModel() {
-    private val graphsContainer: MutableList<GraphViewModel<*, *>> = mutableListOf()
+    private val graphsContainer: MutableList<GraphViewModel> = mutableListOf()
+
+    init {
+
+    }
 
     private fun isGraphNameValid(graphName: String): Boolean {
         return true // TODO
     }
 
-    fun <V, E>addGraph(graph: Graph<VertexModel<V>, EdgeModel<E>>, graphName: String): Result<String> {
-        if (!isGraphNameValid(graphName)) return Result.failure(IllegalArgumentException("Invalid graph name"))
-
-        for (g in graphsContainer) {
-            if (g.graphName == graphName) return Result.failure(IllegalArgumentException("Graph with this name already exists"))
-        }
-
-        val graphViewModel = GraphViewModel(graph, graphName)
+    fun addGraph(graphViewModel: GraphViewModel): Result<String> {
+//        if (!isGraphNameValid(graphName)) return Result.failure(IllegalArgumentException("Invalid graph name"))
+//
+//        for (g in graphsContainer) {
+//            if (g.graphName == graphName) return Result.failure(IllegalArgumentException("Graph with this name already exists"))
+//        }
+//
+//        val graphViewModel = GraphViewModel(graph, graphName)
 
         graphsContainer.add(graphViewModel)
 
@@ -42,6 +46,16 @@ class GraphsContainerViewModel : ViewModel() {
         graphsContainer.remove(graphToDelete)
 
         return Result.success("Successfully deleted the graph $graphName")
+    }
+
+    fun getGraphs(): List<GraphViewModel> {
+        val graphs = mutableListOf<GraphViewModel>()
+
+        graphsContainer.forEach { g ->
+            graphs.add(g)
+        }
+
+        return graphs
     }
 
 }

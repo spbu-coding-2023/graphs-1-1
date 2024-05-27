@@ -1,27 +1,30 @@
 package view.home
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import graph.Graph
 import graph.implementation.DirectedWeightedGraph
+import graph.implementation.UndirectedWeightedGraph
 import model.EdgeModel
 import model.VertexModel
 import view.settings.SettingsScreen
 import view.workspace.WorkspaceScreen
 import viewModel.workspace.graph.GraphViewModel
+import viewModel.workspace.graph.GraphsContainerViewModel
+import viewModel.workspace.graph.utils.LocalDatabase
 import java.lang.Math.pow
 
-fun setupCycle1(graph: Graph<VertexModel<Int>, EdgeModel<String>>) {
-    val vv = mutableListOf<VertexModel<Int>>()
+fun setupCycle1(graph: Graph<VertexModel, EdgeModel>, n: Int) {
+    val vv = mutableListOf<VertexModel>()
     val r = 1000
 
-    for (i in 0..100) {
-        vv.add(VertexModel(i, (0..r).random().toFloat(), (0..r).random().toFloat(), i*2))
+    for (i in 0..n) {
+        vv.add(VertexModel(i, (0..r).random().toFloat(), (0..r).random().toFloat(), i.toString()))
         graph.addVertex(vv.last())
         repeat(2) {
             val ri = (pow((0..i).random().toDouble(), 2.952)/pow(i.toDouble(), 2.952)*i).toInt()
@@ -36,16 +39,31 @@ class HomeScreen : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val myGraph = DirectedWeightedGraph<VertexModel<Int>, EdgeModel<String>>()
-        setupCycle1(myGraph)
+        val graphsContainer by rememberUpdatedState(GraphsContainerViewModel())
+        var totalGraphs by remember { mutableStateOf(0) }
+        LocalDatabase.getAllGraphs().forEach { g ->
+            graphsContainer.addGraph(g)
+            totalGraphs++
+        }
+
         Column {
-            Text("this is a home screen")
+            Text("home screen")
             Button(
                 onClick = {
-                    navigator.push(WorkspaceScreen(GraphViewModel(myGraph, "freshGraph")))
-                },
-            ) {
-                Text("Go to graphs!")
+                    val gg = UndirectedWeightedGraph<VertexModel, EdgeModel>()
+                    setupCycle1(gg, 3)
+                    graphsContainer.addGraph(GraphViewModel(gg, "namelesss thing $totalGraphs"))
+                    totalGraphs++
+                }
+            ) { Text("add") }
+            graphsContainer.getGraphs().forEach { g ->
+                Button(
+                    onClick = {
+                        navigator.push(WorkspaceScreen(g))
+                    }
+                ) {
+                    Text("go to graph \"${g.graphName}\"")
+                }
             }
             Button(
                 onClick = {

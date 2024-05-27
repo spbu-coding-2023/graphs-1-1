@@ -19,7 +19,7 @@ import display.placement.implementation.GraphPlacementYifanHu
 import viewModel.workspace.graph.GraphViewModel
 
 @Composable
-fun <V, E>GraphConfiguration(viewModel: GraphViewModel<V, E>, modifier: Modifier) {
+fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
     var isShown by rememberSaveable { mutableStateOf(true) }
     var btnColorIsRunning by remember { mutableStateOf(false) }
     Column(
