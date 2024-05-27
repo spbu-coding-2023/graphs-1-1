@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     `java-library`
     jacoco
-
 }
 
 jacoco {
@@ -24,8 +23,13 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-
+    testImplementation("org.mockito:mockito-core:5.12.0")
     testImplementation("org.hamcrest:hamcrest:2.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.testcontainers:testcontainers:1.19.8")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.8")
+    testImplementation("org.testcontainers:neo4j:1.19.8")
+
 }
 
 tasks.named<Test>("test") {
