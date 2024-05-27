@@ -1,13 +1,12 @@
 package graph
 
-import org.gephi.graph.impl.GraphStoreConfiguration.DEFAULT_EDGE_WEIGHT
-
 import graph.configuration.GraphConfiguration
 
 /**
  * Common interface for all graphs
  */
 interface Graph<V, E> {
+    val DEFAULT_EDGE_WEIGHT: Double
 
     /**
      * Adds vertex to the graph if not present
