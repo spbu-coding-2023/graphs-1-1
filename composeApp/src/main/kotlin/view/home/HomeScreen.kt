@@ -12,6 +12,7 @@ import graph.implementation.DirectedWeightedGraph
 import graph.implementation.UndirectedWeightedGraph
 import model.EdgeModel
 import model.VertexModel
+import view.home.header.HeaderLogo
 import view.settings.SettingsScreen
 import view.workspace.WorkspaceScreen
 import viewModel.workspace.graph.GraphViewModel
@@ -46,11 +47,14 @@ class HomeScreen : Screen {
         }
 
         Column {
-            Text("home screen")
+            HeaderLogo()
+
+
+
             Button(
                 onClick = {
                     val gg = UndirectedWeightedGraph<VertexModel, EdgeModel>()
-                    setupCycle1(gg, 0)
+                    setupCycle1(gg, 10)
                     graphsContainer.addGraph(GraphViewModel(gg, "namelesss thing"))
                 }
             ) { Text("add") }
