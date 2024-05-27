@@ -1,7 +1,5 @@
 package graph
 
-import org.gephi.graph.impl.GraphStoreConfiguration.DEFAULT_EDGE_WEIGHT
-
 import graph.configuration.GraphConfiguration
 
 /**
