@@ -35,19 +35,14 @@ class HomeScreen : Screen {
             graphsContainerViewModel.addGraph(g)
         }
 
-        Column {
-            HeaderLogo()
-
-            Row(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                ColumnMenuList(modifier = Modifier.fillMaxWidth(1-.618f), graphsContainerViewModel)
-                ColumnGraphsList(modifier = Modifier.weight(1f), graphsContainerViewModel)
-            }
-
+        Row(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            ColumnMenuList(modifier = Modifier.fillMaxWidth(1-.618f), graphsContainerViewModel)
+            ColumnGraphsList(modifier = Modifier.weight(1f), graphsContainerViewModel)
         }
     }
 }

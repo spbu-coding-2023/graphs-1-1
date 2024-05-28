@@ -9,12 +9,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Toll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import display.bridgeSearch.implementation.GraphTarjanBridgeFinder
@@ -304,7 +307,7 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 onClick = { isShown = !isShown },
                 modifier = Modifier
             ) {
-                Icon(Icons.Filled.Call, "settingsIcon")
+                Icon(Icons.Filled.Cake, "settingsIcon")
             }
         }
 
@@ -324,11 +327,15 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState())
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clip(shape = MaterialTheme.shapes.large)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
                 ) {
                     runnableOptions.forEach { option ->
                         ConfigurationOption(
-                            modifier = Modifier.padding(4.dp),
+                            modifier = Modifier.padding(8.dp),
                             title = option.title,
                             description = option.description,
                             onClick = option.onRun,

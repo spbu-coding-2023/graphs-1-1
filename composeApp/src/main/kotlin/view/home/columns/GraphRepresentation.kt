@@ -9,10 +9,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -52,49 +55,79 @@ fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: Gra
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(16.dp, 4.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Surface(
-           modifier = Modifier
-               .size(40.dp)
-               .offset(y = 4.dp),
-            shape = MaterialTheme.shapes.medium,
+        Row(
+            modifier = Modifier
+                .clip(shape = MaterialTheme.shapes.small)
+                .weight(1f)
+                .clickable {
+                    navigator.push(WorkspaceScreen(viewModel))
+                },
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-                                   .background(brush = iconBgColors)
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Surface(
+                modifier = Modifier
+                    .size(40.dp),
+                shape = MaterialTheme.shapes.medium,
             ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxSize()
+                        .background(brush = iconBgColors)
+                ) {
+                    Text(
+                        text = viewModel.graphName.slice(0..1).uppercase(),
+                        fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                        color = iconTextColor
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Column(
+                modifier = Modifier
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Bottom),
+
+                ) {
                 Text(
-                    text = viewModel.graphName.slice(0..1).uppercase(),
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    color = iconTextColor
+                    text = viewModel.graphName,
+                    color = titleColor,
+                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                )
+
+                Text(
+                    text = "${LocalDatabase.getGraphsDirectory()}/${viewModel.graphName}",
+                    color = subTitleColor,
+                    fontSize = MaterialTheme.typography.labelSmall.fontSize
                 )
             }
         }
 
-        Spacer(modifier = Modifier.width(8.dp))
+//        Spacer(modifier = Modifier.weight(1f))
 
         Column(
-            modifier = Modifier
-                .clickable {
-                    navigator.push(WorkspaceScreen(viewModel))
-                },
-            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Bottom)
+            modifier = Modifier.padding(4.dp).alpha(.5f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.End
         ) {
             Text(
-                text = viewModel.graphName,
-                color = titleColor,
-                fontSize = MaterialTheme.typography.labelMedium.fontSize
+                text = if (viewModel.isDirected()) "directed" else "undirected",
+                fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                textAlign = TextAlign.End
             )
-
             Text(
-                text = "${LocalDatabase.getGraphsDirectory()}/${viewModel.graphName}",
-                color = subTitleColor,
-                fontSize = MaterialTheme.typography.labelSmall.fontSize
+                text = if (viewModel.isWeighted()) "weighted" else "unweighted",
+                fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                textAlign = TextAlign.End
             )
         }
-
-        Spacer(modifier = Modifier.weight(1f))
 
         IconButton(
             modifier = Modifier,
@@ -102,7 +135,10 @@ fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: Gra
                 isDeleteDialogShown = !isDeleteDialogShown
             }
         ) {
-            Icon(Icons.Filled.DeleteForever, "deleteIcon")
+            Icon(
+                Icons.Filled.DeleteForever, "deleteIcon",
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
 
     }
