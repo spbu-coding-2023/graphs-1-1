@@ -304,7 +304,8 @@ class AbstractGraphTest {
 
         DUWgraph.setEdgeWeight("A", 2.0)
 
-        assertEquals(DUWgraph.structure.matrix[0][1]?.weight, 1.0)
+        assertEquals(DUWgraph.structure.matrix[0][1]?.weight, 2.0)
+        assertEquals(DUWgraph.getEdgeWeight("A"), 1.0)
     }
 
     @Test
