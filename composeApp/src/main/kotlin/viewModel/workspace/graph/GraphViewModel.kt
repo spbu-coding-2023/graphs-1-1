@@ -270,7 +270,7 @@ class GraphViewModel(
     }
 
     fun isEdgesPositive(): Boolean {
-        return edges.value.all { it.weight >= 0 }
+        return !isWeighted() || edges.value.all { it.weight >= 0 }
     }
 
 }
