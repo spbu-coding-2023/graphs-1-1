@@ -43,8 +43,7 @@ fun HeaderLogo() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(1-.618f)
-            .background(MaterialTheme.colorScheme.primary)
+//            .background(MaterialTheme.colorScheme.primary)
     ) {
 //        Image(
 //            modifier = Modifier
@@ -56,37 +55,23 @@ fun HeaderLogo() {
 //            contentDescription = "catImage"
 //        )
 
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top,
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.Start
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.Top,
         ) {
             Text(
                 text = "Graphses",
-                color = Color.White,
-                fontSize = MaterialTheme.typography.displayLarge.fontSize,
-                fontFamily = MaterialTheme.typography.displayLarge.fontFamily,
-                style = TextStyle(
-                    color = Color.Cyan,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontStyle = FontStyle.Italic,
-                    letterSpacing = 8.sp,
-                    shadow = Shadow(
-                        color = Color.Green,
-                        offset = Offset(8f, 8f),
-                        blurRadius = 32f
-
-                    ),
-                    textDecoration = TextDecoration.Underline,
-
-                ),
-
+                color = MaterialTheme.colorScheme.secondary,
+                fontSize = MaterialTheme.typography.labelLarge.fontSize,
             )
             Text(
                 text = "v 1.0.0",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.secondary,
                 fontSize = MaterialTheme.typography.labelSmall.fontSize,
                 fontFamily = MaterialTheme.typography.labelSmall.fontFamily,
                 fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
