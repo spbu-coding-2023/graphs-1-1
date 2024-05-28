@@ -5,7 +5,9 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material3.*
@@ -13,15 +15,42 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import display.placement.implementation.GraphPlacementRandom
 import display.placement.implementation.GraphPlacementYifanHu
 import viewModel.workspace.graph.GraphViewModel
 
+private data class GraphRunnableOption(val title: String, val description: String, val onRun: () -> Unit, val content: @Composable () -> Unit = {})
+
 @Composable
-fun <V, E>GraphConfiguration(viewModel: GraphViewModel<V, E>, modifier: Modifier) {
+fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
     var isShown by rememberSaveable { mutableStateOf(true) }
-    var btnColorIsRunning by remember { mutableStateOf(false) }
+    var isRunning by remember { mutableStateOf(false) }
+
+    val runnableOptions = listOf(
+        GraphRunnableOption(
+            title = "Placement",
+            description = "runs Yifan Hu algorithm",
+            onRun = {
+                isRunning = true
+                val graphPlacement = GraphPlacementYifanHu()
+                graphPlacement.setSize(4, 4)
+                viewModel.runPlacement(graphPlacement, { isRunning = false })
+            }
+        ),
+        GraphRunnableOption(
+            title = "Placement",
+            description = "places graph randomly",
+            onRun = {
+                isRunning = true
+                val graphPlacement = GraphPlacementRandom()
+                graphPlacement.setSize(600, 600)
+                viewModel.runPlacement(graphPlacement, { isRunning = false })
+            }
+        ),
+    )
+
     Column(
         modifier = Modifier
             .then(modifier)
@@ -51,42 +80,23 @@ fun <V, E>GraphConfiguration(viewModel: GraphViewModel<V, E>, modifier: Modifier
                     .fillMaxSize()
                     .padding(0.dp, 0.dp, 0.dp, 24.dp),
                 shadowElevation = 8.dp,
-                shape = MaterialTheme.shapes.medium.copy(
+                shape = MaterialTheme.shapes.large.copy(
                     topEnd = CornerSize(0),
                     bottomEnd = CornerSize(0)
                 )
             ) {
                 Column(
-                    modifier = Modifier.background(MaterialTheme.colorScheme.background)
+                    modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState())
                 ) {
-                    Text("Content")
-                    // insides
-                    // YH
-                    Button(
-                        onClick = {
-                            btnColorIsRunning = true
-                            val graphPlacement = GraphPlacementYifanHu()
-                            graphPlacement.setSize(4, 4)
-                            viewModel.runPlacement(graphPlacement, { btnColorIsRunning = false })
-                        }
-                    ) {
-                        Text(
-                        text = "run placement in parallel YH",
-                        color = if (btnColorIsRunning) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onBackground
-                    ) }
-                    // RAND
-                    Button(
-                        onClick = {
-                            btnColorIsRunning = true
-                            val graphPlacement = GraphPlacementRandom()
-                            graphPlacement.setSize(600, 600)
-                            viewModel.runPlacement(graphPlacement, { btnColorIsRunning = false })
-                        }
-                    ) {
-                        Text(
-                            text = "run placement in parallel RANDOM",
-                            color = if (btnColorIsRunning) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onBackground
-                        ) }
+                    runnableOptions.forEach { option ->
+                        ConfigurationSetting(
+                            modifier = Modifier.padding(4.dp),
+                            title = option.title,
+                            description = option.description,
+                            onClick = option.onRun,
+                            enabled = !isRunning,
+                        ) {  }
+                    }
                 }
             }
         }

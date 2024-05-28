@@ -13,13 +13,13 @@ import view.workspace.graph.GraphView
 import view.workspace.header.Header
 import viewModel.workspace.graph.GraphViewModel
 
-class WorkspaceScreen<V, E>(val viewModel: GraphViewModel<V, E>) : Screen {
+class WorkspaceScreen(val viewModel: GraphViewModel) : Screen {
     @Composable
     override fun Content() {
         Scaffold(
             topBar = {
                 // the header of the screen
-                Header("(graph name)")
+                Header(viewModel)
             },
             content = {
                 Box(

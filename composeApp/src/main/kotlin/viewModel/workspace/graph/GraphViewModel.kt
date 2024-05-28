@@ -17,19 +17,22 @@ import model.EdgeModel
 import model.VertexModel
 import view.workspace.graph.MAX_SCALE_FACTOR
 import view.workspace.graph.MIN_SCALE_FACTOR
+import viewModel.workspace.graph.utils.GraphStorage
 
 enum class GraphInteractionMode {Pan, Delete, Drag, Create, Select}
 
-class GraphViewModel<V, E>(
-    initialGraph: Graph<VertexModel<V>, EdgeModel<E>>
+class GraphViewModel(
+    initialGraph: Graph<VertexModel, EdgeModel>,
+    val graphName: String
 ) : ViewModel() {
     private val graph = initialGraph
+    val storage = GraphStorage({ graph }, graphName)
 
-    private val _vertices = MutableStateFlow<List<VertexModel<V>>>(listOf())
-    val vertices: StateFlow<List<VertexModel<V>>> = _vertices
+    private val _vertices = MutableStateFlow<List<VertexModel>>(listOf())
+    val vertices: StateFlow<List<VertexModel>> = _vertices
 
-    private val _edges = MutableStateFlow<List<EdgeModel<E>>>(listOf())
-    val edges: StateFlow<List<EdgeModel<E>>> = _edges
+    private val _edges = MutableStateFlow<List<EdgeModel>>(listOf())
+    val edges: StateFlow<List<EdgeModel>> = _edges
 
     private val _scaleFactor = MutableStateFlow(1f)
     val scaleFactor: StateFlow<Float> = _scaleFactor
@@ -60,7 +63,7 @@ class GraphViewModel<V, E>(
         _updated.value = !_updated.value
     }
 
-    fun updateGraph(actionOnGraph: (Graph<VertexModel<V>, EdgeModel<E>>) -> Unit) {
+    fun updateGraph(actionOnGraph: (Graph<VertexModel, EdgeModel>) -> Unit) {
         actionOnGraph(graph)
         updateState()
     }
@@ -158,13 +161,13 @@ class GraphViewModel<V, E>(
         }
     }
 
-    fun switchSelectionVertex(vertex: VertexModel<V>) {
+    fun switchSelectionVertex(vertex: VertexModel) {
         updateGraph { g ->
             vertex.isSelected = !vertex.isSelected
         }
     }
 
-    fun removeAndAllIfSelected(vertex: VertexModel<V>) {
+    fun removeAndAllIfSelected(vertex: VertexModel) {
         updateGraph { g ->
             if (vertex.isSelected) {
                 g.vertexSet().filter { v -> v.isSelected }.forEach { v ->

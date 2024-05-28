@@ -10,23 +10,19 @@ import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import view.common.CommonScreenLayout
 
 class SettingsScreen : Screen {
 
     @Composable
     override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
-        Column {
-            Text("Settings are a bit empty")
-            Button(
-                onClick = {
-                    navigator.pop()
-                },
-            ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, "backIcon")
-                Text("Back")
+        CommonScreenLayout(
+            title = "Settings",
+            content = {
+                Text("Settings are a bit empty")
+
             }
-        }
+        )
     }
 
 }

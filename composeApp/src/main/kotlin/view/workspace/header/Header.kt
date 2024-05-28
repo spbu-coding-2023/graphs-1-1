@@ -10,21 +10,25 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import view.home.HomeScreen
 import view.workspace.header.menu.Menu
+import viewModel.workspace.graph.GraphViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Header(titleText: String) {
+fun Header(viewModel: GraphViewModel) {
     var isMenuOpen by remember { mutableStateOf(false) }
     val navigator = LocalNavigator.currentOrThrow
 
     TopAppBar(
         title = {
-            Text(titleText)
+            Text(viewModel.graphName)
         },
         navigationIcon = {
             // Home button
             IconButton(
-                onClick = { navigator.push(HomeScreen()) }
+                onClick = {
+                    viewModel.storage.exportGraph()
+                    navigator.push(HomeScreen())
+                }
             ) {
                 Icon( Icons.Default.Home, "homeIcon")
             }

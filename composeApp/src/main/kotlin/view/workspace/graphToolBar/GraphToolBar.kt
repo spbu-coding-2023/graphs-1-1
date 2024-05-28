@@ -15,14 +15,14 @@ import androidx.compose.ui.unit.dp
 import viewModel.workspace.graph.GraphInteractionMode
 import viewModel.workspace.graph.GraphViewModel
 
-data class GraphTool(val icon: ImageVector, val name: String, val interactiveMode: GraphInteractionMode) {
-    fun <V, E>onClick(viewModel: GraphViewModel<V, E>) {
+private data class GraphTool(val icon: ImageVector, val name: String, val interactiveMode: GraphInteractionMode) {
+    fun onClick(viewModel: GraphViewModel) {
         viewModel.setInteractionMode(interactiveMode)
     }
 }
 
 @Composable
-fun <V, E>GraphToolBar(viewModel: GraphViewModel<V, E>, modifier: Modifier) {
+fun GraphToolBar(viewModel: GraphViewModel, modifier: Modifier) {
     val interactionMode = viewModel.interactionMode.collectAsState()
     val tools = listOf(
         GraphTool(Icons.Filled.PanTool, "Pan", GraphInteractionMode.Pan),

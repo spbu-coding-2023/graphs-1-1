@@ -38,7 +38,7 @@ val VERTEX_ALPHA = 1f
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun <V, E>GraphView(viewModel: GraphViewModel<V, E>) {
+fun GraphView(viewModel: GraphViewModel) {
     val selectionArea by viewModel.selectionArea.collectAsState()
     val vertices by viewModel.vertices.collectAsState()
     val edges by viewModel.edges.collectAsState()
@@ -156,7 +156,7 @@ fun DrawSelectArea(area: Rect) {
 }
 
 @Composable
-fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFactor: Offset, graphViewModel: GraphViewModel<V, E>) {
+fun DraggableVertex(vertex: VertexModel, scaleFactor: Float, offsetFactor: Offset, graphViewModel: GraphViewModel) {
     val scaleFactor by rememberUpdatedState(scaleFactor)
     val offsetFactor by rememberUpdatedState(offsetFactor)
     var offsetX by remember { mutableStateOf(vertex.x) }
@@ -223,7 +223,7 @@ fun <V, E>DraggableVertex(vertex: VertexModel<V>, scaleFactor: Float, offsetFact
 }
 
 @Composable
-fun <V, E>EdgesView(vertices: List<VertexModel<V>>, edges: List<EdgeModel<E>>, scaleFactor: Float, offsetFactor: Offset) {
+fun EdgesView(vertices: List<VertexModel>, edges: List<EdgeModel>, scaleFactor: Float, offsetFactor: Offset) {
     val EDGE_COLOR = MaterialTheme.colorScheme.outline
 
     Canvas(
