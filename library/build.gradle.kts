@@ -1,6 +1,11 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     `java-library`
+    jacoco
+}
+
+jacoco {
+    toolVersion = "0.8.11"
 }
 
 dependencies {
@@ -18,10 +23,13 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-
+    testImplementation("org.mockito:mockito-core:5.12.0")
     testImplementation("org.hamcrest:hamcrest:2.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.testcontainers:testcontainers:1.19.8")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.8")
+    testImplementation("org.testcontainers:neo4j:1.19.8")
+
 }
 
 tasks.named<Test>("test") {
@@ -40,6 +48,25 @@ tasks.register("downloadGephiToolkit") {
 
     if (!jarFile.exists())
         download(sourceUrl, path)
+}
+
+tasks.named<JacocoReport>("jacocoTestReport") {
+    reports {
+        xml.required = false
+        csv.required = true
+        html.required = true
+    }
+    dependsOn(tasks.test)
+}
+
+tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.7".toBigDecimal()
+            }
+        }
+    }
 }
 
 tasks.build {

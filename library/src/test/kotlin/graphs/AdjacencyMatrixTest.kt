@@ -79,4 +79,43 @@ class AdjacencyMatrixTest {
         hm[1] = 1
         assertEquals(structure.verticesMap, hm)
     }
+
+    @Test
+    fun `should throw IllegalArgumentException since tail doesn't exist function get`() {
+        structure.add(1)
+        assertThrows(IllegalArgumentException::class.java) {
+            structure.get(0, 1)
+        }
+    }
+
+    @Test
+    fun `should throw IllegalArgumentException since tail doesn't exist function set`() {
+        structure.add(1)
+        assertThrows(IllegalArgumentException::class.java) {
+            structure.set(0, 1, "A")
+        }
+    }
+
+    @Test
+    fun `should throw IllegalArgumentException since head doesn't exist function get`() {
+        structure.add(0)
+        assertThrows(IllegalArgumentException::class.java) {
+            structure.get(0, 1)
+        }
+    }
+
+    @Test
+    fun `should throw IllegalArgumentException since head doesn't exist function set`() {
+        structure.add(0)
+        assertThrows(IllegalArgumentException::class.java) {
+            structure.set(0, 1, "A")
+        }
+    }
+
+    @Test
+    fun `should throw IllegalArgumentException since vertex to be deleted doesn't exist`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            structure.delete(0)
+        }
+    }
 }

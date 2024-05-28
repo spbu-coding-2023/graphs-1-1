@@ -6,12 +6,25 @@ import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 
+
 class GraphSQLiteImporter : GraphImporter {
     override fun <V, E> importGraph(graph: Graph<V, E>, file: File) {
         val url = "jdbc:sqlite:${file.absolutePath}"
         val connection: Connection = DriverManager.getConnection(url)
 
         connection.use {
+            val configQuery = "SELECT isDirected, isWeighted FROM Configuration"
+            val configStatement = connection.createStatement()
+            val configResultSet = configStatement.executeQuery(configQuery)
+
+            if (configResultSet.next()) {
+                val isDirected = configResultSet.getInt("isDirected") == 1
+                val isWeighted = configResultSet.getInt("isWeighted") == 1
+
+                if (isDirected) graph.configuration.asDirected() else graph.configuration.asUndirected()
+                if (isWeighted) graph.configuration.asWeighted() else graph.configuration.asUnweighted()
+            }
+
             val nodeQuery = "SELECT id, value FROM Node"
             val nodeStatement = connection.createStatement()
             val nodeResultSet = nodeStatement.executeQuery(nodeQuery)
@@ -19,7 +32,7 @@ class GraphSQLiteImporter : GraphImporter {
 
             while (nodeResultSet.next()) {
                 val id = nodeResultSet.getInt("id")
-                val value = nodeResultSet.getString("value")
+                val value = nodeResultSet.getInt("value")
                 val vertex: V = value as V
                 graph.addVertex(vertex)
                 nodeMap[id] = vertex

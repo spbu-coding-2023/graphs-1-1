@@ -1,51 +1,76 @@
 package repository.implementation.neo4j
 
-import graph.Graph
 import org.neo4j.driver.AuthTokens
 import org.neo4j.driver.Driver
-import org.neo4j.driver.GraphDatabase
 import org.neo4j.driver.Session
-import repository.GraphImporter
-import java.io.File
+import graph.Graph
+import graph.implementation.UndirectedUnweightedGraph
+import repository.DatabaseGraphImporter
 
-class GraphNeo4jImporter : GraphImporter {
-    private val uri = "bolt://localhost:7687"
-    private val user = "neo4j"
-    private val password = "12345678"
-
-    override fun <V, E> importGraph(graph: Graph<V, E>, file: File) {
-        val driver: Driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password))
+class GraphNeo4jImporter(private val driverFactory: (String, org.neo4j.driver.AuthToken) -> Driver): DatabaseGraphImporter {
+    /* Example of credentials
+    uri = credentials[0] = "bolt://localhost:7687"
+    user = credentials[1] = "neo4j"
+    password = credentials[2] = "12345678"
+    */
+    override fun <V, E> importGraph(graphId: String, credentials: List<String?>): Graph<V, E> {
+        if (credentials[0] == null) {
+            throw IllegalStateException("bolt link needed (credentials[0])")
+        }
+        val driver: Driver = driverFactory(credentials[0]!!, AuthTokens.basic(credentials[1], credentials[2]))
+        val graph = UndirectedUnweightedGraph<V, E>()
         driver.use {
-            val session: Session = it.session()
+            val session: Session = driver.session()
 
-            // Retrieve all nodes
-            val nodesResult = session.run("MATCH (n) RETURN n")
-            val nodes = mutableMapOf<String, V>()
-            while (nodesResult.hasNext()) {
-                val record = nodesResult.next()
-                val node = record["n"].asNode()
-                val id = node.elementId().toString()
-                val value = node["value"].asObject() as V
-                nodes[id] = value
-                graph.addVertex(value)
+            // Retrieve the graph metadata
+            val graphMetadataResult = session.run("MATCH (g:Graph {id: \$graphId}) RETURN g LIMIT 1", mapOf("graphId" to graphId))
+            if (!graphMetadataResult.hasNext()) {
+                throw IllegalStateException("No graph found with id $graphId")
+            }
+            val graphMetadata = graphMetadataResult.single()["g"].asNode()
+            val isDirected = graphMetadata["directed"].asBoolean()
+            val isWeighted = graphMetadata["weighted"].asBoolean()
+
+            // Change metadata of the graph
+            if (isWeighted) {
+                graph.configuration.asWeighted()
+            } else {
+                graph.configuration.asUnweighted()
+            }
+            if (isDirected) {
+                graph.configuration.asDirected()
+            } else {
+                graph.configuration.asUndirected()
             }
 
-            // Retrieve all relationships
-            val edgesResult = session.run("MATCH (a)-[r:EDGE]->(b) RETURN a, b, r")
-            while (edgesResult.hasNext()) {
-                val record = edgesResult.next()
-                val nodeA = record["a"].asNode()
-                val nodeB = record["b"].asNode()
-                val relationship = record["r"].asRelationship()
-
-                val valueA = nodes[nodeA.elementId().toString()]!!
-                val valueB = nodes[nodeB.elementId().toString()]!!
-                val edge = relationship["value"].asObject() as E
-                val weight = relationship["weight"].asDouble()
-
-                graph.addEdge(valueA, valueB, edge, weight)
+            // Retrieve all nodes and add them to the graph
+            val nodesResult = session.run("MATCH (n:Node {graphId: \$graphId}) RETURN n.value AS value", mapOf("graphId" to graphId))
+            nodesResult.forEach { record ->
+                val vertex = record["value"].asObject() as V
+                graph.addVertex(vertex)
             }
+
+            // Retrieve all edges and add them to the graph
+            val edgesResult = session.run(
+                "MATCH (a)-[r:EDGE {graphId: \$graphId}]->(b) " +
+                "RETURN a.value AS tail, b.value AS head, r.value AS edge, r.weight AS weight",
+                mapOf("graphId" to graphId))
+            edgesResult.forEach { record ->
+                val tail = record["tail"].asObject() as V
+                val head = record["head"].asObject() as V
+                val edge = record["edge"].asObject() as E
+
+                if (isWeighted) {
+                    val weight = record["weight"].asDouble()
+                    graph.addEdge(tail, head, edge, weight)
+                } else {
+                    graph.addEdge(tail, head, edge)
+                }
+            }
+
             session.close()
         }
+        return graph
     }
 }
+

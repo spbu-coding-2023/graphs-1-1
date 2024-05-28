@@ -14,6 +14,7 @@ class AbstractGraphTest {
     var UDWgraph = UndirectedWeightedGraph<Int, String>()
     var DUWgraph = DirectedUnweightedGraph<Int, String>()
     var UDUWgraph = UndirectedUnweightedGraph<Int, String>()
+
     @BeforeEach
     fun setup() {
         DWgraph = DirectedWeightedGraph()
@@ -97,7 +98,9 @@ class AbstractGraphTest {
         DWgraph.addEdge(23, 52, "A")
 
         assertNotNull(DWgraph.structure.matrix[0][1])
+        assertNull(DWgraph.structure.matrix[1][0])
         assertTrue(DWgraph.containsEdge(23, 52))
+        assertFalse(DWgraph.containsEdge(52, 23))
     }
 
     @Test
@@ -110,6 +113,13 @@ class AbstractGraphTest {
         assertNull(UDWgraph.structure.matrix[1][0])
         assertTrue(UDWgraph.containsEdge(23, 52))
         assertTrue(UDWgraph.containsEdge(52, 23))
+    }
+
+    @Test
+    fun `doesn't contain edge undirected`() {
+        UDWgraph.addVertex(23)
+        UDWgraph.addVertex(52)
+        assertFalse(UDWgraph.containsEdge(23, 52))
     }
 
     @Test
@@ -133,7 +143,7 @@ class AbstractGraphTest {
     }
 
     @Test
-    fun `in degree of`() {
+    fun `in degree of directed`() {
         DWgraph.addVertex(23)
         DWgraph.addVertex(52)
         DWgraph.addVertex(1)
@@ -153,7 +163,27 @@ class AbstractGraphTest {
     }
 
     @Test
-    fun `out degree of`() {
+    fun `in degree of undirected`() {
+        UDWgraph.addVertex(23)
+        UDWgraph.addVertex(52)
+        UDWgraph.addVertex(1)
+        UDWgraph.addVertex(9)
+        UDWgraph.addVertex(0)
+        UDWgraph.addEdge(23, 52, "A")
+        UDWgraph.addEdge(1, 52, "B")
+        UDWgraph.addEdge(52, 9, "C")
+        UDWgraph.addEdge(9, 1, "D")
+        UDWgraph.addEdge(1, 9, "E")
+
+        assertEquals(UDWgraph.inDegreeOf(23), 1)
+        assertEquals(UDWgraph.inDegreeOf(52), 3)
+        assertEquals(UDWgraph.inDegreeOf(1), 2)
+        assertEquals(UDWgraph.inDegreeOf(9), 2)
+        assertEquals(UDWgraph.inDegreeOf(0), 0)
+    }
+
+    @Test
+    fun `out degree of directed`() {
         DWgraph.addVertex(23)
         DWgraph.addVertex(52)
         DWgraph.addVertex(1)
@@ -170,6 +200,26 @@ class AbstractGraphTest {
         assertEquals(DWgraph.outDegreeOf(1), 2)
         assertEquals(DWgraph.outDegreeOf(9), 0)
         assertEquals(DWgraph.outDegreeOf(0), 0)
+    }
+
+    @Test
+    fun `out degree of undirected`() {
+        UDWgraph.addVertex(23)
+        UDWgraph.addVertex(52)
+        UDWgraph.addVertex(1)
+        UDWgraph.addVertex(9)
+        UDWgraph.addVertex(0)
+        UDWgraph.addEdge(23, 52, "A")
+        UDWgraph.addEdge(1, 52, "B")
+        UDWgraph.addEdge(52, 9, "C")
+        UDWgraph.addEdge(9, 1, "D")
+        UDWgraph.addEdge(1, 9, "E")
+
+        assertEquals(UDWgraph.outDegreeOf(23), 1)
+        assertEquals(UDWgraph.outDegreeOf(52), 3)
+        assertEquals(UDWgraph.outDegreeOf(1), 2)
+        assertEquals(UDWgraph.outDegreeOf(9), 2)
+        assertEquals(UDWgraph.outDegreeOf(0), 0)
     }
 
     @Test
@@ -366,7 +416,7 @@ class AbstractGraphTest {
     }
 
     @Test
-    fun `incoming edges of`() {
+    fun `incoming edges of directed graph`() {
         DWgraph.addVertex(23)
         DWgraph.addVertex(52)
         DWgraph.addVertex(1)
@@ -382,6 +432,26 @@ class AbstractGraphTest {
         assertEquals(DWgraph.incomingEdgesOf(0), setOf<Int>())
         assertEquals(DWgraph.incomingEdgesOf(23), setOf<Int>())
     }
+
+    @Test
+    fun `incoming edges of undirected graph`() {
+        UDWgraph.addVertex(23)
+        UDWgraph.addVertex(52)
+        UDWgraph.addVertex(1)
+        UDWgraph.addVertex(9)
+        UDWgraph.addVertex(0)
+        UDWgraph.addEdge(23, 52, "A")
+        UDWgraph.addEdge(1, 52, "B")
+        UDWgraph.addEdge(52, 9, "C")
+        UDWgraph.addEdge(9, 1, "D")
+        UDWgraph.addEdge(1, 9, "E")
+
+        assertEquals(UDWgraph.incomingEdgesOf(0), setOf<Int>())
+        assertEquals(UDWgraph.incomingEdgesOf(23), setOf("A"))
+        assertEquals(UDWgraph.incomingEdgesOf(52), setOf("A", "B", "C"))
+        assertEquals(UDWgraph.incomingEdgesOf(1), setOf("B", "E")) // E is the same edge as D
+    }
+
 
     @Test
     fun `outgoing vertices of`() {
@@ -415,6 +485,25 @@ class AbstractGraphTest {
 
         assertEquals(DWgraph.incomingVerticesOf(52), setOf(23, 1))
         assertEquals(DWgraph.incomingVerticesOf(0), setOf<Int>())
+    }
+
+    @Test
+    fun `vertices of`() {
+        UDWgraph.addVertex(23)
+        UDWgraph.addVertex(52)
+        UDWgraph.addVertex(1)
+        UDWgraph.addVertex(9)
+        UDWgraph.addVertex(0)
+        UDWgraph.addEdge(23, 52, "A")
+        UDWgraph.addEdge(1, 52, "B")
+        UDWgraph.addEdge(52, 9, "C")
+        UDWgraph.addEdge(9, 1, "D")
+        UDWgraph.addEdge(1, 9, "E")
+
+        assertEquals(UDWgraph.verticesOf(52), setOf(23, 1, 9))
+        assertEquals(UDWgraph.verticesOf(23), setOf(52))
+        assertEquals(UDWgraph.verticesOf(1), setOf(52, 9))
+        assertEquals(UDWgraph.verticesOf(0), setOf<Int>())
     }
 
     @Test
@@ -459,5 +548,146 @@ class AbstractGraphTest {
         DWgraph.addEdge(1, 9, "E")
 
         assertEquals(DWgraph.edgesOf(1), setOf("B", "E"))
+    }
+
+    @Test
+    fun `remove edge from an undirected graph head-tail`() {
+        UDWgraph.addVertex(23)
+        UDWgraph.addVertex(52)
+        UDWgraph.addEdge(23, 52, "A", 3.0)
+        UDWgraph.removeEdge(23, 52)
+
+        assertEquals(setOf<Pair<Int, Int>>(), UDWgraph.edgeSetOfVertices())
+        assertEquals(setOf(23, 52), UDWgraph.vertexSet())
+    }
+
+    @Test
+    fun `remove edge from an undirected graph tail-head`() {
+        UDWgraph.addVertex(23)
+        UDWgraph.addVertex(52)
+        UDWgraph.addEdge(23, 52, "A", 3.0)
+        UDWgraph.removeEdge(52, 23)
+
+        assertEquals(setOf<Pair<Int, Int>>(), UDWgraph.edgeSetOfVertices())
+        assertEquals(setOf(52, 23), UDWgraph.vertexSet())
+    }
+
+    @Test
+    fun `remove edge that doesn't exist in an undirected graph`() {
+        UDWgraph.addVertex(1)
+        UDWgraph.addVertex(1000)
+        assertEquals(false, UDWgraph.removeEdge(1, 1000))
+    }
+
+    @Test
+    fun `set edge weight unweighted graph`() {
+        UDUWgraph.addVertex(23)
+        UDUWgraph.addVertex(52)
+        UDUWgraph.addEdge(23, 52, "A", 3.0)
+        assertEquals(UDWgraph.DEFAULT_EDGE_WEIGHT, UDUWgraph.getEdgeWeight(23, 52))
+        UDUWgraph.setEdgeWeight(23, 52, 5.0)
+        assertEquals(UDUWgraph.DEFAULT_EDGE_WEIGHT, UDUWgraph.getEdgeWeight(23, 52))
+    }
+
+    @Test
+    fun `set edge weight weighted graph`() {
+        UDWgraph.addVertex(23)
+        UDWgraph.addVertex(52)
+        UDWgraph.addEdge(23, 52, "A", 3.0)
+        assertEquals(3.0, UDWgraph.getEdgeWeight(23, 52))
+        UDWgraph.setEdgeWeight(23, 52, 5.0)
+        assertEquals(5.0, UDWgraph.getEdgeWeight(23, 52))
+    }
+
+    @Test
+    fun `should throw RuntimeException since edge doesn't exist function getEdgeWeight(e)`() {
+        assertThrows(RuntimeException::class.java) {
+            UDWgraph.getEdgeWeight("A")
+        }
+    }
+
+    @Test
+    fun `should throw RuntimeException since edge doesn't exist function getEdgeWeight(v, v)`() {
+        DWgraph.addVertex(1)
+        DWgraph.addVertex(1000)
+        assertThrows(RuntimeException::class.java) {
+            DWgraph.getEdgeWeight(1, 1000)
+        }
+    }
+
+    @Test
+    fun `should throw Error since there is no edge function getEdgeHead(e)`() {
+        assertThrows(Error::class.java) {
+            DWgraph.getEdgeHead("A")
+        }
+    }
+
+    @Test
+    fun `should throw Error since there is no edge function getEdgeTail(e)`() {
+        assertThrows(Error::class.java) {
+            DWgraph.getEdgeTail("A")
+        }
+    }
+
+    @Test
+    fun `get edge directed but edge doesn't exist between vertices that exist`() {
+        DWgraph.addVertex(1)
+        DWgraph.addVertex(1000)
+        assertEquals(null, DWgraph.getEdge(1, 1000))
+    }
+
+    @Test
+    fun `get edge undirected access by tail-head but edge doesn't exist between vertices that exist`() {
+        UDWgraph.addVertex(1)
+        UDWgraph.addVertex(1000)
+        assertEquals(null, UDWgraph.getEdge(1, 1000))
+    }
+
+    @Test
+    fun `get edge undirected access by head-tail but edge doesn't exist between vertices that exist`() {
+        UDWgraph.addVertex(1)
+        UDWgraph.addVertex(1000)
+        assertEquals(null, UDWgraph.getEdge(1000, 1))
+    }
+
+    @Test
+    fun `weird setEdgeWeight 1`() {
+        val DWgraphWithNull = DirectedWeightedGraph<Int?, String?>()
+        DWgraphWithNull.addVertex(1)
+        DWgraphWithNull.addVertex(1000)
+        DWgraphWithNull.setEdgeWeight(1, 1000, 4.0)
+        DWgraphWithNull.addEdge(1, 1000, null, 3.0)
+        assertEquals(true, DWgraphWithNull.containsVertex(1))
+        assertEquals(true, DWgraphWithNull.containsVertex(1000))
+        assertEquals(true, DWgraphWithNull.containsEdge(1, 1000))
+        assertEquals(3.0, DWgraphWithNull.getEdgeWeight(null))
+        DWgraphWithNull.setEdgeWeight(null, 4.0)
+        assertEquals(true, DWgraphWithNull.containsVertex(1))
+        assertEquals(true, DWgraphWithNull.containsVertex(1000))
+        assertEquals(true, DWgraphWithNull.containsEdge(1, 1000))
+        assertEquals(4.0, DWgraphWithNull.getEdgeWeight(null))
+    }
+
+    @Test
+    fun `weird setEdgeWeight 2`() {
+        val DWgraphWithNull = DirectedWeightedGraph<Int?, String?>()
+        DWgraphWithNull.addVertex(1)
+        DWgraphWithNull.addVertex(1000)
+        DWgraphWithNull.setEdgeWeight(1, 1000, 4.0)
+        DWgraphWithNull.addEdge(1, 1000, null, 3.0)
+        assertEquals(true, DWgraphWithNull.containsVertex(1))
+        assertEquals(true, DWgraphWithNull.containsVertex(1000))
+        assertEquals(true, DWgraphWithNull.containsEdge(1, 1000))
+        assertEquals(3.0, DWgraphWithNull.getEdgeWeight(null))
+        DWgraphWithNull.setEdgeWeight(1, 1000, 4.0)
+        assertEquals(true, DWgraphWithNull.containsVertex(1))
+        assertEquals(true, DWgraphWithNull.containsVertex(1000))
+        assertEquals(true, DWgraphWithNull.containsEdge(1, 1000))
+        assertEquals(4.0, DWgraphWithNull.getEdgeWeight(null))
+    }
+
+    @Test
+    fun `remove imaginary vertex`() {
+        assertEquals(false, DWgraph.removeVertex(1))
     }
 }

@@ -1,9 +1,13 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.psi.simpleNameExpressionVisitor
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.compose)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 dependencies {
