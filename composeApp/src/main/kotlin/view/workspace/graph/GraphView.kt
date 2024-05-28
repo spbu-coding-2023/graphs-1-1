@@ -161,7 +161,7 @@ fun DraggableVertex(vertex: VertexModel, scaleFactor: Float, offsetFactor: Offse
     val offsetFactor by rememberUpdatedState(offsetFactor)
     var offsetX by remember { mutableStateOf(vertex.x) }
     var offsetY by remember { mutableStateOf(vertex.y) }
-    val vertexSize by rememberUpdatedState(VERTEX_SIZE*scaleFactor)
+    val vertexSize by rememberUpdatedState(VERTEX_SIZE*scaleFactor*vertex.size)
     val interactionMode by graphViewModel.interactionMode.collectAsState()
     var reRender by remember { mutableStateOf(false) }
 
@@ -243,7 +243,7 @@ fun EdgesView(vertices: List<VertexModel>, edges: List<EdgeModel>, scaleFactor: 
                     drawSelfLoop(
                         centerX = startX,
                         centerY = startY,
-                        vertexRadius = VERTEX_SIZE*scaleFactor,
+                        vertexRadius = VERTEX_SIZE*scaleFactor*headVertex.size,
                         arrowHeadLength = 20f*scaleFactor,
                         arrowHeadAngle = 30f,
                         lineColor = EDGE_COLOR.copy(alpha = EDGE_ALPHA),
@@ -255,7 +255,8 @@ fun EdgesView(vertices: List<VertexModel>, edges: List<EdgeModel>, scaleFactor: 
                         startY = startY,
                         endX = endX,
                         endY = endY,
-                        vertexRadius = VERTEX_SIZE*scaleFactor,
+                        vertexRadiusStart = VERTEX_SIZE*scaleFactor*tailVertex.size,
+                        vertexRadiusEnd = VERTEX_SIZE*scaleFactor*headVertex.size,
                         arrowHeadLength = 20f*scaleFactor,
                         arrowHeadAngle = 30f,
                         lineColor = EDGE_COLOR.copy(alpha = EDGE_ALPHA),
@@ -281,7 +282,8 @@ fun DrawScope.drawArrow(
     startY: Float,
     endX: Float,
     endY: Float,
-    vertexRadius: Float,
+    vertexRadiusStart: Float,
+    vertexRadiusEnd: Float,
     arrowHeadLength: Float,
     arrowHeadAngle: Float,
     lineColor: Color,
@@ -289,10 +291,10 @@ fun DrawScope.drawArrow(
 ) {
     val angle = atan2(endY - startY, endX - startX)
 
-    val startAdjustedX = startX + vertexRadius * cos(angle)
-    val startAdjustedY = startY + vertexRadius * sin(angle)
-    val endAdjustedX = endX - vertexRadius * cos(angle)
-    val endAdjustedY = endY - vertexRadius * sin(angle)
+    val startAdjustedX = startX + vertexRadiusStart * cos(angle)
+    val startAdjustedY = startY + vertexRadiusStart * sin(angle)
+    val endAdjustedX = endX - vertexRadiusEnd * cos(angle)
+    val endAdjustedY = endY - vertexRadiusEnd * sin(angle)
 
     val arrowX1 = endAdjustedX - arrowHeadLength * cos(angle - Math.toRadians(arrowHeadAngle.toDouble())).toFloat()
     val arrowY1 = endAdjustedY - arrowHeadLength * sin(angle - Math.toRadians(arrowHeadAngle.toDouble())).toFloat()

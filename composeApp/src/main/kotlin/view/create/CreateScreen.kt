@@ -81,6 +81,7 @@ class CreateScreen(val viewModel: GraphsContainerViewModel) : Screen {
                                     if (isDirected) if (isWeighted) DirectedWeightedGraph() else DirectedUnweightedGraph() else if (isWeighted) UndirectedWeightedGraph() else UndirectedUnweightedGraph(),
                                     graphName
                                 )
+                                newGraph.setupRandom(100)
                                 viewModel.addGraph(newGraph)
                                 navigator.push(WorkspaceScreen(newGraph))
                             }

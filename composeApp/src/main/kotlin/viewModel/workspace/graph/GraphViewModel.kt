@@ -1,10 +1,12 @@
 package viewModel.workspace.graph
 
+import androidx.compose.runtime.key
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.lifecycle.ViewModel
+import display.keyVertex.GraphKeyVertex
 import display.placement.GraphPlacement
 import graph.Graph
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +20,9 @@ import model.VertexModel
 import view.workspace.graph.MAX_SCALE_FACTOR
 import view.workspace.graph.MIN_SCALE_FACTOR
 import viewModel.workspace.graph.utils.GraphStorage
+import java.lang.Math.pow
+import kotlin.math.max
+import kotlin.math.min
 
 enum class GraphInteractionMode {Pan, Delete, Drag, Create, Select}
 
@@ -196,5 +201,38 @@ class GraphViewModel(
 
         setScaleFactor(scaleChange)
         setOffsetFactor(offsetChange)
+    }
+
+    fun runKeyVertex(keyVertex: GraphKeyVertex, maxIncreaseSize: Float = 1f, onFinished: () -> Unit) {
+        CoroutineScope(Dispatchers.Default).launch {
+            updateGraph { g ->
+                val keyVertices = keyVertex.getKeyVertices(g)
+                val maxKeyVertex = keyVertices.values.max()
+                println(keyVertices)
+                g.vertexSet().forEach { v ->
+                    keyVertices[v]?.let {
+                        v.size = max(1f, it / maxKeyVertex * maxIncreaseSize)
+                    }
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                onFinished()
+            }
+        }
+    }
+
+    fun setupRandom(n: Int) {
+        val vv = mutableListOf<VertexModel>()
+        val r = 1000
+
+        for (i in 0..n) {
+            vv.add(VertexModel(i, (0..r).random().toFloat(), (0..r).random().toFloat(), i.toString()))
+            graph.addVertex(vv.last())
+            repeat(2) {
+                val ri = (pow((0..i).random().toDouble(), 2.952)/pow(i.toDouble(), 2.952)*i).toInt()
+                graph.addEdge(vv[i], vv[ri], EdgeModel(i, ri, "$i"))
+            }
+        }
     }
 }
