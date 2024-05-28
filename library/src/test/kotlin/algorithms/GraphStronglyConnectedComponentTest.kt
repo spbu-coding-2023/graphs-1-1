@@ -8,13 +8,19 @@ import graph.implementation.UndirectedWeightedGraph
 import graph.implementation.UndirectedUnweightedGraph
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 class GraphStronglyConnectedComponentTest {
-    val SCCsearch = GraphSCCSearchWithTarjan()
+    var SCCsearch = GraphSCCSearchWithTarjan<String, Int>()
+
+    @BeforeEach
+    fun setupSCCsearch(){
+        SCCsearch = GraphSCCSearchWithTarjan()
+    }
     private fun setupGraph1(graph: Graph<String, Int>): Graph<String, Int> {
         graph.addVertex("a")
         graph.addVertex("b")

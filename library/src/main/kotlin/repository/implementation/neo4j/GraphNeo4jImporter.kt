@@ -4,8 +4,8 @@ import org.neo4j.driver.AuthTokens
 import org.neo4j.driver.Driver
 import org.neo4j.driver.Session
 import graph.Graph
-import repository.DatabaseGraphImporter
 import graph.implementation.UndirectedUnweightedGraph
+import repository.DatabaseGraphImporter
 
 class GraphNeo4jImporter(private val driverFactory: (String, org.neo4j.driver.AuthToken) -> Driver): DatabaseGraphImporter {
     /* Example of credentials

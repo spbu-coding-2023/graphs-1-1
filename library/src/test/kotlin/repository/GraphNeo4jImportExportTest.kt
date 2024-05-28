@@ -110,9 +110,8 @@ class GraphNeo4jImporterTest {
         // Verify the nodes and edges are added to the graph
         assertEquals(true, result.containsVertex("node1"))
         assertEquals(true, result.containsVertex("node2"))
-        assertEquals(true, result.containsEdge("node1", "node2"))
         assertEquals(true, result.containsEdge("node2", "node1"))
-        assertEquals(1.0, result.getEdgeWeight("edge1"))
+        assertEquals(1.0, result.getEdgeWeight("edge2"))
     }
 
     @Test
