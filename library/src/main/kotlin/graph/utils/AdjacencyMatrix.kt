@@ -16,10 +16,9 @@ class AdjacencyMatrix<V, E> {
         val headIndex = verticesMap[head]
         if (tailIndex == null || headIndex == null)
             throw IllegalArgumentException("Can not set edge by vertices: Both vertices must exist")
-        val prev = matrix[tailIndex][headIndex]
+        val prev = matrix[tailIndex][headIndex] == null
         matrix[tailIndex][headIndex] = e
-        if (prev == null) return true
-        return false
+        return prev
     }
 
     fun add(v: V): Boolean {
