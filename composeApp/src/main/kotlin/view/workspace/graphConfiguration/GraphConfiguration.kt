@@ -211,6 +211,34 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 )
             }
         ),
+        GraphRunnableOption(
+            title = "Remove Edge",
+            description = "Removes an edge between two vertices. If two same vertices chosen removes self loop if it exists",
+            onRun = {
+                val vertexStartId = selectedVertexStartId
+                val vertexEndId = selectedVertexEndId
+                if (vertexStartId == null || vertexEndId == null) return@GraphRunnableOption
+                val graphVertices = viewModel.vertices.value
+                val vertexStart = graphVertices.find { it.id == vertexStartId }
+                val vertexEnd = graphVertices.find { it.id == vertexEndId }
+                if (vertexStart == null || vertexEnd == null) return@GraphRunnableOption
+                viewModel.removeEdge(vertexStart, vertexEnd)
+            },
+            content = {
+                NumberInputPicker(
+                    text = "starting vertex id",
+                    onChange = {
+                        it?.let { selectedVertexStartId = it }
+                    }
+                )
+                NumberInputPicker(
+                    text = "ending vertex id",
+                    onChange = {
+                        it?.let { selectedVertexEndId = it }
+                    }
+                )
+            }
+        ),
 
 
 

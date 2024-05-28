@@ -296,6 +296,12 @@ class GraphViewModel(
         }
     }
 
+    fun removeEdge(vertexFrom: VertexModel, vertexTo: VertexModel) {
+        updateGraph { g ->
+            g.removeEdge(vertexFrom, vertexTo)
+        }
+    }
+
     fun setupRandom(n: Int) {
         val vv = mutableListOf<VertexModel>()
         val r = 1000
