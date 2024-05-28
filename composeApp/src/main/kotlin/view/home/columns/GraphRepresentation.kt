@@ -9,7 +9,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -18,11 +21,33 @@ import view.workspace.WorkspaceScreen
 import viewModel.workspace.graph.GraphViewModel
 import viewModel.workspace.graph.GraphsContainerViewModel
 import viewModel.workspace.graph.utils.LocalDatabase
+import kotlin.math.abs
 
 @Composable
-fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: GraphsContainerViewModel, iconBgColor: Color, titleColor: Color, subTitleColor: Color) {
+fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: GraphsContainerViewModel, titleColor: Color, subTitleColor: Color) {
     var isDeleteDialogShown by remember { mutableStateOf(false) }
     val navigator = LocalNavigator.currentOrThrow
+    val density = LocalDensity.current.density
+    val colorTriples = listOf(
+        Triple(Color(0xFF6200EE), Color(0xFFB07FF6), Color.White),
+        Triple(Color(0xFFF44336), Color(0xFFFAB3AE), Color.White),
+        Triple(Color(0xFF38761d), Color(0xFF9BBA8E), Color.White),
+        Triple(Color(0xFFC90076), Color(0xFFE999C8), Color.White),
+        Triple(Color(0xFF16537E), Color(0xFFD0DCE5), Color.White),
+    )
+    val colorTriple = colorTriples[abs(viewModel.graphName.hashCode()) % colorTriples.size]
+
+    fun createLinearGradient(): Brush {
+        return Brush.linearGradient(
+            colors = listOf(colorTriple.first, colorTriple.second),
+            start = Offset(0f, 0f),
+            end = Offset(50f*density, 50f*density)
+        )
+    }
+
+    var iconBgColors: Brush by mutableStateOf(createLinearGradient())
+    var iconTextColor: Color by mutableStateOf(colorTriple.third)
+
 
     Row(
         modifier = Modifier
@@ -37,12 +62,12 @@ fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: Gra
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxSize()
-                                   .background(brush = viewModel.iconBgColors)
+                                   .background(brush = iconBgColors)
             ) {
                 Text(
                     text = viewModel.graphName.slice(0..1).uppercase(),
                     fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    color = viewModel.iconTextColor
+                    color = iconTextColor
                 )
             }
         }

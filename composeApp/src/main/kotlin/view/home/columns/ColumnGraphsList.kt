@@ -22,7 +22,6 @@ fun ColumnGraphsList(modifier: Modifier, graphsContainerViewModel: GraphsContain
             GraphRepresentation(
                 viewModel = graph,
                 graphsContainerViewModel = graphsContainerViewModel,
-                iconBgColor =  MaterialTheme.colorScheme.onBackground,
                 titleColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 subTitleColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = .7f)
             )
