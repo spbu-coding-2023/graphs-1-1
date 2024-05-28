@@ -5,11 +5,15 @@ import graph.Graph
 import org.gephi.graph.api.Edge
 import org.gephi.graph.api.GraphController
 import org.gephi.graph.api.Node
+import org.gephi.project.api.ProjectController
 import org.gephi.statistics.plugin.Modularity
 import org.openide.util.Lookup
 
 class LouvainCommunity : GraphCommunity {
     override fun <V, E> getCommunities(graph: Graph<V, E>): Map<V, Int> {
+        val pc = Lookup.getDefault().lookup(ProjectController::class.java)
+        pc.newProject()
+
         val graphModel = Lookup.getDefault().lookup(GraphController::class.java).graphModel
         val graphType = graphModel.directedGraph
 

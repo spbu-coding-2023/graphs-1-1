@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import display.community.implementation.LouvainCommunity
 import display.keyVertex.implementation.GraphBetweennessCentrality
 import display.minimumSpanningTree.implementation.GraphMSTWithKruskal
 import display.pathSearch.implementation.GraphDijkstraPathFinder
@@ -145,12 +146,36 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 viewModel.runMST(graphMST, { isRunning = false })
             }
         ),
+        GraphRunnableOption(
+            title = "Community detection",
+            description = "Runs Louvain algorithm to find communities in the graph",
+            onRun = {
+                isRunning = true
+                val graphCommunity = LouvainCommunity()
+                viewModel.runResetCommunities()
+                viewModel.runCommunity(graphCommunity, { isRunning = false })
+            }
+        ),
+        GraphRunnableOption(
+            title = "Deselect edges",
+            description = "Deselects all selected edges in the graph",
+            onRun = {
+                viewModel.runResetEdges()
+            }
+        ),
+        GraphRunnableOption(
+            title = "Deselect communities",
+            description = "Sets all vertices to one community",
+            onRun = {
+                viewModel.runResetCommunities()
+            }
+        ),
 
 
 
 
 
-    )
+        )
 
     Column(
         modifier = Modifier
