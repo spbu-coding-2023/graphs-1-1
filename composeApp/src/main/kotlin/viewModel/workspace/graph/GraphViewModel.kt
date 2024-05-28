@@ -7,6 +7,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.lifecycle.ViewModel
 import display.community.GraphCommunity
+import display.cycleSearch.GraphVertexCycleSearch
 import display.keyVertex.GraphKeyVertex
 import display.minimumSpanningTree.GraphMST
 import display.pathSearch.GraphPathSearch
@@ -281,6 +282,22 @@ class GraphViewModel(
                 val listOfCommunities = graphSCC.getSCCs(g)
                 listOfCommunities.forEachIndexed { i, communityOfVertices ->
                     communityOfVertices.forEach { v -> v.communityId = i }
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                onFinished()
+            }
+        }
+    }
+
+    fun runCycleSearch(graphCycleSearch: GraphVertexCycleSearch, vertexFrom: VertexModel, onFinished: () -> Unit) {
+        CoroutineScope(Dispatchers.Default).launch {
+            updateGraph { g ->
+                val cycle = graphCycleSearch.getCycle(g, vertexFrom)
+                if (cycle.isEmpty()) return@updateGraph
+                repeat(cycle.size-1) { i ->
+                    g.getEdge(cycle[i], cycle[i+1])?.isHighlighted = true
                 }
             }
 
