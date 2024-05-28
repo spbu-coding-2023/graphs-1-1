@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import display.bridgeSearch.implementation.GraphTarjanBridgeFinder
 import display.community.implementation.LouvainCommunity
 import display.cycleSearch.implementation.GraphVertexCycleSearchWithDfs
 import display.keyVertex.implementation.GraphBetweennessCentrality
@@ -265,7 +266,17 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 )
             }
         ),
-
+        GraphRunnableOption(
+            title = "Search Bridges",
+            description = "Finds all bridges in the graph",
+            onRun = {
+                if (viewModel.isDirected()) return@GraphRunnableOption
+                isRunning = true
+                viewModel.runResetEdges()
+                val graphBridges = GraphTarjanBridgeFinder()
+                viewModel.runBridges(graphBridges, { isRunning = false })
+            }
+        ),
 
 
 
