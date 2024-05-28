@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import display.bridgeSearch.implementation.GraphTarjanBridgeFinder
@@ -326,11 +327,15 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState())
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clip(shape = MaterialTheme.shapes.large)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
                 ) {
                     runnableOptions.forEach { option ->
                         ConfigurationOption(
-                            modifier = Modifier.padding(4.dp),
+                            modifier = Modifier.padding(8.dp),
                             title = option.title,
                             description = option.description,
                             onClick = option.onRun,

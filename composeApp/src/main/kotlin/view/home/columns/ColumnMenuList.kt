@@ -29,7 +29,7 @@ fun ColumnMenuList(modifier: Modifier, graphsContainerViewModel: GraphsContainer
         ) {
             Column(
                 modifier = Modifier
-                    .padding(16.dp, 32.dp)
+                    .padding(16.dp, 64.dp)
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
                 horizontalAlignment = Alignment.CenterHorizontally
