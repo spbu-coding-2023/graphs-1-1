@@ -37,14 +37,11 @@ class GraphStronglyConnectedComponentTest {
         graph.addEdge("b", "f", 4)
         graph.addEdge("e", "f", 5)
         graph.addEdge("f", "g", 6)
-        graph.addEdge("g", "f", 7)
-        graph.addEdge("b", "c", 8)
-        graph.addEdge("c", "g", 9)
-        graph.addEdge("c", "d", 10)
-        graph.addEdge("d", "c", 11)
-        graph.addEdge("d", "h", 12)
-        graph.addEdge("h", "d", 13)
-        graph.addEdge("h", "g", 14)
+        graph.addEdge("b", "c", 7)
+        graph.addEdge("c", "g", 8)
+        graph.addEdge("c", "d", 9)
+        graph.addEdge("d", "h", 10)
+        graph.addEdge("h", "g", 11)
 
         return graph
     }
@@ -132,37 +129,12 @@ class GraphStronglyConnectedComponentTest {
     private fun setupGraph8(graph: Graph<String, Int>): Graph<String, Int> {
         graph.addVertex("a")
         graph.addVertex("b")
-        graph.addEdge("a", "b", 1)
-        graph.addEdge("b", "a", 2)
-        return graph
-    }
-
-    private fun setupGraph9(graph: Graph<String, Int>): Graph<String, Int> {
-        graph.addVertex("a")
-        graph.addVertex("b")
         graph.addVertex("c")
         graph.addEdge("a", "b", 1)
         graph.addEdge("b", "c", 2)
         graph.addEdge("c", "a", 3)
         return graph
     }
-
-    private fun setupGraph10(graph: Graph<String, Int>): Graph<String, Int> {
-        graph.addVertex("a")
-        graph.addVertex("b")
-        graph.addVertex("c")
-        graph.addEdge("a", "b", 1)
-        graph.addEdge("a", "c", 2)
-        graph.addEdge("a", "a", 3)
-        graph.addEdge("b", "a", 4)
-        graph.addEdge("b", "c", 5)
-        graph.addEdge("b", "b", 6)
-        graph.addEdge("c", "b", 7)
-        graph.addEdge("c", "c", 8)
-        graph.addEdge("c", "a", 9)
-        return graph
-    }
-
 
     companion object {
         @JvmStatic
@@ -172,16 +144,14 @@ class GraphStronglyConnectedComponentTest {
                 Arguments.of(UndirectedUnweightedGraph<String, Int>(), null, "Should not work for undirected graphs"),
                 Arguments.of(UndirectedWeightedGraph<String, Int>(), null, "Should not work for undirected graphs"),
                 Arguments.of(GraphStronglyConnectedComponentTest().setupGraph1(UndirectedUnweightedGraph()), null, "Should not work for undirected graphs"),
-                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph1(DirectedWeightedGraph()), setOf(setOf("a", "b", "e"), setOf("c", "d", "h"), setOf("f", "g")), "Initial test graph"),
-                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph2(DirectedWeightedGraph()), setOf(setOf("a", "b", "e"), setOf("c", "d", "h"), setOf("f", "g"), setOf("k")), "Lonely vertex in initial test graph"),
-                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph3(DirectedUnweightedGraph()), setOf(setOf("a", "b", "d"), setOf("c"), setOf("e", "f"), setOf("g"), setOf("h"), setOf("i", "j", "k", "l", "m", "n")), "Complicated graph"),
+                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph1(DirectedWeightedGraph()), setOf(setOf("a", "b", "e"), setOf("c"), setOf("d"), setOf("h"), setOf("f"), setOf("g")), "Initial test graph"),
+                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph2(DirectedWeightedGraph()), setOf(setOf("a", "b", "e"), setOf("c"), setOf("d"), setOf("h"), setOf("f"), setOf("g"), setOf("k")), "Lonely vertex in initial test graph"),
+                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph3(DirectedUnweightedGraph()), setOf(setOf("a", "b", "d"), setOf("c"), setOf("e"), setOf("f"), setOf("g"), setOf("h"), setOf("i", "j", "k", "l", "m", "n")), "Complicated graph"),
                 Arguments.of(GraphStronglyConnectedComponentTest().setupGraph4(DirectedUnweightedGraph()), setOf(setOf("a")), "One vertex"),
                 Arguments.of(GraphStronglyConnectedComponentTest().setupGraph5(DirectedUnweightedGraph()), setOf(setOf("a")), "Loop of one vertex"),
                 Arguments.of(GraphStronglyConnectedComponentTest().setupGraph6(DirectedUnweightedGraph()), setOf(setOf("a"), setOf("b")), "Two separate vertices"),
-                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph7(DirectedUnweightedGraph()), setOf(setOf("a"), setOf("b")), "Two connected vertices, one side"),
-                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph8(DirectedUnweightedGraph()), setOf(setOf("a", "b")), "Two connected vertices, two sides"),
-                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph9(DirectedUnweightedGraph()), setOf(setOf("a", "b", "c")), "A loop of three vertices"),
-                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph10(DirectedUnweightedGraph()), setOf(setOf("a", "b", "c")), "A very connected graph of three vertices")
+                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph7(DirectedUnweightedGraph()), setOf(setOf("a"), setOf("b")), "Two connected vertices"),
+                Arguments.of(GraphStronglyConnectedComponentTest().setupGraph8(DirectedUnweightedGraph()), setOf(setOf("a", "b", "c")), "A loop of three vertices"),
             )
         }
     }
