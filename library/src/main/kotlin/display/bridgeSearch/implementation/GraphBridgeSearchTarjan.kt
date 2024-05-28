@@ -42,8 +42,6 @@ class GraphTarjanBridgeFinder : GraphBridgeSearch {
         var localTime = time + 1
 
         for (adjacentVertex in graph.outgoingVerticesOf(currentVertex)) {
-//            val edge =
-//            val adjacentVertex = graph.getEdgeHead(edge)
             if (discoveryTimes[adjacentVertex] == -1) {
                 parents[adjacentVertex] = currentVertex
                 dfs(graph, adjacentVertex, discoveryTimes, lowestDiscoveryTimes, parents, bridges, localTime)
