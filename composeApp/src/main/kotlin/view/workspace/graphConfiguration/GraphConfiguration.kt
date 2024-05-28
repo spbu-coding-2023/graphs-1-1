@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import display.keyVertex.implementation.GraphBetweennessCentrality
+import display.minimumSpanningTree.implementation.GraphMSTWithKruskal
+import display.pathSearch.implementation.GraphDijkstraPathFinder
 import display.pathSearch.implementation.GraphPathSearchBellmanFord
 import display.placement.implementation.GraphPlacementRandom
 import display.placement.implementation.GraphPlacementYifanHu
@@ -39,7 +41,7 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
 
     val runnableOptions = listOf(
         GraphRunnableOption(
-            title = "Placement",
+            title = "Placement Yifan Hu",
             description = "runs Yifan Hu algorithm",
             onRun = {
                 isRunning = true
@@ -49,7 +51,7 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
             }
         ),
         GraphRunnableOption(
-            title = "Placement",
+            title = "Placement Random",
             description = "places graph randomly",
             onRun = {
                 isRunning = true
@@ -71,10 +73,9 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
             }
         ),
         GraphRunnableOption(
-            title = "Find path",
+            title = "Find path Bellman-Ford",
             description = "Find shortest path with Bellman-Ford algorithm between two vertices",
             onRun = {
-                isRunning = true
                 val vertexStartId = selectedVertexStartId
                 val vertexEndId = selectedVertexEndId
                 if (vertexStartId == null || vertexEndId == null) return@GraphRunnableOption
@@ -83,6 +84,7 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 val vertexEnd = graphVertices.find { it.id == vertexEndId }
                 if (vertexStart == null || vertexEnd == null) return@GraphRunnableOption
                 val graphShortestPath = GraphPathSearchBellmanFord()
+                isRunning = true
                 viewModel.runResetEdges()
                 viewModel.runShortestPath(graphShortestPath, vertexStart, vertexEnd, { isRunning = false })
             },
@@ -101,6 +103,53 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 )
             }
         ),
+        GraphRunnableOption(
+            title = "Find path Dijkstra",
+            description = "Find shortest path with Dijkstra algorithm between two vertices",
+            onRun = {
+                if (!viewModel.isEdgesPositive()) return@GraphRunnableOption
+                val vertexStartId = selectedVertexStartId
+                val vertexEndId = selectedVertexEndId
+                if (vertexStartId == null || vertexEndId == null) return@GraphRunnableOption
+                val graphVertices = viewModel.vertices.value
+                val vertexStart = graphVertices.find { it.id == vertexStartId }
+                val vertexEnd = graphVertices.find { it.id == vertexEndId }
+                if (vertexStart == null || vertexEnd == null) return@GraphRunnableOption
+                val graphShortestPath = GraphDijkstraPathFinder()
+                isRunning = true
+                viewModel.runResetEdges()
+                viewModel.runShortestPath(graphShortestPath, vertexStart, vertexEnd, { isRunning = false })
+            },
+            content = {
+                NumberInputPicker(
+                    text = "starting vertex id",
+                    onChange = {
+                        it?.let { selectedVertexStartId = it }
+                    }
+                )
+                NumberInputPicker(
+                    text = "ending vertex id",
+                    onChange = {
+                        it?.let { selectedVertexEndId = it }
+                    }
+                )
+            }
+        ),
+        GraphRunnableOption(
+            title = "Find MST",
+            description = "Finds minimum spanning tree in the graph",
+            onRun = {
+                isRunning = true
+                val graphMST = GraphMSTWithKruskal()
+                viewModel.runResetEdges()
+                viewModel.runMST(graphMST, { isRunning = false })
+            }
+        ),
+
+
+
+
+
     )
 
     Column(

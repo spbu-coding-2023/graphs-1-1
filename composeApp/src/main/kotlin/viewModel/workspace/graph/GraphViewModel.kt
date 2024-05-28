@@ -7,6 +7,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.lifecycle.ViewModel
 import display.keyVertex.GraphKeyVertex
+import display.minimumSpanningTree.GraphMST
 import display.pathSearch.GraphPathSearch
 import display.placement.GraphPlacement
 import graph.Graph
@@ -135,12 +136,6 @@ class GraphViewModel(
             }
         }
     }
-    /**
-     * Returns if edge is directed or not
-     */
-    fun isEdgesDirected(): Boolean {
-        return graph.configuration.isDirected()
-    }
 
     fun getVertexNextId(): Int {
 //        var nextId = 0
@@ -243,6 +238,18 @@ class GraphViewModel(
         }
     }
 
+    fun runMST(graphMST: GraphMST, onFinished: () -> Unit) {
+        CoroutineScope(Dispatchers.Default).launch {
+            updateGraph { g ->
+                graphMST.getMST(g).forEach { it.isHighlighted = true }
+            }
+
+            withContext(Dispatchers.Main) {
+                onFinished()
+            }
+        }
+    }
+
     fun setupRandom(n: Int) {
         val vv = mutableListOf<VertexModel>()
         val r = 1000
@@ -252,8 +259,18 @@ class GraphViewModel(
             graph.addVertex(vv.last())
             repeat(2) {
                 val ri = (pow((0..i).random().toDouble(), 2.952)/pow(i.toDouble(), 2.952)*i).toInt()
-                graph.addEdge(vv[i], vv[ri], EdgeModel(i, ri, "$i"))
+                val randW = (-1..3).random()
+                graph.addEdge(vv[i], vv[ri], EdgeModel(i, ri, "$i", weight = randW.toDouble()), randW.toDouble())
             }
         }
     }
+
+    fun isWeighted(): Boolean {
+        return graph.configuration.isWeighted()
+    }
+
+    fun isEdgesPositive(): Boolean {
+        return edges.value.all { it.weight >= 0 }
+    }
+
 }
