@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import graphses.composeapp.generated.resources.Res
-import graphses.composeapp.generated.resources.cat
+//import graphses.composeapp.generated.resources.cat
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.imageResource
 import org.jetbrains.compose.resources.painterResource
@@ -46,15 +46,15 @@ fun HeaderLogo() {
             .fillMaxHeight(1-.618f)
             .background(MaterialTheme.colorScheme.primary)
     ) {
-        Image(
-            modifier = Modifier
-                .fillMaxSize()
-                .alpha(.2f)
-            ,
-            contentScale = ContentScale.FillBounds,
-            painter = painterResource(Res.drawable.cat),
-            contentDescription = "catImage"
-        )
+//        Image(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .alpha(.2f)
+//            ,
+//            contentScale = ContentScale.FillBounds,
+//            painter = painterResource(Res.drawable.cat),
+//            contentDescription = "catImage"
+//        )
 
         Row(
             modifier = Modifier
