@@ -1,5 +1,6 @@
 package view.home.columns
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -29,16 +30,24 @@ fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: Gra
     ) {
         Surface(
            modifier = Modifier
-               .size(48.dp),
-           shape = MaterialTheme.shapes.medium,
-            color = iconBgColor
+               .size(40.dp)
+               .offset(y = 4.dp),
+            shape = MaterialTheme.shapes.medium,
         ) {
-            Text(
-                text = viewModel.graphName.slice(0..1).uppercase(),
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                color = Color.White
-            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+                                   .background(brush = viewModel.iconBgColors)
+            ) {
+                Text(
+                    text = viewModel.graphName.slice(0..1).uppercase(),
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                    color = viewModel.iconTextColor
+                )
+            }
         }
+
+        Spacer(modifier = Modifier.width(8.dp))
 
         Column(
             modifier = Modifier

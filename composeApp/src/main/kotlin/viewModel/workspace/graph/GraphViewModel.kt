@@ -1,10 +1,15 @@
 package viewModel.workspace.graph
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import display.community.GraphCommunity
 import display.keyVertex.GraphKeyVertex
@@ -25,8 +30,8 @@ import view.workspace.graph.MAX_SCALE_FACTOR
 import view.workspace.graph.MIN_SCALE_FACTOR
 import viewModel.workspace.graph.utils.GraphStorage
 import java.lang.Math.pow
+import kotlin.math.abs
 import kotlin.math.max
-import kotlin.math.min
 
 enum class GraphInteractionMode {Pan, Delete, Drag, Create, Select}
 
@@ -34,6 +39,13 @@ class GraphViewModel(
     initialGraph: Graph<VertexModel, EdgeModel>,
     val graphName: String
 ) : ViewModel() {
+    private val colorTriples = listOf(
+        Triple(Color(0xFF6200EE), Color(0xFFB07FF6), Color.White),
+        Triple(Color(0xFFF44336), Color(0xFFFAB3AE), Color.White),
+        Triple(Color(0xFF38761d), Color(0xFF9BBA8E), Color.White),
+        Triple(Color(0xFFC90076), Color(0xFFE999C8), Color.White),
+        Triple(Color(0xFF16537E), Color(0xFFD0DCE5), Color.White),
+    )
     private val graph = initialGraph
     val storage = GraphStorage({ graph }, graphName)
 
@@ -57,6 +69,19 @@ class GraphViewModel(
 
     private val _updated = MutableStateFlow(false)
     val updated: StateFlow<Boolean> = _updated
+
+    val colorTriple = colorTriples[abs(graphName.hashCode()) % colorTriples.size]
+
+    var iconBgColors: Brush by mutableStateOf(createLinearGradient())
+    var iconTextColor: Color by mutableStateOf(colorTriple.third)
+
+    private fun createLinearGradient(): Brush {
+        return Brush.linearGradient(
+            colors = listOf(colorTriple.first, colorTriple.second),
+            start = Offset(0f, 0f),
+            end = Offset(50f, 50f)
+        )
+    }
 
     init {
         updateState()
