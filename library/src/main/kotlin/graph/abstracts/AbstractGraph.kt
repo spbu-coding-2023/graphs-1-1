@@ -39,8 +39,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
 
     private fun addFullEdge(tail: V, head: V, e: E, w: Double): Boolean {
         val oppositeEdge = structure.set(head, tail, null)
-        val weight = if (configuration.isUnweighted()) DEFAULT_EDGE_WEIGHT else w
-        return structure.set(tail, head, Edge(e, weight)) || oppositeEdge
+        return structure.set(tail, head, Edge(e, w)) || oppositeEdge
     }
 
     override fun containsVertex(v: V): Boolean {
@@ -138,7 +137,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     }
 
     override fun setEdgeWeight(e: E, w: Double) {
-        if (configuration.isUnweighted()) return
+//        if (configuration.isUnweighted()) return
 
         structure.matrix.forEach { row -> row.forEach { edgeItem ->
             val edge = edgeItem?.data
@@ -147,7 +146,7 @@ abstract class AbstractGraph<V, E>(isDirected: Boolean, isWeighted: Boolean) : G
     }
 
     override fun setEdgeWeight(tail: V, head: V, w: Double) {
-        if (configuration.isUnweighted()) return
+//        if (configuration.isUnweighted()) return
 
         structure.get(tail, head)?.weight = w
     }
