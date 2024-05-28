@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import viewModel.workspace.graph.GraphInteractionMode
 import viewModel.workspace.graph.GraphViewModel
 
-data class GraphTool(val icon: ImageVector, val name: String, val interactiveMode: GraphInteractionMode) {
+private data class GraphTool(val icon: ImageVector, val name: String, val interactiveMode: GraphInteractionMode) {
     fun onClick(viewModel: GraphViewModel) {
         viewModel.setInteractionMode(interactiveMode)
     }
