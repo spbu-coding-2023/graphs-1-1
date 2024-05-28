@@ -230,6 +230,12 @@ class GraphViewModel(
         }
     }
 
+    fun runResetSize() {
+        updateGraph { g ->
+            g.vertexSet().forEach { v -> v.size = 1f }
+        }
+    }
+
     fun runShortestPath(graphPathSearch: GraphPathSearch, vertexFrom: VertexModel, vertexTo: VertexModel, onFinished: () -> Unit) {
         CoroutineScope(Dispatchers.Default).launch {
             updateGraph { g ->
