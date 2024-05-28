@@ -127,6 +127,9 @@ fun GraphView(viewModel: GraphViewModel) {
             }
     ) {
 
+        LaunchedEffect(Unit) {
+            viewModel.setOffsetFactor(Offset(constraints.maxWidth.toFloat()/2, constraints.maxHeight.toFloat()/2))
+        }
         EdgesView(vertices, edges, scaleFactor, offsetFactor)
 
         key(updated) {
@@ -143,7 +146,6 @@ fun GraphView(viewModel: GraphViewModel) {
         selectionArea?.let { area ->
             DrawSelectArea(area)
         }
-
     }
 }
 
