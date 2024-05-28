@@ -18,6 +18,10 @@ class GraphStorage(
     private val jsonExporter = GraphJSONExporter()
 
     init {
+        initGraph()
+    }
+
+    fun initGraph() {
         if (!appDir.exists()) {
             appDir.mkdirs()
         }
@@ -29,7 +33,6 @@ class GraphStorage(
         } else {
             importGraph()
         }
-
     }
 
     fun importGraph() {
