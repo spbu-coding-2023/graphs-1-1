@@ -40,7 +40,7 @@ private data class GraphRunnableOption(val title: String, val description: Strin
 fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
     var isShown by rememberSaveable { mutableStateOf(true) }
     var isRunning by remember { mutableStateOf(false) }
-    var keyVertexIncrease by remember { mutableStateOf(1) }
+    var keyVertexIncrease by remember { mutableStateOf(2) }
     var selectedVertexStartId by remember { mutableStateOf<Int?>(null) }
     var selectedVertexEndId by remember { mutableStateOf<Int?>(null) }
 
@@ -74,7 +74,14 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 viewModel.runKeyVertex(graphBC, keyVertexIncrease.toFloat(), { isRunning = false })
             },
             content = {
-                NumberRangePicker(1..4, "Increase", { inc -> keyVertexIncrease = inc })
+                NumberRangePicker(2..5, "Increase", { inc -> keyVertexIncrease = inc })
+            }
+        ),
+        GraphRunnableOption(
+            title = "Deselect Size",
+            description = "Sets initial size to all vertices",
+            onRun = {
+                viewModel.runResetSize()
             }
         ),
         GraphRunnableOption(

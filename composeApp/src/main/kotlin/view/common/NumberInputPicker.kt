@@ -30,7 +30,7 @@ fun NumberInputPicker(text: String, onChange: (Int?) -> Unit) {
         TextField(
             value = if (currentValue == null) "" else currentValue.toString(),
             onValueChange = {
-                if (it.isEmpty() || !it.matches(pattern)) {
+                if (it.isEmpty() || !it.matches(pattern) || it.length > 8) {
                     currentValue = null
                 } else {
                     currentValue = it.toInt()
