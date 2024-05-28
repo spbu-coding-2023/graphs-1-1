@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 
 
-class GraphKeyVertexSearchTestTest {
+class GraphKeyVertexSearchTest {
     var UDWgraph = UndirectedWeightedGraph<Int, String>()
     var DWgraph = DirectedWeightedGraph<Int, String>()
     val KeyVertexFinder = GraphBetweennessCentrality()
@@ -30,7 +30,6 @@ class GraphKeyVertexSearchTestTest {
         graph.addEdge(2, 3, "B")
         graph.addEdge(1, 3, "C")
         graph.addEdge(2, 4, "D")
-
     }
 
     fun setupGraph2(graph: Graph<Int, String>) {

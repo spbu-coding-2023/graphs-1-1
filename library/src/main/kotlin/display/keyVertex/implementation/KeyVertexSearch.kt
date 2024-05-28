@@ -7,14 +7,10 @@ import java.util.*
 
 
 class GraphBetweennessCentrality : GraphKeyVertex {
-//    fun <V, E> successors(graph: Graph<V, E>, v: V): Set<V> {
-//        val incoming = graph.incomingVerteciesOf(v)
-//        val outgoing = graph.outgoingVerteciesOf(v)
-//        return incoming.union(outgoing)
-//    }
-
     fun <V, E> successors(graph: Graph<V, E>, v: V): Set<V> {
-        return graph.outgoingVerticesOf(v)
+        val incoming = graph.incomingVerticesOf(v)
+        val outgoing = graph.outgoingVerticesOf(v)
+        return incoming.union(outgoing)
     }
 
 
