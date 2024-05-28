@@ -1,5 +1,6 @@
 package view.settings
 
+import view.common.CommonScreenLayout
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -32,72 +33,74 @@ class SettingsScreen : Screen {
         var savedNeo4jUser by remember { mutableStateOf("") }
         var savedNeo4jPassword by remember { mutableStateOf("") }
 
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(onClick = {
-                    showSQLiteInput = true
-                    showNeo4jInputs = false
-                }, modifier = Modifier.weight(1f).padding(8.dp)) {
-                    Text("SQLite", modifier = Modifier.fillMaxWidth(), color = Color.White)
-                }
-                Button(onClick = {
-                    showSQLiteInput = false
-                    showNeo4jInputs = true
-                }, modifier = Modifier.weight(1f).padding(8.dp)) {
-                    Text("neo4j", modifier = Modifier.fillMaxWidth(), color = Color.White)
-                }
-            }
-
-            if (showSQLiteInput) {
-                OutlinedTextField(
-                    value = sqlitePath,
-                    onValueChange = { sqlitePath = it },
-                    label = { Text("Please enter path to the local database") },
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-                )
-            }
-
-            if (showNeo4jInputs) {
-                OutlinedTextField(
-                    value = neo4jUrl,
-                    onValueChange = { neo4jUrl = it },
-                    label = { Text("Please enter URL") },
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-                )
-                OutlinedTextField(
-                    value = neo4jUser,
-                    onValueChange = { neo4jUser = it },
-                    label = { Text("Please enter user name") },
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-                )
-                OutlinedTextField(
-                    value = neo4jPassword,
-                    onValueChange = { neo4jPassword = it },
-                    label = { Text("Please enter password") },
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-                )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Button(
-                    onClick = { navigator.pop() },
-                    modifier = Modifier.padding(end = 8.dp)
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "backIcon")
-                    Text("Back")
-                }
-                Button(
-                    onClick = {
-                        savedSqlitePath = sqlitePath.text
-                        savedNeo4jUrl = neo4jUrl.text
-                        savedNeo4jUser = neo4jUser.text
-                        savedNeo4jPassword = neo4jPassword.text
+        CommonScreenLayout("Settings") {
+            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    Button(onClick = {
+                        showSQLiteInput = true
+                        showNeo4jInputs = false
+                    }, modifier = Modifier.weight(1f).padding(8.dp)) {
+                        Text("SQLite", modifier = Modifier.fillMaxWidth(), color = Color.White)
                     }
+                    Button(onClick = {
+                        showSQLiteInput = false
+                        showNeo4jInputs = true
+                    }, modifier = Modifier.weight(1f).padding(8.dp)) {
+                        Text("neo4j", modifier = Modifier.fillMaxWidth(), color = Color.White)
+                    }
+                }
+
+                if (showSQLiteInput) {
+                    OutlinedTextField(
+                        value = sqlitePath,
+                        onValueChange = { sqlitePath = it },
+                        label = { Text("Please enter path to the local database") },
+                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+                    )
+                }
+
+                if (showNeo4jInputs) {
+                    OutlinedTextField(
+                        value = neo4jUrl,
+                        onValueChange = { neo4jUrl = it },
+                        label = { Text("Please enter URL") },
+                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+                    )
+                    OutlinedTextField(
+                        value = neo4jUser,
+                        onValueChange = { neo4jUser = it },
+                        label = { Text("Please enter user name") },
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    )
+                    OutlinedTextField(
+                        value = neo4jPassword,
+                        onValueChange = { neo4jPassword = it },
+                        label = { Text("Please enter password") },
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Start
                 ) {
-                    Text("Apply")
+                    Button(
+                        onClick = { navigator.pop() },
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "backIcon")
+                        Text("Back")
+                    }
+                    Button(
+                        onClick = {
+                            savedSqlitePath = sqlitePath.text
+                            savedNeo4jUrl = neo4jUrl.text
+                            savedNeo4jUser = neo4jUser.text
+                            savedNeo4jPassword = neo4jPassword.text
+                        }
+                    ) {
+                        Text("Apply")
+                    }
                 }
             }
         }
