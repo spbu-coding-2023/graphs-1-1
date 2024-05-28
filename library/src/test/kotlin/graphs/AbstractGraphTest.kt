@@ -14,6 +14,7 @@ class AbstractGraphTest {
     var UDWgraph = UndirectedWeightedGraph<Int, String>()
     var DUWgraph = DirectedUnweightedGraph<Int, String>()
     var UDUWgraph = UndirectedUnweightedGraph<Int, String>()
+
     @BeforeEach
     fun setup() {
         DWgraph = DirectedWeightedGraph()
@@ -556,7 +557,7 @@ class AbstractGraphTest {
         UDWgraph.addEdge(23, 52, "A", 3.0)
         UDWgraph.removeEdge(23, 52)
 
-        assertEquals(setOf<Pair<Int,Int>>(), UDWgraph.edgeSetOfVertices())
+        assertEquals(setOf<Pair<Int, Int>>(), UDWgraph.edgeSetOfVertices())
         assertEquals(setOf(23, 52), UDWgraph.vertexSet())
     }
 
@@ -567,7 +568,7 @@ class AbstractGraphTest {
         UDWgraph.addEdge(23, 52, "A", 3.0)
         UDWgraph.removeEdge(52, 23)
 
-        assertEquals(setOf<Pair<Int,Int>>(), UDWgraph.edgeSetOfVertices())
+        assertEquals(setOf<Pair<Int, Int>>(), UDWgraph.edgeSetOfVertices())
         assertEquals(setOf(52, 23), UDWgraph.vertexSet())
     }
 
@@ -600,7 +601,7 @@ class AbstractGraphTest {
 
     @Test
     fun `should throw RuntimeException since edge doesn't exist function getEdgeWeight(e)`() {
-        assertThrows(RuntimeException::class.java){
+        assertThrows(RuntimeException::class.java) {
             UDWgraph.getEdgeWeight("A")
         }
     }
@@ -609,148 +610,7 @@ class AbstractGraphTest {
     fun `should throw RuntimeException since edge doesn't exist function getEdgeWeight(v, v)`() {
         DWgraph.addVertex(1)
         DWgraph.addVertex(1000)
-        assertThrows(RuntimeException::class.java){
-            DWgraph.getEdgeWeight(1, 1000)
-        }
-    }
-
-    @Test
-    fun `should throw Error since there is no edge function getEdgeHead(e)`() {
-        assertThrows(Error::class.java) {
-            DWgraph.getEdgeHead("A")
-        }
-    }
-
-    @Test
-    fun `should throw Error since there is no edge function getEdgeTail(e)`() {
-        assertThrows(Error::class.java) {
-            DWgraph.getEdgeTail("A")
-        }
-    }
-
-    @Test
-    fun `get edge directed but edge doesn't exist between vertices that exist`() {
-        DWgraph.addVertex(1)
-        DWgraph.addVertex(1000)
-        assertEquals(null, DWgraph.getEdge(1, 1000))
-    }
-
-    @Test
-    fun `get edge undirected access by tail-head but edge doesn't exist between vertices that exist`() {
-        UDWgraph.addVertex(1)
-        UDWgraph.addVertex(1000)
-        assertEquals(null, UDWgraph.getEdge(1, 1000))
-    }
-
-    @Test
-    fun `get edge undirected access by head-tail but edge doesn't exist between vertices that exist`() {
-        UDWgraph.addVertex(1)
-        UDWgraph.addVertex(1000)
-        assertEquals(null, UDWgraph.getEdge(1000, 1))
-    }
-
-    @Test
-    fun `weird setEdgeWeight 1`() {
-        val DWgraphWithNull = DirectedWeightedGraph<Int?, String?>()
-        DWgraphWithNull.addVertex(1)
-        DWgraphWithNull.addVertex(1000)
-        DWgraphWithNull.setEdgeWeight(1, 1000, 4.0)
-        DWgraphWithNull.addEdge(1, 1000, null, 3.0)
-        assertEquals(true, DWgraphWithNull.containsVertex(1))
-        assertEquals(true, DWgraphWithNull.containsVertex(1000))
-        assertEquals(true, DWgraphWithNull.containsEdge(1, 1000))
-        assertEquals(3.0, DWgraphWithNull.getEdgeWeight(null))
-        DWgraphWithNull.setEdgeWeight(null, 4.0)
-        assertEquals(true, DWgraphWithNull.containsVertex(1))
-        assertEquals(true, DWgraphWithNull.containsVertex(1000))
-        assertEquals(true, DWgraphWithNull.containsEdge(1, 1000))
-        assertEquals(4.0, DWgraphWithNull.getEdgeWeight(null))
-    }
-
-    @Test
-    fun `weird setEdgeWeight 2`() {
-        val DWgraphWithNull = DirectedWeightedGraph<Int?, String?>()
-        DWgraphWithNull.addVertex(1)
-        DWgraphWithNull.addVertex(1000)
-        DWgraphWithNull.setEdgeWeight(1, 1000, 4.0)
-        DWgraphWithNull.addEdge(1, 1000, null, 3.0)
-        assertEquals(true, DWgraphWithNull.containsVertex(1))
-        assertEquals(true, DWgraphWithNull.containsVertex(1000))
-        assertEquals(true, DWgraphWithNull.containsEdge(1, 1000))
-        assertEquals(3.0, DWgraphWithNull.getEdgeWeight(null))
-        DWgraphWithNull.setEdgeWeight(1, 1000, 4.0)
-        assertEquals(true, DWgraphWithNull.containsVertex(1))
-        assertEquals(true, DWgraphWithNull.containsVertex(1000))
-        assertEquals(true, DWgraphWithNull.containsEdge(1, 1000))
-        assertEquals(4.0, DWgraphWithNull.getEdgeWeight(null))
-    }
-
-    @Test
-    fun `remove imaginary vertex`() {
-        assertEquals(false, DWgraph.removeVertex(1))
-    }
-
-    @Test
-    fun `remove edge from an undirected graph head-tail`() {
-        UDWgraph.addVertex(23)
-        UDWgraph.addVertex(52)
-        UDWgraph.addEdge(23, 52, "A", 3.0)
-        UDWgraph.removeEdge(23, 52)
-
-        assertEquals(setOf<Pair<Int,Int>>(), UDWgraph.edgeSetOfVertices())
-        assertEquals(setOf(23, 52), UDWgraph.vertexSet())
-    }
-
-    @Test
-    fun `remove edge from an undirected graph tail-head`() {
-        UDWgraph.addVertex(23)
-        UDWgraph.addVertex(52)
-        UDWgraph.addEdge(23, 52, "A", 3.0)
-        UDWgraph.removeEdge(52, 23)
-
-        assertEquals(setOf<Pair<Int,Int>>(), UDWgraph.edgeSetOfVertices())
-        assertEquals(setOf(52, 23), UDWgraph.vertexSet())
-    }
-
-    @Test
-    fun `remove edge that doesn't exist in an undirected graph`() {
-        UDWgraph.addVertex(1)
-        UDWgraph.addVertex(1000)
-        assertEquals(false, UDWgraph.removeEdge(1, 1000))
-    }
-
-    @Test
-    fun `set edge weight unweighted graph`() {
-        UDUWgraph.addVertex(23)
-        UDUWgraph.addVertex(52)
-        UDUWgraph.addEdge(23, 52, "A", 3.0)
-        assertEquals(UDWgraph.DEFAULT_EDGE_WEIGHT, UDUWgraph.getEdgeWeight(23, 52))
-        UDUWgraph.setEdgeWeight(23, 52, 5.0)
-        assertEquals(UDUWgraph.DEFAULT_EDGE_WEIGHT, UDUWgraph.getEdgeWeight(23, 52))
-    }
-
-    @Test
-    fun `set edge weight weighted graph`() {
-        UDWgraph.addVertex(23)
-        UDWgraph.addVertex(52)
-        UDWgraph.addEdge(23, 52, "A", 3.0)
-        assertEquals(3.0, UDWgraph.getEdgeWeight(23, 52))
-        UDWgraph.setEdgeWeight(23, 52, 5.0)
-        assertEquals(5.0, UDWgraph.getEdgeWeight(23, 52))
-    }
-
-    @Test
-    fun `should throw RuntimeException since edge doesn't exist function getEdgeWeight(e)`() {
-        assertThrows(RuntimeException::class.java){
-            UDWgraph.getEdgeWeight("A")
-        }
-    }
-
-    @Test
-    fun `should throw RuntimeException since edge doesn't exist function getEdgeWeight(v, v)`() {
-        DWgraph.addVertex(1)
-        DWgraph.addVertex(1000)
-        assertThrows(RuntimeException::class.java){
+        assertThrows(RuntimeException::class.java) {
             DWgraph.getEdgeWeight(1, 1000)
         }
     }
