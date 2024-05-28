@@ -1,6 +1,6 @@
 package model
 
-data class VertexModel(val id: Int, var x: Float, var y: Float, var data: String?, var isSelected: Boolean = false, var size: Float = 1f) {
+data class VertexModel(val id: Int, var x: Float, var y: Float, var data: String?, var isSelected: Boolean = false, var size: Float = 1f, var communityId: Int = 0) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is VertexModel) return false

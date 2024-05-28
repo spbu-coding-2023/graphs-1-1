@@ -30,6 +30,7 @@ import model.VertexModel
 import viewModel.workspace.graph.GraphInteractionMode
 import viewModel.workspace.graph.GraphViewModel
 import kotlin.math.*
+import kotlin.random.Random
 
 
 val MAX_SCALE_FACTOR = 5f
@@ -170,6 +171,12 @@ fun DraggableVertex(vertex: VertexModel, scaleFactor: Float, offsetFactor: Offse
     val interactionMode by graphViewModel.interactionMode.collectAsState()
     var reRender by remember { mutableStateOf(false) }
 
+    val random = Random(vertex.communityId)
+    val communityColorRed = random.nextInt(128)+128
+    val communityColorGreen = random.nextInt(128)+128
+    val communityColorBlue = random.nextInt(128)+128
+    val communityColor = if (vertex.communityId == 0) MaterialTheme.colorScheme.surfaceDim else Color(communityColorRed, communityColorGreen, communityColorBlue)
+
     key (reRender) {
         Box(
             modifier = Modifier
@@ -182,7 +189,7 @@ fun DraggableVertex(vertex: VertexModel, scaleFactor: Float, offsetFactor: Offse
                     scaleY = density/2
                 }
                 .background(
-            color = (if (vertex.isSelected) MaterialTheme.colorScheme.surfaceBright else MaterialTheme.colorScheme.surfaceDim).copy(alpha = VERTEX_ALPHA),
+            color = (if (vertex.isSelected) MaterialTheme.colorScheme.surfaceBright else communityColor).copy(alpha = VERTEX_ALPHA),
             shape = CircleShape
                 )
                 .border(
@@ -227,7 +234,7 @@ fun DraggableVertex(vertex: VertexModel, scaleFactor: Float, offsetFactor: Offse
         ) {
             if (scaleFactor >= 1.4f) {
                 Text(
-                    text = vertex.data ?: "-",
+                    text = vertex.id.toString(),
                     fontSize = MaterialTheme.typography.labelSmall.fontSize*scaleFactor,
                     color = MaterialTheme.colorScheme.outline.copy(alpha = .8f)
                 )

@@ -6,6 +6,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.lifecycle.ViewModel
+import display.community.GraphCommunity
 import display.keyVertex.GraphKeyVertex
 import display.minimumSpanningTree.GraphMST
 import display.pathSearch.GraphPathSearch
@@ -242,6 +243,29 @@ class GraphViewModel(
         CoroutineScope(Dispatchers.Default).launch {
             updateGraph { g ->
                 graphMST.getMST(g).forEach { it.isHighlighted = true }
+            }
+
+            withContext(Dispatchers.Main) {
+                onFinished()
+            }
+        }
+    }
+
+    fun runResetCommunities() {
+        updateGraph { g ->
+            g.vertexSet().forEach { v -> v.communityId = 0 }
+        }
+    }
+
+    fun runCommunity(graphCommunity: GraphCommunity, onFinished: () -> Unit) {
+        CoroutineScope(Dispatchers.Default).launch {
+            updateGraph { g ->
+                val verticesCommunity = graphCommunity.getCommunities(g)
+                g.vertexSet().forEach { v ->
+                    val vertexCommunity = verticesCommunity[v]
+                    if (vertexCommunity == null) v.communityId = 0
+                    else v.communityId = vertexCommunity
+                }
             }
 
             withContext(Dispatchers.Main) {
