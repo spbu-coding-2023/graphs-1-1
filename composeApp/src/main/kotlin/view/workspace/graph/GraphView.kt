@@ -178,6 +178,8 @@ fun DraggableVertex(vertex: VertexModel, scaleFactor: Float, offsetFactor: Offse
                 .graphicsLayer {
                     translationX = -vertexSize/2 * density
                     translationY = -vertexSize/2 * density
+                    scaleX = density/2
+                    scaleY = density/2
                 }
                 .background(
             color = (if (vertex.isSelected) MaterialTheme.colorScheme.surfaceBright else MaterialTheme.colorScheme.surfaceDim).copy(alpha = VERTEX_ALPHA),
