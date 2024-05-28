@@ -21,13 +21,16 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.screen.Screen
 import model.EdgeModel
 import model.VertexModel
 import viewModel.workspace.graph.GraphInteractionMode
 import viewModel.workspace.graph.GraphViewModel
 import kotlin.math.*
+
 
 val MAX_SCALE_FACTOR = 5f
 val MIN_SCALE_FACTOR = .1f
@@ -173,8 +176,10 @@ fun DraggableVertex(vertex: VertexModel, scaleFactor: Float, offsetFactor: Offse
                 .offset { IntOffset((offsetX * scaleFactor + offsetFactor.x).roundToInt(), (offsetY * scaleFactor + offsetFactor.y).roundToInt()) }
                 .size(vertexSize.dp)
                 .graphicsLayer {
-                    translationX = -vertexSize
-                    translationY = -vertexSize
+                    translationX = -vertexSize/2 * density
+                    translationY = -vertexSize/2 * density
+                    scaleX = density/2
+                    scaleY = density/2
                 }
                 .background(
             color = (if (vertex.isSelected) MaterialTheme.colorScheme.surfaceBright else MaterialTheme.colorScheme.surfaceDim).copy(alpha = VERTEX_ALPHA),
@@ -197,7 +202,6 @@ fun DraggableVertex(vertex: VertexModel, scaleFactor: Float, offsetFactor: Offse
                                     offsetY += dragAmount.y / scaleFactor
                                     vertex.x = offsetX
                                     vertex.y = offsetY
-//                                    graphViewModel.updateState()
                                 }
                                 else -> return@detectDragGestures
                             }
