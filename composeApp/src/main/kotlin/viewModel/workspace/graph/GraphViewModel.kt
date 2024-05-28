@@ -4,10 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.input.pointer.PointerEvent
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.ViewModel
 import display.bridgeSearch.GraphBridgeSearch
 import display.community.GraphCommunity
@@ -30,7 +27,6 @@ import view.workspace.graph.MAX_SCALE_FACTOR
 import view.workspace.graph.MIN_SCALE_FACTOR
 import viewModel.workspace.graph.utils.GraphStorage
 import java.lang.Math.pow
-import kotlin.math.abs
 import kotlin.math.max
 
 enum class GraphInteractionMode {Pan, Delete, Drag, Create, Select}
@@ -248,7 +244,7 @@ class GraphViewModel(
     fun runMST(graphMST: GraphMST, onFinished: () -> Unit) {
         CoroutineScope(Dispatchers.Default).launch {
             updateGraph { g ->
-                graphMST.getMST(g).forEach { it.isHighlighted = true }
+                graphMST.getMST(g)?.forEach { it.isHighlighted = true }
             }
 
             withContext(Dispatchers.Main) {
@@ -284,7 +280,7 @@ class GraphViewModel(
         CoroutineScope(Dispatchers.Default).launch {
             updateGraph { g ->
                 val listOfCommunities = graphSCC.getSCCs(g)
-                listOfCommunities.forEachIndexed { i, communityOfVertices ->
+                listOfCommunities?.forEachIndexed { i, communityOfVertices ->
                     communityOfVertices.forEach { v -> v.communityId = i }
                 }
             }
