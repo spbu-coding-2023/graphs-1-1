@@ -8,20 +8,25 @@ import java.sql.DriverManager
 import java.sql.PreparedStatement
 
 class GraphSQLiteExporter : GraphExporter {
-
     override fun <V, E> exportGraph(graph: Graph<V, E>, file: File) {
-
         val url = "jdbc:sqlite:${file.absolutePath}"
         val connection: Connection = DriverManager.getConnection(url)
 
         connection.use {
-            // если бд уже была в файле, то дропнем её, чтобы избежать коллизий
             it.createStatement().use { statement ->
+                statement.execute("DROP TABLE IF EXISTS Configuration")
                 statement.execute("DROP TABLE IF EXISTS Node")
                 statement.execute("DROP TABLE IF EXISTS Edge")
+                statement.execute("CREATE TABLE Configuration (isDirected INTEGER, isWeighted INTEGER)")
                 statement.execute("CREATE TABLE Node (id INTEGER PRIMARY KEY, value TEXT)")
                 statement.execute("CREATE TABLE Edge (tail INTEGER, head INTEGER, value TEXT, weight REAL, FOREIGN KEY(tail) REFERENCES Node(id), FOREIGN KEY(head) REFERENCES Node(id))")
             }
+
+            val insertConfigSQL = "INSERT INTO Configuration(isDirected, isWeighted) VALUES (?, ?)"
+            val configStatement: PreparedStatement = connection.prepareStatement(insertConfigSQL)
+            configStatement.setInt(1, if (graph.configuration.isDirected()) 1 else 0)
+            configStatement.setInt(2, if (graph.configuration.isWeighted()) 1 else 0)
+            configStatement.executeUpdate()
 
             val insertNodeSQL = "INSERT INTO Node(value) VALUES (?)"
             val nodeStatement: PreparedStatement = connection.prepareStatement(insertNodeSQL)
