@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import display.community.implementation.LouvainCommunity
+import display.cycleSearch.implementation.GraphVertexCycleSearchWithDfs
 import display.keyVertex.implementation.GraphBetweennessCentrality
 import display.minimumSpanningTree.implementation.GraphMSTWithKruskal
 import display.pathSearch.implementation.GraphDijkstraPathFinder
@@ -211,7 +212,59 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 )
             }
         ),
-
+        GraphRunnableOption(
+            title = "Remove Edge",
+            description = "Removes an edge between two vertices. If two same vertices chosen removes self loop if it exists",
+            onRun = {
+                val vertexStartId = selectedVertexStartId
+                val vertexEndId = selectedVertexEndId
+                if (vertexStartId == null || vertexEndId == null) return@GraphRunnableOption
+                val graphVertices = viewModel.vertices.value
+                val vertexStart = graphVertices.find { it.id == vertexStartId }
+                val vertexEnd = graphVertices.find { it.id == vertexEndId }
+                if (vertexStart == null || vertexEnd == null) return@GraphRunnableOption
+                viewModel.removeEdge(vertexStart, vertexEnd)
+            },
+            content = {
+                NumberInputPicker(
+                    text = "starting vertex id",
+                    onChange = {
+                        it?.let { selectedVertexStartId = it }
+                    }
+                )
+                NumberInputPicker(
+                    text = "ending vertex id",
+                    onChange = {
+                        it?.let { selectedVertexEndId = it }
+                    }
+                )
+            }
+        ),
+        GraphRunnableOption(
+            title = "Find Cycle",
+            description = "For a give vertex find if it has a path which leads to itself",
+            onRun = {
+                val vertexStartId = selectedVertexStartId
+                val vertexEndId = selectedVertexEndId
+                if (vertexStartId == null || vertexEndId == null) return@GraphRunnableOption
+                val graphVertices = viewModel.vertices.value
+                val vertexStart = graphVertices.find { it.id == vertexStartId }
+                val vertexEnd = graphVertices.find { it.id == vertexEndId }
+                if (vertexStart == null || vertexEnd == null) return@GraphRunnableOption
+                val graphCycleSearch = GraphVertexCycleSearchWithDfs()
+                isRunning = true
+                viewModel.runResetEdges()
+                viewModel.runCycleSearch(graphCycleSearch, vertexStart, { isRunning = false })
+            },
+            content = {
+                NumberInputPicker(
+                    text = "vertex id",
+                    onChange = {
+                        it?.let { selectedVertexStartId = it }
+                    }
+                )
+            }
+        ),
 
 
 
