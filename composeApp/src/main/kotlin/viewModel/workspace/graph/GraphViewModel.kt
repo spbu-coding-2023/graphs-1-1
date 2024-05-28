@@ -11,6 +11,7 @@ import display.keyVertex.GraphKeyVertex
 import display.minimumSpanningTree.GraphMST
 import display.pathSearch.GraphPathSearch
 import display.placement.GraphPlacement
+import display.stronglyConnectedComponentSearch.implementation.GraphSCCSearchWithTarjan
 import graph.Graph
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -274,6 +275,27 @@ class GraphViewModel(
         }
     }
 
+    fun runSGG(graphSCC: GraphSCCSearchWithTarjan<VertexModel, EdgeModel>, onFinished: () -> Unit) {
+        CoroutineScope(Dispatchers.Default).launch {
+            updateGraph { g ->
+                val listOfCommunities = graphSCC.getSCCs(g)
+                listOfCommunities.forEachIndexed { i, communityOfVertices ->
+                    communityOfVertices.forEach { v -> v.communityId = i }
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                onFinished()
+            }
+        }
+    }
+
+    fun createEdge(vertexFrom: VertexModel, vertexTo: VertexModel) {
+        updateGraph { g ->
+            g.addEdge(vertexFrom, vertexTo, EdgeModel(vertexFrom.id, vertexTo.id, null, isDirected = isDirected()))
+        }
+    }
+
     fun setupRandom(n: Int) {
         val vv = mutableListOf<VertexModel>()
         val r = 1000
@@ -295,6 +317,10 @@ class GraphViewModel(
 
     fun isEdgesPositive(): Boolean {
         return !isWeighted() || edges.value.all { it.weight >= 0 }
+    }
+
+    fun isDirected(): Boolean {
+        return graph.configuration.isDirected()
     }
 
 }
