@@ -9,6 +9,7 @@ import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.lifecycle.ViewModel
+import display.bridgeSearch.GraphBridgeSearch
 import display.community.GraphCommunity
 import display.cycleSearch.GraphVertexCycleSearch
 import display.keyVertex.GraphKeyVertex
@@ -301,6 +302,23 @@ class GraphViewModel(
                 if (cycle.isEmpty()) return@updateGraph
                 repeat(cycle.size-1) { i ->
                     g.getEdge(cycle[i], cycle[i+1])?.isHighlighted = true
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                onFinished()
+            }
+        }
+    }
+
+    fun runBridges(graphBridges: GraphBridgeSearch, onFinished: () -> Unit) {
+        CoroutineScope(Dispatchers.Default).launch {
+            updateGraph { g ->
+                val bridges = graphBridges.getBridges(g)
+
+                bridges.forEach { (v, u) ->
+                    g.getEdge(v, u)?.isHighlighted = true
+                    g.getEdge(u, v)?.isHighlighted = true
                 }
             }
 
