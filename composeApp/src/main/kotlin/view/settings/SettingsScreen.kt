@@ -26,8 +26,13 @@ class SettingsScreen : Screen {
         var neo4jUser by remember { mutableStateOf(TextFieldValue("")) }
         var neo4jPassword by remember { mutableStateOf(TextFieldValue("")) }
 
+
+        var savedSqlitePath by remember { mutableStateOf("") }
+        var savedNeo4jUrl by remember { mutableStateOf("") }
+        var savedNeo4jUser by remember { mutableStateOf("") }
+        var savedNeo4jPassword by remember { mutableStateOf("") }
+
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            // SQLite and Neo4j Buttons
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 Button(onClick = {
                     showSQLiteInput = true
@@ -73,8 +78,10 @@ class SettingsScreen : Screen {
                 )
             }
 
-            // Buttons Row
-            Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.Start) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.Start
+            ) {
                 Button(
                     onClick = { navigator.pop() },
                     modifier = Modifier.padding(end = 8.dp)
@@ -84,7 +91,10 @@ class SettingsScreen : Screen {
                 }
                 Button(
                     onClick = {
-                        // сюда бы имплементацию сохранения
+                        savedSqlitePath = sqlitePath.text
+                        savedNeo4jUrl = neo4jUrl.text
+                        savedNeo4jUser = neo4jUser.text
+                        savedNeo4jPassword = neo4jPassword.text
                     }
                 ) {
                     Text("Apply")
