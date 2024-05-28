@@ -24,7 +24,9 @@ import display.pathSearch.implementation.GraphDijkstraPathFinder
 import display.pathSearch.implementation.GraphPathSearchBellmanFord
 import display.placement.implementation.GraphPlacementRandom
 import display.placement.implementation.GraphPlacementYifanHu
+import display.stronglyConnectedComponentSearch.implementation.GraphSCCSearchWithTarjan
 import kotlinx.coroutines.flow.filter
+import model.EdgeModel
 import model.VertexModel
 import view.common.NumberInputPicker
 import view.common.NumberRangePicker
@@ -168,6 +170,45 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
             description = "Sets all vertices to one community",
             onRun = {
                 viewModel.runResetCommunities()
+            }
+        ),
+        GraphRunnableOption(
+            title = "Find SCC",
+            description = "In directed graph finds all strongly connected communities",
+            onRun = {
+                if (!viewModel.isDirected()) return@GraphRunnableOption
+                isRunning = true
+                viewModel.runResetCommunities()
+                val graphSCC = GraphSCCSearchWithTarjan<VertexModel, EdgeModel>()
+                viewModel.runSGG(graphSCC, { isRunning = false })
+            }
+        ),
+        GraphRunnableOption(
+            title = "Create Edge",
+            description = "Creates an edge between two vertices. if the graph is undirected the direction of the edge won't matter",
+            onRun = {
+                val vertexStartId = selectedVertexStartId
+                val vertexEndId = selectedVertexEndId
+                if (vertexStartId == null || vertexEndId == null) return@GraphRunnableOption
+                val graphVertices = viewModel.vertices.value
+                val vertexStart = graphVertices.find { it.id == vertexStartId }
+                val vertexEnd = graphVertices.find { it.id == vertexEndId }
+                if (vertexStart == null || vertexEnd == null) return@GraphRunnableOption
+                viewModel.createEdge(vertexStart, vertexEnd)
+            },
+            content = {
+                NumberInputPicker(
+                    text = "starting vertex id",
+                    onChange = {
+                        it?.let { selectedVertexStartId = it }
+                    }
+                )
+                NumberInputPicker(
+                    text = "ending vertex id",
+                    onChange = {
+                        it?.let { selectedVertexEndId = it }
+                    }
+                )
             }
         ),
 
