@@ -17,8 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import display.keyVertex.implementation.GraphBetweennessCentrality
 import display.placement.implementation.GraphPlacementRandom
 import display.placement.implementation.GraphPlacementYifanHu
+import view.common.NumberRangePicker
 import viewModel.workspace.graph.GraphViewModel
 
 private data class GraphRunnableOption(val title: String, val description: String, val onRun: () -> Unit, val content: @Composable () -> Unit = {})
@@ -27,6 +29,7 @@ private data class GraphRunnableOption(val title: String, val description: Strin
 fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
     var isShown by rememberSaveable { mutableStateOf(true) }
     var isRunning by remember { mutableStateOf(false) }
+    var keyVertexIncrease by remember { mutableStateOf(1) }
 
     val runnableOptions = listOf(
         GraphRunnableOption(
@@ -47,6 +50,20 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 val graphPlacement = GraphPlacementRandom()
                 graphPlacement.setSize(600, 600)
                 viewModel.runPlacement(graphPlacement, { isRunning = false })
+            }
+        ),
+        GraphRunnableOption(
+            title = "Key Vertex",
+            description = "Run betweenness centrality algorithm",
+            onRun = {
+                isRunning = true
+                val graphBC = GraphBetweennessCentrality()
+                viewModel.runKeyVertex(graphBC, keyVertexIncrease.toFloat(), { isRunning = false })
+            },
+            content = {
+                Box(modifier = Modifier.padding(8.dp)) {
+                    NumberRangePicker(1..4, "Increase", { inc -> keyVertexIncrease = inc })
+                }
             }
         ),
     )
@@ -95,7 +112,8 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                             description = option.description,
                             onClick = option.onRun,
                             enabled = !isRunning,
-                        ) {  }
+                            content = option.content
+                        )
                     }
                 }
             }

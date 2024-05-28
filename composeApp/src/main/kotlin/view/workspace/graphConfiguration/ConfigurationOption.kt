@@ -24,17 +24,29 @@ fun ConfigurationSetting(modifier: Modifier, title: String, description: String,
             modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)
         ) {
-            Text(
-                text = title,
-                fontSize = MaterialTheme.typography.headlineMedium.fontSize
-            )
-            Text(
-                text = description,
-                fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f)
-            )
+            Column(
+                modifier = Modifier,
+                verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top)
+            ) {
+                Text(
+                    text = title,
+                    fontSize = MaterialTheme.typography.headlineSmall.fontSize
+                )
+                Text(
+                    text = description,
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f)
+                )
+            }
 
-            content()
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                tonalElevation = 8.dp,
+                shape = MaterialTheme.shapes.medium
+            ) {
+                content()
+            }
 
             Button(
                 onClick = onClick,
