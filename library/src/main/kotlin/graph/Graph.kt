@@ -16,7 +16,8 @@ interface Graph<V, E> {
     /**
      * Adds Edge between tail and head to the graph if not present
      */
-    fun addEdge(tail: V, head: V, e: E, weight: Double = DEFAULT_EDGE_WEIGHT): Boolean
+    fun addEdge(tail: V, head: V, e: E): Boolean
+    fun addEdge(tail: V, head: V, e: E, w: Double): Boolean
 
     /**
      * Returns true if vertex is in the graph
