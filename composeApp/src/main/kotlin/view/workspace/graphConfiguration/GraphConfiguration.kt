@@ -18,18 +18,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import display.keyVertex.implementation.GraphBetweennessCentrality
+import display.pathSearch.implementation.GraphPathSearchBellmanFord
 import display.placement.implementation.GraphPlacementRandom
 import display.placement.implementation.GraphPlacementYifanHu
+import kotlinx.coroutines.flow.filter
+import model.VertexModel
+import view.common.NumberInputPicker
 import view.common.NumberRangePicker
 import viewModel.workspace.graph.GraphViewModel
 
-private data class GraphRunnableOption(val title: String, val description: String, val onRun: () -> Unit, val content: @Composable () -> Unit = {})
+private data class GraphRunnableOption(val title: String, val description: String, val onRun: () -> Unit, val content: (@Composable () -> Unit)? = null)
 
 @Composable
 fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
     var isShown by rememberSaveable { mutableStateOf(true) }
     var isRunning by remember { mutableStateOf(false) }
     var keyVertexIncrease by remember { mutableStateOf(1) }
+    var selectedVertexStartId by remember { mutableStateOf<Int?>(null) }
+    var selectedVertexEndId by remember { mutableStateOf<Int?>(null) }
 
     val runnableOptions = listOf(
         GraphRunnableOption(
@@ -61,9 +67,38 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 viewModel.runKeyVertex(graphBC, keyVertexIncrease.toFloat(), { isRunning = false })
             },
             content = {
-                Box(modifier = Modifier.padding(8.dp)) {
-                    NumberRangePicker(1..4, "Increase", { inc -> keyVertexIncrease = inc })
-                }
+                NumberRangePicker(1..4, "Increase", { inc -> keyVertexIncrease = inc })
+            }
+        ),
+        GraphRunnableOption(
+            title = "Find path",
+            description = "Find shortest path with Bellman-Ford algorithm between two vertices",
+            onRun = {
+                isRunning = true
+                val vertexStartId = selectedVertexStartId
+                val vertexEndId = selectedVertexEndId
+                if (vertexStartId == null || vertexEndId == null) return@GraphRunnableOption
+                val graphVertices = viewModel.vertices.value
+                val vertexStart = graphVertices.find { it.id == vertexStartId }
+                val vertexEnd = graphVertices.find { it.id == vertexEndId }
+                if (vertexStart == null || vertexEnd == null) return@GraphRunnableOption
+                val graphShortestPath = GraphPathSearchBellmanFord()
+                viewModel.runResetEdges()
+                viewModel.runShortestPath(graphShortestPath, vertexStart, vertexEnd, { isRunning = false })
+            },
+            content = {
+                NumberInputPicker(
+                    text = "starting vertex id",
+                    onChange = {
+                        it?.let { selectedVertexStartId = it }
+                    }
+                )
+                NumberInputPicker(
+                    text = "ending vertex id",
+                    onChange = {
+                        it?.let { selectedVertexEndId = it }
+                    }
+                )
             }
         ),
     )
@@ -106,7 +141,7 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                     modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState())
                 ) {
                     runnableOptions.forEach { option ->
-                        ConfigurationSetting(
+                        ConfigurationOption(
                             modifier = Modifier.padding(4.dp),
                             title = option.title,
                             description = option.description,
@@ -115,21 +150,6 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                             content = option.content
                         )
                     }
-                }
-            }
-        }
-
-        if (isShown) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize(),
-                shadowElevation = 3.dp,
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Column(
-
-                ) {
-                    Text("Content")
                 }
             }
         }

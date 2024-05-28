@@ -83,4 +83,13 @@ class GraphPathSearchBellmanFordTest {
 
         assertEquals(bellmanFord.searchPath(UDWgraph, 1, 0), listOf<Int>())
     }
+
+    @Test
+    fun `search path directed two vertices`() {
+        DWgraph.addVertex(1)
+        DWgraph.addVertex(2)
+        DWgraph.addEdge(1, 2, "A")
+
+        assertEquals(bellmanFord.searchPath(DWgraph, 1, 2), listOf(1, 2))
+    }
 }

@@ -37,13 +37,16 @@ class GraphPathSearchBellmanFord : GraphPathSearch {
 
             if (distance[edgeTail]!! + weight < distance[edgeHead]!!) {
                 // negative cycle
+                println("neg cyc")
                 return listOf()
             }
         }
 
         var currentVertex = endingVertex
         while (currentVertex != startingVertex) {
-            if (predecessor[currentVertex] == null) return listOf() // TODO: think of
+            if (predecessor[currentVertex] == null) {
+                return listOf()
+            } // TODO: think of
             currentVertex = predecessor[currentVertex]!!
             path.add(currentVertex)
         }

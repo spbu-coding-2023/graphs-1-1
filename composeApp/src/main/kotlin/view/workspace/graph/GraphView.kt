@@ -6,7 +6,9 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -27,7 +29,7 @@ import viewModel.workspace.graph.GraphInteractionMode
 import viewModel.workspace.graph.GraphViewModel
 import kotlin.math.*
 
-val MAX_SCALE_FACTOR = 25f
+val MAX_SCALE_FACTOR = 5f
 val MIN_SCALE_FACTOR = .1f
 
 val EDGE_STROKE_WIDTH = 2f
@@ -216,15 +218,26 @@ fun DraggableVertex(vertex: VertexModel, scaleFactor: Float, offsetFactor: Offse
                             else -> return@detectTapGestures
                         }
                     }
-                }
-        )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            if (scaleFactor >= 1.4f) {
+                Text(
+                    text = vertex.data ?: "-",
+                    fontSize = MaterialTheme.typography.labelSmall.fontSize*scaleFactor,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = .8f)
+                )
+            }
+        }
     }
 
 }
 
 @Composable
 fun EdgesView(vertices: List<VertexModel>, edges: List<EdgeModel>, scaleFactor: Float, offsetFactor: Offset) {
-    val EDGE_COLOR = MaterialTheme.colorScheme.outline
+    val EDGE_COLOR = MaterialTheme.colorScheme.outline.copy(alpha = EDGE_ALPHA)
+    val EDGE_COLOR_HIGHLIGHTED = MaterialTheme.colorScheme.primary
+    val EDGE_STROKE_WIDTH_HIGHLIGHTED = EDGE_STROKE_WIDTH * 2.5f
 
     Canvas(
         modifier = Modifier
@@ -246,8 +259,8 @@ fun EdgesView(vertices: List<VertexModel>, edges: List<EdgeModel>, scaleFactor: 
                         vertexRadius = VERTEX_SIZE*scaleFactor*headVertex.size,
                         arrowHeadLength = 20f*scaleFactor,
                         arrowHeadAngle = 30f,
-                        lineColor = EDGE_COLOR.copy(alpha = EDGE_ALPHA),
-                        lineWidth = EDGE_STROKE_WIDTH*scaleFactor
+                        lineColor = (if (edge.isHighlighted) EDGE_COLOR_HIGHLIGHTED else EDGE_COLOR),
+                        lineWidth = (if (edge.isHighlighted) EDGE_STROKE_WIDTH_HIGHLIGHTED else EDGE_STROKE_WIDTH)*scaleFactor
                     )
                 } else if (edge.isDirected) {
                     drawArrow(
@@ -259,15 +272,15 @@ fun EdgesView(vertices: List<VertexModel>, edges: List<EdgeModel>, scaleFactor: 
                         vertexRadiusEnd = VERTEX_SIZE*scaleFactor*headVertex.size,
                         arrowHeadLength = 20f*scaleFactor,
                         arrowHeadAngle = 30f,
-                        lineColor = EDGE_COLOR.copy(alpha = EDGE_ALPHA),
-                        lineWidth = EDGE_STROKE_WIDTH*scaleFactor
+                        lineColor = (if (edge.isHighlighted) EDGE_COLOR_HIGHLIGHTED else EDGE_COLOR),
+                        lineWidth = (if (edge.isHighlighted) EDGE_STROKE_WIDTH_HIGHLIGHTED else EDGE_STROKE_WIDTH)*scaleFactor
                     )
                 } else {
                     drawLine(
-                        color = EDGE_COLOR.copy(alpha = EDGE_ALPHA),
+                        color = (if (edge.isHighlighted) EDGE_COLOR_HIGHLIGHTED else EDGE_COLOR),
                         start = Offset(startX, startY),
                         end = Offset(endX, endY),
-                        strokeWidth = EDGE_STROKE_WIDTH*scaleFactor
+                        strokeWidth = (if (edge.isHighlighted) EDGE_STROKE_WIDTH_HIGHLIGHTED else EDGE_STROKE_WIDTH)*scaleFactor
                     )
                 }
 

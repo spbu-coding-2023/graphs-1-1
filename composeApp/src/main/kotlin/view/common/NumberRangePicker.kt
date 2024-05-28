@@ -46,7 +46,7 @@ fun NumberRangePicker(numberRange: IntRange, text: String, onChange: (Int) -> Un
                 onChange(nextNumber)
             }
         ) {
-            Icon(Icons.Filled.Add, "decIcon")
+            Icon(Icons.Filled.Add, "incIcon")
         }
     }
 }
