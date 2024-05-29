@@ -10,6 +10,11 @@ import java.io.File
  * this thing know where all graphs are and can read them, delete them, update them, etc. singleton
  */
 object LocalDatabase {
+    var sqlitePath: String? = null
+    var neo4jUrl: String? = null
+    var neo4jUser: String? = null
+    var neo4jPassword: String? = null
+
     fun getGraphsDirectory(): File {
         return File(System.getProperty("user.home"), ".graphses")
     }
