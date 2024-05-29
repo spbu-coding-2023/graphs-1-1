@@ -30,6 +30,12 @@ class SettingsScreen : Screen {
         var neo4jUser by remember { mutableStateOf(TextFieldValue("")) }
         var neo4jPassword by remember { mutableStateOf(TextFieldValue("")) }
 
+
+        var savedSqlitePath by remember { mutableStateOf("") }
+        var savedNeo4jUrl by remember { mutableStateOf("") }
+        var savedNeo4jUser by remember { mutableStateOf("") }
+        var savedNeo4jPassword by remember { mutableStateOf("") }
+
         CommonScreenLayout("Settings") {
             Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -94,11 +100,24 @@ class SettingsScreen : Screen {
                     horizontalArrangement = Arrangement.Start
                 ) {
                     Button(
+                        onClick = { navigator.pop() },
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "backIcon")
+                        Text("Back")
+                    }
+                    Button(
                         onClick = {
-                            LocalDatabase.neo4jPassword = neo4jPassword.text
-                            LocalDatabase.neo4jUser = neo4jUser.text
-                            LocalDatabase.neo4jUrl = neo4jUrl.text
-                            LocalDatabase.sqlitePath = sqlitePath.text
+                            val settings = """
+                                {
+                                    "sqlitePath": "${sqlitePath.text}",
+                                    "neo4jUrl": "${neo4jUrl.text}",
+                                    "neo4jUser": "${neo4jUser.text}",
+                                    "neo4jPassword": "${neo4jPassword.text}"
+                                }
+                            """.trimIndent()
+                            val settingsManager = SettingsFileManager("settings.json")
+                            settingsManager.saveSettings(settings)
                         }
                     ) {
                         Text("Apply")
