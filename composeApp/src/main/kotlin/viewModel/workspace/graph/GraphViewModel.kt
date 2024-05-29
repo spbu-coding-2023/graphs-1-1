@@ -356,7 +356,7 @@ class GraphViewModel(
             graph.addVertex(vv.last())
             repeat(2) {
                 val ri = (pow((0..i).random().toDouble(), 2.952)/pow(i.toDouble(), 2.952)*i).toInt()
-                val randW = if (isWeighted) (-1..3).random() else 1
+                val randW = if (isWeighted) (0..3).random() else 1
                 graph.addEdge(vv[i], vv[ri], EdgeModel(i, ri, "$i", weight = randW.toDouble(), isDirected = isDirected, isWeighted = isWeighted), randW.toDouble())
             }
         }
