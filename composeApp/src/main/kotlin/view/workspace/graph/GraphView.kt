@@ -14,24 +14,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.*
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.core.screen.Screen
 import model.EdgeModel
 import model.VertexModel
 import viewModel.workspace.graph.GraphInteractionMode
 import viewModel.workspace.graph.GraphViewModel
 import kotlin.math.*
 import kotlin.random.Random
-
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.*
+import androidx.compose.ui.unit.sp
 
 val MAX_SCALE_FACTOR = 5f
 val MIN_SCALE_FACTOR = .1f
@@ -251,7 +251,8 @@ fun EdgesView(vertices: List<VertexModel>, edges: List<EdgeModel>, scaleFactor: 
     val EDGE_COLOR = MaterialTheme.colorScheme.outline.copy(alpha = EDGE_ALPHA)
     val EDGE_COLOR_HIGHLIGHTED = MaterialTheme.colorScheme.primary
     val EDGE_STROKE_WIDTH_HIGHLIGHTED = EDGE_STROKE_WIDTH * 2.5f
-
+    val WEIGHT_SIZE = 12f
+    val textMeasurer = rememberTextMeasurer()
     Canvas(
         modifier = Modifier
             .fillMaxSize()
@@ -297,7 +298,23 @@ fun EdgesView(vertices: List<VertexModel>, edges: List<EdgeModel>, scaleFactor: 
                     )
                 }
 
+                // draw weight
+                if (edge.isWeighted) {
+                    val textLayoutResult = textMeasurer.measure(
+                        text = AnnotatedString(edge.weight.toString()),
+                        style = TextStyle(
+                            fontSize = (WEIGHT_SIZE*scaleFactor).sp,
+                        )
+                    )
+                    val textX = (startX + endX)/2
+                    val textY = (startY + endY)/2
 
+                    drawText(
+                        textLayoutResult = textLayoutResult,
+                        brush = SolidColor(EDGE_COLOR),
+                        topLeft = Offset(textX, textY)
+                    )
+                }
             }
         }
     }

@@ -43,7 +43,7 @@ fun ConfigurationOption(modifier: Modifier, title: String, description: String, 
                 shape = MaterialTheme.shapes.medium
             ) {
                 if (content != null) {
-                    Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)) {
                         content()
                     }
                 }

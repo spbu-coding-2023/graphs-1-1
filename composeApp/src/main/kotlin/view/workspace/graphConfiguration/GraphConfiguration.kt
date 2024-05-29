@@ -35,6 +35,7 @@ import model.EdgeModel
 import model.VertexModel
 import view.common.NumberInputPicker
 import view.common.NumberRangePicker
+import view.common.SliderFloat
 import viewModel.workspace.graph.GraphViewModel
 
 private data class GraphRunnableOption(val title: String, val description: String, val onRun: () -> Unit, val content: (@Composable () -> Unit)? = null)
@@ -46,6 +47,7 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
     var keyVertexIncrease by remember { mutableStateOf(2) }
     var selectedVertexStartId by remember { mutableStateOf<Int?>(null) }
     var selectedVertexEndId by remember { mutableStateOf<Int?>(null) }
+    var currentWeight by remember { mutableStateOf(1f) }
 
     val runnableOptions = listOf(
         GraphRunnableOption(
@@ -287,7 +289,44 @@ fun GraphConfiguration(viewModel: GraphViewModel, modifier: Modifier) {
                 viewModel.runBridges(graphBridges, { isRunning = false })
             }
         ),
-
+        GraphRunnableOption(
+            title = "Set Weight",
+            description = "Sets a weight to any edge in the graph",
+            onRun = {
+                if (!viewModel.isWeighted()) return@GraphRunnableOption
+                val vertexStartId = selectedVertexStartId
+                val vertexEndId = selectedVertexEndId
+                if (vertexStartId == null || vertexEndId == null) return@GraphRunnableOption
+                val graphVertices = viewModel.vertices.value
+                val vertexStart = graphVertices.find { it.id == vertexStartId }
+                val vertexEnd = graphVertices.find { it.id == vertexEndId }
+                if (vertexStart == null || vertexEnd == null) return@GraphRunnableOption
+                viewModel.setWeight(vertexStart, vertexEnd, currentWeight.toDouble())
+            },
+            content = {
+                SliderFloat(
+                    text = "weight",
+                    onChange = {
+                        currentWeight = it
+                    },
+                    floatRangeFrom = -5f,
+                    floatRangeTo = 5f,
+                    steps = 19
+                )
+                NumberInputPicker(
+                    text = "starting vertex id",
+                    onChange = {
+                        it?.let { selectedVertexStartId = it }
+                    }
+                )
+                NumberInputPicker(
+                    text = "ending vertex id",
+                    onChange = {
+                        it?.let { selectedVertexEndId = it }
+                    }
+                )
+            }
+        ),
 
 
         )

@@ -12,10 +12,12 @@ import view.workspace.graphToolBar.GraphToolBar
 import view.workspace.graph.GraphView
 import view.workspace.header.Header
 import viewModel.workspace.graph.GraphViewModel
+import viewModel.workspace.graph.utils.LocalDatabase
 
 class WorkspaceScreen(val viewModel: GraphViewModel) : Screen {
     @Composable
     override fun Content() {
+        println(LocalDatabase.neo4jUrl)
         Scaffold(
             topBar = {
                 // the header of the screen
