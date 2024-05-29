@@ -11,8 +11,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import viewModel.workspace.graph.GraphsContainerViewModel
 
@@ -37,7 +39,7 @@ fun ColumnGraphsList(modifier: Modifier, graphsContainerViewModel: GraphsContain
 
         Surface(
             modifier = Modifier
-                .fillMaxHeight()
+                .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .clip(shape = MaterialTheme.shapes.large.copy(
                     topEnd = CornerSize(0),
@@ -46,18 +48,33 @@ fun ColumnGraphsList(modifier: Modifier, graphsContainerViewModel: GraphsContain
                 ))
                 .verticalScroll(rememberScrollState())
                 .then(modifier),
-            tonalElevation = 8.dp,
+            tonalElevation = 2.dp,
         ) {
             Column(
-                modifier = Modifier.padding(0.dp, 8.dp)
+                modifier = Modifier.padding(0.dp, 8.dp).fillMaxHeight()
             ) {
-                graphsContainer.filter { g -> g.graphName.lowercase().startsWith(searchText.lowercase()) }.forEach { graph ->
-                    GraphRepresentation(
-                        viewModel = graph,
-                        graphsContainerViewModel = graphsContainerViewModel,
-                        titleColor = MaterialTheme.colorScheme.primary,
-                        subTitleColor = MaterialTheme.colorScheme.secondary
-                    )
+                val listedGraphs = graphsContainer.filter { g -> g.graphName.lowercase().startsWith(searchText.lowercase()) }
+                if (listedGraphs.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(32.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "no graphs are found",
+                            color = MaterialTheme.colorScheme.secondary,
+                            fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                        )
+                    }
+                } else {
+                    listedGraphs.forEach { graph ->
+                        GraphRepresentation(
+                            viewModel = graph,
+                            graphsContainerViewModel = graphsContainerViewModel,
+                            titleColor = MaterialTheme.colorScheme.primary,
+                            subTitleColor = MaterialTheme.colorScheme.secondary
+                        )
+                    }
                 }
             }
         }
