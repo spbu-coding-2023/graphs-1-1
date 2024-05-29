@@ -120,7 +120,7 @@ fun ColumnGraphsList(modifier: Modifier, graphsContainerViewModel: GraphsContain
             },
             onNeo4jRequest = {
                 isImportDialogShown = !isImportDialogShown
-                val settingsManager = SettingsFileManager(".settings.json")
+                val settingsManager = SettingsFileManager()
                 val settingsJson = settingsManager.loadSettings()
 
                 val settingsObject = Json.decodeFromString<SettingsFileManager.settings>(settingsJson)
@@ -137,7 +137,7 @@ fun ColumnGraphsList(modifier: Modifier, graphsContainerViewModel: GraphsContain
             },
             onSQLiteRequest = {
                 isImportDialogShown = !isImportDialogShown
-                val settingsManager = SettingsFileManager(".settings.json")
+                val settingsManager = SettingsFileManager()
                 val settingsJson = settingsManager.loadSettings()
 
                 val settingsObject = Json.decodeFromString<SettingsFileManager.settings>(settingsJson)

@@ -3,10 +3,12 @@ package view.settings
 import viewModel.workspace.graph.utils.LocalDatabase
 import java.io.File
 import java.io.IOException
+import kotlinx.serialization.Serializable
 
 class SettingsFileManager(
 ) {
     private val settingsFileName = ".settings.json"
+    @Serializable
     data class settings(
         val sqlitePath: String,
         val neo4jUrl: String,

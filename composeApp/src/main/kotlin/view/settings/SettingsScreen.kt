@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import kotlinx.serialization.json.Json
 import viewModel.workspace.graph.utils.LocalDatabase
 
 class SettingsScreen : Screen {
@@ -30,11 +31,15 @@ class SettingsScreen : Screen {
         var neo4jUser by remember { mutableStateOf(TextFieldValue("")) }
         var neo4jPassword by remember { mutableStateOf(TextFieldValue("")) }
 
+        val settingsManager = SettingsFileManager()
+        val settingsJson = settingsManager.loadSettings()
 
-        var savedSqlitePath by remember { mutableStateOf("") }
-        var savedNeo4jUrl by remember { mutableStateOf("") }
-        var savedNeo4jUser by remember { mutableStateOf("") }
-        var savedNeo4jPassword by remember { mutableStateOf("") }
+        val settingsObject = Json.decodeFromString<SettingsFileManager.settings>(settingsJson)
+
+        sqlitePath = TextFieldValue(settingsObject.sqlitePath)
+        neo4jUrl = TextFieldValue(settingsObject.neo4jUrl)
+        neo4jUser = TextFieldValue(settingsObject.neo4jUser)
+        neo4jPassword = TextFieldValue(settingsObject.neo4jPassword)
 
         CommonScreenLayout("Settings") {
             Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {

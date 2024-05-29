@@ -5,7 +5,7 @@ plugins {
     // in each subproject's classloader
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.compose) apply false
-
+    kotlin("plugin.serialization") version "1.6.10"
     `java-library`
 
     // formatter
