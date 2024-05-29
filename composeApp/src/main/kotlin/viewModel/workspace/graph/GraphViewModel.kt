@@ -26,6 +26,8 @@ import model.VertexModel
 import view.workspace.graph.MAX_SCALE_FACTOR
 import view.workspace.graph.MIN_SCALE_FACTOR
 import viewModel.workspace.graph.utils.GraphStorage
+import java.io.File
+import java.io.InputStream
 import java.lang.Math.pow
 import kotlin.math.max
 
@@ -343,16 +345,18 @@ class GraphViewModel(
     }
 
     fun setupRandom(n: Int) {
+
         val vv = mutableListOf<VertexModel>()
         val r = 600
         val isDirected = isDirected()
+        val isWeighted = isWeighted()
 
         for (i in 0..n) {
             vv.add(VertexModel(i, (-r..r).random().toFloat(), (-r..r).random().toFloat(), i.toString()))
             graph.addVertex(vv.last())
             repeat(2) {
                 val ri = (pow((0..i).random().toDouble(), 2.952)/pow(i.toDouble(), 2.952)*i).toInt()
-                val randW = (-1..3).random()
+                val randW = if (isWeighted) (-1..3).random() else 1
                 graph.addEdge(vv[i], vv[ri], EdgeModel(i, ri, "$i", weight = randW.toDouble(), isDirected = isDirected), randW.toDouble())
             }
         }
