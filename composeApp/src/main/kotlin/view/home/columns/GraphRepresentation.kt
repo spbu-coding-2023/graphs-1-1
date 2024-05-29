@@ -186,7 +186,7 @@ fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: Gra
             },
             onNeo4jRequest = {
                 isExportDialogShown = !isExportDialogShown
-                val settingsManager = SettingsFileManager("settings.json")
+                val settingsManager = SettingsFileManager(".settings.json")
                 val settingsJson = settingsManager.loadSettings()
 
                 val settingsObject = Json.decodeFromString<SettingsFileManager.settings>(settingsJson)
@@ -200,7 +200,7 @@ fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: Gra
             },
             onSQLiteRequest = {
                 isExportDialogShown = !isExportDialogShown
-                val settingsManager = SettingsFileManager("settings.json")
+                val settingsManager = SettingsFileManager(".settings.json")
                 val settingsJson = settingsManager.loadSettings()
 
                 val settingsObject = Json.decodeFromString<SettingsFileManager.settings>(settingsJson)

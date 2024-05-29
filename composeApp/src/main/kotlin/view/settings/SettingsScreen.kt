@@ -93,19 +93,13 @@ class SettingsScreen : Screen {
                     )
                 }
 
-                HorizontalDivider(modifier = Modifier.padding(32.dp))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 32.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Start
                 ) {
-                    Button(
-                        onClick = { navigator.pop() },
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "backIcon")
-                        Text("Back")
-                    }
+
                     Button(
                         onClick = {
                             val settings = """
@@ -116,7 +110,7 @@ class SettingsScreen : Screen {
                                     "neo4jPassword": "${neo4jPassword.text}"
                                 }
                             """.trimIndent()
-                            val settingsManager = SettingsFileManager("settings.json")
+                            val settingsManager = SettingsFileManager(".settings.json")
                             settingsManager.saveSettings(settings)
                         }
                     ) {
