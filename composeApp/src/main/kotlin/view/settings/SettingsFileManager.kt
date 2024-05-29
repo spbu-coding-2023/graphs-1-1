@@ -13,7 +13,7 @@ class SettingsFileManager(
         val neo4jUser: String,
         val neo4jPassword: String
     )
-    private val appDir = File(LocalDatabase.getGraphsDirectory(), "settings")
+    private val appDir = LocalDatabase.getGraphsDirectory()
 
     init {
         if (!appDir.exists()) {
