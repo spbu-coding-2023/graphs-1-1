@@ -10,12 +10,14 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import view.home.HomeScreen
 import view.workspace.header.menu.Menu
+import view.workspace.header.menu.SaveDialog
 import viewModel.workspace.graph.GraphViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Header(viewModel: GraphViewModel) {
     var isMenuOpen by remember { mutableStateOf(false) }
+    var isSaveDialogShown by remember { mutableStateOf(false) }
     val navigator = LocalNavigator.currentOrThrow
 
     TopAppBar(
@@ -26,8 +28,7 @@ fun Header(viewModel: GraphViewModel) {
             // Home button
             IconButton(
                 onClick = {
-                    viewModel.storage.exportGraph()
-                    navigator.push(HomeScreen())
+                    isSaveDialogShown = true
                 }
             ) {
                 Icon( Icons.Default.Home, "homeIcon")
@@ -58,4 +59,21 @@ fun Header(viewModel: GraphViewModel) {
             }
         }
     )
+
+    if (isSaveDialogShown) {
+        SaveDialog(
+            onDismissRequest = {
+                isSaveDialogShown = false
+            },
+            onNotSaveRequest = {
+                isSaveDialogShown = false
+                navigator.push(HomeScreen())
+            },
+            onSaveRequest = {
+                isSaveDialogShown = false
+                viewModel.storage.exportGraph()
+                navigator.push(HomeScreen())
+            }
+        )
+    }
 }
