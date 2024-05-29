@@ -334,13 +334,20 @@ class GraphViewModel(
 
     fun createEdge(vertexFrom: VertexModel, vertexTo: VertexModel) {
         updateGraph { g ->
-            g.addEdge(vertexFrom, vertexTo, EdgeModel(vertexFrom.id, vertexTo.id, null, isDirected = isDirected()))
+            g.addEdge(vertexFrom, vertexTo, EdgeModel(vertexFrom.id, vertexTo.id, null, isDirected = isDirected(), isWeighted = isWeighted()))
         }
     }
 
     fun removeEdge(vertexFrom: VertexModel, vertexTo: VertexModel) {
         updateGraph { g ->
             g.removeEdge(vertexFrom, vertexTo)
+        }
+    }
+
+    fun setWeight(vertexFrom: VertexModel, vertexTo: VertexModel, w: Double) {
+        updateGraph { g ->
+            g.setEdgeWeight(vertexFrom, vertexTo, w)
+            g.getEdge(vertexFrom, vertexTo)?.weight = w
         }
     }
 
