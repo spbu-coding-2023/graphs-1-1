@@ -1,4 +1,4 @@
-package view.home.columns.deleteDialog
+package view.home.columns.dialog
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

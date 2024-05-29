@@ -93,10 +93,16 @@ class SettingsScreen : Screen {
                     }
                     Button(
                         onClick = {
-                            savedSqlitePath = sqlitePath.text
-                            savedNeo4jUrl = neo4jUrl.text
-                            savedNeo4jUser = neo4jUser.text
-                            savedNeo4jPassword = neo4jPassword.text
+                            val settings = """
+                                {
+                                    "sqlitePath": "${sqlitePath.text}",
+                                    "neo4jUrl": "${neo4jUrl.text}",
+                                    "neo4jUser": "${neo4jUser.text}",
+                                    "neo4jPassword": "${neo4jPassword.text}"
+                                }
+                            """.trimIndent()
+                            val settingsManager = SettingsFileManager("settings.json")
+                            settingsManager.saveSettings(settings)
                         }
                     ) {
                         Text("Apply")

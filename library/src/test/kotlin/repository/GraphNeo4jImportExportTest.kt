@@ -177,7 +177,7 @@ class GraphNeo4jImporterTest {
         val exporter = GraphNeo4jExporter()
 
         // Export test graph
-        val graphId = exporter.exportGraph(graph, listOf(uri, user, password))
+        val graphId = exporter.exportGraph(graph, listOf(uri, user, password), "abracadabra")
 
         // Instantiate GraphNeo4jImporter
         val driverFactory: (String, AuthToken) -> Driver = { currentUri, authToken ->
@@ -255,7 +255,7 @@ class GraphNeo4jExporterTest {
         val exporter = GraphNeo4jExporter()
 
         // Call exportGraph function
-        val graphId =  exporter.exportGraph(graph, listOf(uri, user, password))
+        val graphId =  exporter.exportGraph(graph, listOf(uri, user, password), "abracadabra")
 
         // Verify the data
         val driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password))
@@ -342,7 +342,7 @@ class GraphNeo4jExporterTest {
         val user = "john"
         val password = "password"
         assertThrows(IllegalStateException::class.java) {
-            GraphNeo4jExporter().exportGraph(testGraph, listOf(uri, user, password))
+            GraphNeo4jExporter().exportGraph(testGraph, listOf(uri, user, password), "abracadabra")
         }
     }
 }

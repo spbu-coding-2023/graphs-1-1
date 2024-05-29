@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Publish
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,18 +18,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import repository.implementation.neo4j.GraphNeo4jExporter
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import view.home.columns.deleteDialog.DeleteGraphDialog
+import view.home.columns.dialog.DeleteGraphDialog
+import view.home.columns.dialog.ExportGraphDialog
+import view.settings.SettingsFileManager
+import view.settings.SettingsScreen
 import view.workspace.WorkspaceScreen
 import viewModel.workspace.graph.GraphViewModel
 import viewModel.workspace.graph.GraphsContainerViewModel
 import viewModel.workspace.graph.utils.LocalDatabase
 import kotlin.math.abs
+import kotlinx.serialization.json.Json
+
 
 @Composable
 fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: GraphsContainerViewModel, titleColor: Color, subTitleColor: Color) {
     var isDeleteDialogShown by remember { mutableStateOf(false) }
+    var isExportDialogShown by remember { mutableStateOf(false)}
     val navigator = LocalNavigator.currentOrThrow
     val density = LocalDensity.current.density
     val colorTriples = listOf(
@@ -141,6 +149,18 @@ fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: Gra
             )
         }
 
+        IconButton(
+            modifier = Modifier,
+            onClick = {
+                isExportDialogShown = !isExportDialogShown
+            }
+        ) {
+            Icon(
+                Icons.Filled.Publish, "importIcon",
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+
     }
 
     if (isDeleteDialogShown) {
@@ -154,4 +174,42 @@ fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: Gra
             }
         )
     }
+
+    if (isExportDialogShown) {
+        ExportGraphDialog(
+            onDismissRequest = {
+                isExportDialogShown = !isExportDialogShown
+            },
+            onSettingsRequest = {
+                isExportDialogShown = !isExportDialogShown
+                navigator.push(SettingsScreen())
+            },
+            onNeo4jRequest = {
+                isExportDialogShown = !isExportDialogShown
+                val settingsManager = SettingsFileManager("settings.json")
+                val settingsJson = settingsManager.loadSettings()
+
+                val settingsObject = Json.decodeFromString<SettingsFileManager.settings>(settingsJson)
+
+                val neo4jUrl = settingsObject.neo4jUrl
+                val neo4jUser = settingsObject.neo4jUser
+                val neo4jPassword = settingsObject.neo4jPassword
+
+                val neo4jExporter = GraphNeo4jExporter()
+                neo4jExporter.exportGraph(viewModel., listOf(neo4jUrl, neo4jUser, neo4jPassword), viewModel.graphName)
+            },
+            onSQLiteRequest = {
+                isExportDialogShown = !isExportDialogShown
+                val settingsManager = SettingsFileManager("settings.json")
+                val settingsJson = settingsManager.loadSettings()
+
+                val settingsObject = Json.decodeFromString<SettingsFileManager.settings>(settingsJson)
+
+                val sqlitePath = settingsObject.sqlitePath
+                val sqlite
+            }
+        )
+    }
 }
+
+

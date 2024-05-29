@@ -16,13 +16,13 @@ class GraphNeo4jExporter: DatabaseGraphExporter {
     */
     override fun <V, E> exportGraph(
         graph: Graph<V, E>,
-        credentials: List<String?>
+        credentials: List<String?>,
+        graphId: String
     ): String {
         if (credentials[0] == null) {
             throw IllegalStateException("bolt link needed (credentials[0])")
         }
         val driver: Driver = GraphDatabase.driver(credentials[0], AuthTokens.basic(credentials[1], credentials[2]))
-        val graphId = UUID.randomUUID().toString()
         driver.use {
             val session: Session = it.session()
             session.executeWrite { tx ->
