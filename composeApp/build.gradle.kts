@@ -29,7 +29,7 @@ dependencies {
     implementation(compose.components.resources)
 
     // serialization
-//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     // Voyager
     val voyagerVersion = "1.0.0"
