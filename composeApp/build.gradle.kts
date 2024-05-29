@@ -31,6 +31,9 @@ dependencies {
     // serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
+    // neo4j
+    implementation("org.neo4j.driver:neo4j-java-driver:5.19.0")
+
     // Voyager
     val voyagerVersion = "1.0.0"
     implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
