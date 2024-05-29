@@ -196,7 +196,7 @@ fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: Gra
                 val neo4jPassword = settingsObject.neo4jPassword
 
                 val neo4jExporter = GraphNeo4jExporter()
-                neo4jExporter.exportGraph(viewModel., listOf(neo4jUrl, neo4jUser, neo4jPassword), viewModel.graphName)
+//                neo4jExporter.exportGraph(viewModel., listOf(neo4jUrl, neo4jUser, neo4jPassword), viewModel.graphName)
             },
             onSQLiteRequest = {
                 isExportDialogShown = !isExportDialogShown
@@ -206,7 +206,7 @@ fun GraphRepresentation(viewModel: GraphViewModel, graphsContainerViewModel: Gra
                 val settingsObject = Json.decodeFromString<SettingsFileManager.settings>(settingsJson)
 
                 val sqlitePath = settingsObject.sqlitePath
-                val sqlite
+//                val sqlite
             }
         )
     }
