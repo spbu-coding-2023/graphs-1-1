@@ -110,7 +110,7 @@ class SettingsScreen : Screen {
                                     "neo4jPassword": "${neo4jPassword.text}"
                                 }
                             """.trimIndent()
-                            val settingsManager = SettingsFileManager(".settings.json")
+                            val settingsManager = SettingsFileManager()
                             settingsManager.saveSettings(settings)
                         }
                     ) {

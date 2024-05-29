@@ -5,8 +5,8 @@ import java.io.File
 import java.io.IOException
 
 class SettingsFileManager(
-    private val settingsFileName: String
 ) {
+    private val settingsFileName = ".settings.json"
     data class settings(
         val sqlitePath: String,
         val neo4jUrl: String,
