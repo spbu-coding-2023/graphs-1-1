@@ -101,65 +101,6 @@ fun ColumnGraphsList(modifier: Modifier, graphsContainerViewModel: GraphsContain
                         Text("Import existing graph")
                     }
                 }
-
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(16.dp, 4.dp),
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Row(
-//                        modifier = Modifier
-//                            .clip(shape = MaterialTheme.shapes.small)
-//                            .weight(1f)
-//                            .clickable {
-//
-//                            },
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Spacer(modifier = Modifier.width(8.dp))
-//
-//                        Surface(
-//                            modifier = Modifier
-//                                .size(40.dp),
-//                            shape = MaterialTheme.shapes.medium,
-//                        ) {
-//                            Column(
-//                                horizontalAlignment = Alignment.CenterHorizontally,
-//                                verticalArrangement = Arrangement.Center,
-//                                modifier = Modifier.fillMaxSize()
-//                                    .background(brush = Brush.linearGradient(
-//                                        colors = listOf(Color.Gray, Color.DarkGray),
-//                                        start = Offset(0f, 0f),
-//                                        end = Offset(50f*density, 50f*density)
-//                                    ))
-//                            ) {
-//                                Text(
-//                                    text = "+",
-//                                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-//                                    color = Color.White
-//                                )
-//                            }
-//                        }
-//
-//                        Spacer(modifier = Modifier.width(8.dp))
-//
-//                        Column(
-//                            modifier = Modifier
-//                                .padding(8.dp),
-//                            verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Bottom),
-//
-//                            ) {
-//                            Text(
-//                                text = "Import your own graph here!",
-//                                color = MaterialTheme.colorScheme.primary,
-//                                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-//                            )
-//
-//                        }
-//                    }
-//                }
-//                }
             }
         }
     }
