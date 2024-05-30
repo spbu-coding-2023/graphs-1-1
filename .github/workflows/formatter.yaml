@@ -1,0 +1,12 @@
+name: formatter
+on: [push]
+jobs:
+  check-formatted:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v4
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+    - name: Check formatter
+      run: ./gradlew ktfmtCheck
