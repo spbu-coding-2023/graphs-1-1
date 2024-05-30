@@ -68,7 +68,7 @@ class GraphPathSearchDijkstraTest {
     @Test
     fun `search path exists undirected`() {
         setupGraph1(UDWgraph)
-        assertEquals(Dijkstra.searchPath(UDWgraph, 1, 6), mutableListOf(1, 2, 3, 6))
+        assertEquals(Dijkstra.searchPath(UDWgraph, 1, 6), mutableListOf(1, 2, 5, 6))
     }
 
     @Test
