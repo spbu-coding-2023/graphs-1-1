@@ -27,6 +27,9 @@ dependencies {
 
     // resources
     implementation(compose.components.resources)
+    testImplementation("org.testng:testng:7.1.0")
+    testImplementation("junit:junit:4.13.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
     // serialization
 //    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
@@ -46,6 +49,9 @@ dependencies {
 
     // extend icons
     implementation(compose.materialIconsExtended)
+
+    testImplementation(libs.junit.api)
+    testImplementation(libs.junit.engine)
 }
 
 compose.desktop {
@@ -58,4 +64,8 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
